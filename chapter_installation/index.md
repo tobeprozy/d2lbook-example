@@ -43,3 +43,12 @@ conda create --name d2l python=3.9 -y
 ```bash
 conda activate d2l
 ```
+
+
+## 安装深度学习框架和`d2l`软件包
+
+在安装深度学习框架之前，请先检查计算机上是否有可用的GPU。
+例如可以查看计算机是否装有NVIDIA GPU并已安装[CUDA](https://developer.nvidia.com/cuda-downloads)。
+如果机器没有任何GPU，没有必要担心，因为CPU在前几章完全够用。
+但是，如果想流畅地学习全部章节，请提早获取GPU并且安装深度学习框架的GPU版本。
+

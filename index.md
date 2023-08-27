@@ -1,4 +1,4 @@
-《动手学深度学习》
+《机器人与自动驾驶中的感知原理、算法和实践》
 ========================
 
 ```eval_rst
@@ -12,10 +12,23 @@
 
 chapter_preface/index
 chapter_installation/index
+chapter_notation/index
 ```
+
+
 ```toc
 :maxdepth: 2
 :numbered:
 
 chapter_introduction/index
+chapter_preliminaries/index
+
 ```
+
+
+```toc
+:maxdepth: 1
+
+chapter_references/zreferences
+```
+

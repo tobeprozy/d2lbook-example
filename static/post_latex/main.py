@@ -15,7 +15,7 @@ def _unnumber_chaps_and_secs(lines):
         return False
 
     # Preface, Installation, and Notation are unnumbered chapters
-    NUM_UNNUMBERED_CHAPS = 3
+    NUM_UNNUMBERED_CHAPS = 1
     # Prelimilaries
     TOC2_START_CHAP_NO = 5
 
@@ -28,6 +28,7 @@ def _unnumber_chaps_and_secs(lines):
             # Unnumber unnumbered chapters
             if num_chaps <= NUM_UNNUMBERED_CHAPS:
                 chap_name = re.split('{|}', l)[1]
+                
                 lines[i] = ('\\chapter*{' + chap_name
                             + '}\\addcontentsline{toc}{chapter}{'
                             + chap_name + '}\n')

@@ -4,3 +4,8 @@
 
 变换，transform
 
+编码器，encoder
+
+标签，label
+
+步幅，stride
