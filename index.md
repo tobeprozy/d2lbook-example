@@ -22,7 +22,8 @@ chapter_notation/index
 
 chapter_introduction/index
 chapter_preliminaries/index
-
+chapter_cpp/index
+chapter_software/index
 ```
 
 

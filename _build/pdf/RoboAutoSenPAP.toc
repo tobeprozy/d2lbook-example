@@ -1,0 +1,22 @@
+\babel@toc {english}{}
+\contentsline {chapter}{前言}{1}{chapter*.3}%
+\contentsline {chapter}{\numberline {1}安装}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}安装 Miniconda}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}安装深度学习框架和\sphinxstyleliteralintitle {\sphinxupquote {d2l}}软件包}{4}{section.1.2}%
+\contentsline {chapter}{\numberline {2}符号}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}数字}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}集合论}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}函数和运算符}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}微积分}{7}{section.2.4}%
+\contentsline {section}{\numberline {2.5}概率与信息论}{7}{section.2.5}%
+\contentsline {section}{\numberline {2.6}复杂度}{7}{section.2.6}%
+\contentsline {chapter}{\numberline {3}引言}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}日常生活中的机器学习}{10}{section.3.1}%
+\setcounter {tocdepth}{2}
+\contentsline {chapter}{\numberline {4}预备知识}{11}{chapter.4}%
+\contentsline {section}{\numberline {4.1}数据操作}{12}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}入门}{12}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}数据预处理}{12}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}读取数据集}{12}{subsection.4.2.1}%
+\contentsline {chapter}{\numberline {5}C++}{15}{chapter.5}%
+\contentsline {chapter}{\numberline {6}软件工具}{17}{chapter.6}%
