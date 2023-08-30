@@ -75,6 +75,10 @@ unzip SourceHanSerifSC.zip -d SourceHanSerifSC
 
 sudo mv SourceHanSansSC SourceHanSerifSC /usr/share/fonts/opentype/
 sudo fc-cache -f -v
+
+
+pip install sphinxcontrib-restructuredtext-lexer
+pip install sphinx.ext.autosectionlabel
 ```
 
 
