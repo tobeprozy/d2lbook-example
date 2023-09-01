@@ -229,5 +229,9 @@ scp：用于通过SSH安全地复制文件和目录。
  
 查看监听端口：
 sudo netstat -lnp | grep nginx
+
+打印本地ip
+hostname -I
+hostname -I | awk '{print $1}'
 ```
 

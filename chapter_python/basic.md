@@ -2,23 +2,33 @@
 
 
 ## 程序结构、编译 & 执行
-### 程序结构
+```python
+# 导入必要的模块
+import math
+# 定义函数
+def square_root(num):
+    """计算一个数字的平方根"""
+    return math.sqrt(num)
+# 主程序入口
+if __name__ == '__main__':
+    # 获取用户输入
+    num = float(input("请输入一个数字："))  
+    # 调用函数进行计算
+    result = square_root(num)    
+    # 在控制台输出结果
+    print(f"{num}的平方根是：{result}")
 ```
-#include <iostream>
-using namespace std;
- 
-// main() 是程序开始执行的地方
- 
-int main()
-{
-   cout << "Hello World"; // 输出 Hello World
-   return 0;
-}
-```
-### 编译、执行
 ```bash
-$ g++ hello.cpp
-$ ./a.out
-$ Hello World
-
+$ python hello.py
 ```
+
+### 类中的__init__和__call__
+
+|          | `__init__`                   | `__call__`                                |
+| -------- | ---------------------------- | ----------------------------------------- |
+| 触发时机 | 在创建对象时触发             | 调用对象时触发                            |
+| 目的     | 初始化对象的属性和状态       | 将对象作为函数调用                        |
+| 参数     | `self`和其他初始化参数       | `self`和其他调用参数                      |
+| 返回值   | 通常不返回值，只是初始化对象 | 可以返回任何类型的值，取决于实现的逻辑    |
+| 示例     | `obj = MyClass(arg1, arg2)`  | `result = obj(arg1, arg2)` 或 `obj(arg1)` |
+| 用途     | 设置对象的初始状态           | 的将对象实例化后，使其具有可调用行为      |

@@ -1283,6 +1283,13 @@ id  name    gender  mark
 [root@localhost ~]$ cut -f 2,3 student.txt
 ```
 
+### 读取文件名
+
+```shell
+shell_dir=$(dirname $(readlink -f "$0"))# $0表示当前文件名，执行readlink -f "$0" 用于获取脚本的绝对路径，包括文件名。然后执行dirname，就昂完整目录转化为去文件名路径。
+shell_name=$(basename "$0")
+```
+
 
 
 ## 进阶语法

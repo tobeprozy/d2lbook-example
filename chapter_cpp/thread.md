@@ -46,7 +46,7 @@
 
 线程的创建比较简单，只需要把线程添加到线程当中。如下：
 
-```
+```c++
 #include <iostream>
 #include <thread>
 
@@ -93,7 +93,7 @@ int main() {
 
 可以使用joinable判断是何种方式：我们首先创建一个线程 `myThread` 并检查它是否可连接。然后，我们创建一个分离的线程 `myDetachedThread` 并再次检查其可连接状态。根据 `joinable()` 的返回值，我们可以确定线程是可连接还是已经分离。
 
-```
+```c++
 #include <iostream>
 #include <thread>
 
@@ -132,7 +132,7 @@ int main() {
 
 下面的代码中，join后面的代码不会被执行，除非子线程结束了
 
-```
+```c++
 #include <iostream>
 #include <thread>
 using namespace std;
@@ -168,7 +168,7 @@ int main()
 
 使用detch，主线程不会等待子线程结束，如果主线程结束了，程序就结束了。
 
-```
+```c++
 #include <iostream>
 #include <thread>
 using namespace std;
@@ -242,7 +242,7 @@ mutex头文件主要声明了互斥量（tmux）相关类，提供了4种互斥�
 指两个或两个以上的进程在执行过程中，由于竞争资源或者由于彼此通信而造成的一种阻塞的现象，若无外力作用，它们都将无法推进下去。此时称系统外于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁讲程。
 ​	下面结合实例对lock和unlock进行说明。同一个mutex变量上锁之后，一个时间段内，只允许一个线程访问它。例如:
 
-```
+```c++
 #include <iostream>  // std::cout
 #include <thread>  // std::thread
 #include <mutex>  // std::mutex
@@ -272,7 +272,7 @@ int main ()
 
 如果是不同的tmux变量，因为不涉及到统一资源的竞争，所以下面的代码可能会出现交替打印的情况，或者另一个线程可以修改共同的全局变量。
 
-```
+```c++
 #include <iostream> // std::cout
 #include <thread> // std::thread
 #include <mutex> // std::mutex
@@ -323,7 +323,7 @@ int main ()
 
 创建lock guard对象时，它将尝试获取提供给它的与斥锁的所有权。当控制流离开lock guard对象的作用域时，lock guard析构并释放与创建即加锁，作用域结束自动析构并解锁，无需手工解锁不能中途解锁，必须等作用域结束才解锁。下面的程序的功能为：每经过一个线程，g_i加1。因为涉及到共同资源g_i，所以需要一个共同mutex: g_i_mutex。main线程的id为1，所以下次的线程id依次加1。
 
-```
+```c++
 #include <thread>
 #include <mutex>
 #include <iostream>
@@ -357,7 +357,7 @@ void safe_increment()
 4、条件变量需要该类型的锁作为参数 (此时必须使用unique lock)  
 5、所有 lock_guard 能够做到的事情，都可以使用 unique_lock 做到，反之则不然。那么何时使lock_guard呢? 很简单，需要使用锁的时候，首先考虑使用 lock_guard，因为lock_guard是最简单的锁。  
 
-```
+```c++
 #include <mutex>
 #include <thread>
 #include <iostream>
@@ -403,7 +403,7 @@ condition_variable条件变量可以阻塞（wait、wait_for、wait_until）调�
 
 当前线程调用 wait() 后将被阻塞(此时当前线程应该获得了锁 (mutex)不妨设获得锁 Iock)，直到另外某个线程调用 notify_唤醒了当前线程。在线程被阻塞时，该函数会自动调用 ck.unlock 释放锁，使得其他被阻塞在锁竞争上的线程得以继续执行。另外，一旦当前线程获得通知(notied，通常是另外某个线程调用 notiy "唤醒了当前线程)，wait函数也是自动调用ck.ock0，使得ck的状态和 wait 函数调用时相同。代码示例:
 
-```
+```c++
 #include <iostream>           // std::cout
 #include <thread>             // std::thread, std::this_thread::yield
 #include <mutex>              // std::mutex, std::unique_lock
@@ -453,7 +453,7 @@ int main ()
 与std:condition_variable:wait) 类似，不过 wait for可以指定一个时间段，在当前线程收到通知或者指定的时间 rel time 超时之前，该线
 程都会处于阻塞状态。而一旦超时或者收到了其他线程的通知，wait for返回，剩下的处理步骤和 wait)类似。
 
-```
+```c++
 template <class Rep, class Period>
   cv_status wait_for (unique_lock<mutex>& lck,
                       const chrono::duration<Rep,Period>& rel_time);
@@ -461,7 +461,7 @@ template <class Rep, class Period>
 
 另外，wait_for 的重载版本的最后一个参数pred表示 wait_for的预测条件，只有当 pred条件为false时调用 wait()才会阻塞当前线程，并且在收到其他线程的通知后只有当 pred为 true时才会被解除阻塞。
 
-```
+```c++
 template <class Rep, class Period, class Predicate>
     bool wait_for (unique_lock<mutex>& lck,
          const chrono::duration<Rep,Period>& rel_time, Predicate pred);
@@ -469,7 +469,7 @@ template <class Rep, class Period, class Predicate>
 
 使用示例：
 
-```
+```c++
 #include <iostream>           // std::cout
 #include <thread>             // std::thread
 #include <chrono>             // std::chrono::seconds
@@ -531,7 +531,7 @@ int main ()
 
 线程池维护着多个线程，这避免了在处理短时间任务时，创建与销毁线程的代价。线程池实现代码:  
 
-```
+```c++
 #ifndef _THREADPOOL_H
 #define _THREADPOOL_H
 #include <vector>
@@ -634,7 +634,7 @@ while (!stop)
 
 测试代码:
 
-```
+```c++
 #include "mythread.h"
 #include<string>
 #include<math.h>
