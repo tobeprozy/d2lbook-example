@@ -4948,3 +4948,1247 @@ int main()
 }
 ```
 
+## 自动推导类型auto
+
+ 
+
+在C语言和C++98中，auto关键字用于修饰变量（自动存储的局部变量）。
+
+在C++11中，赋予了auto全新的含义，不再用于修饰变量，而是作为一个类型指示符，指示编译器在编译时推导auto声明的变量的数据类型。
+
+语法：auto 变量名 = 初始值;
+
+在Linux平台下，编译需要加-std=c++11参数。
+
+注意：
+
+1）auto声明的变量必须在定义时初始化。
+
+2）初始化的右值可以是具体的数值，也可以是表达式和函数的返回值等。
+
+3）auto不能作为函数的形参类型。
+
+4）auto不能直接声明数组。
+
+5）auto不能定义类的非静态成员变量。
+
+**不要滥用auto，auto在编程时真正的用途如下：**
+
+**1）代替冗长复杂的变量声明。**
+
+**2）在模板中，用于声明依赖模板参数的变量。**
+
+**3）函数模板依赖模板参数的返回值。**
+
+**4）用于lambda表达式中。**
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+          
+double func(double b, const char* c, float d, short e, long f)
+{
+	cout << ",b=" << b << ",c=" << c << ",d=" << d << ",e=" << e << ",f=" << f << endl;
+	return 5.5;
+}
+          
+int main()
+{
+	double (*pf)( double , const char* , float , short , long );    // 声明函数指针pf。
+	pf = func;
+	pf( 2, "西施", 3, 4, 5);
+	auto pf1 = func;
+	pf1(2, "西施", 3, 4, 5);
+}
+```
+
+## 函数模板的基本概念
+
+函数模板是通用的函数描述，使用任意类型（泛型）来描述函数。
+
+编译的时候，编译器推导实参的数据类型，根据实参的数据类型和函数模板，生成该类型的函数定义。
+
+生成函数定义的过程被称为实例化。
+
+创建交换两个变量的函数模板：
+
+```
+template <typename T>
+void Swap(T &a, T &b)
+{
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
+```
+
+在C++98添加关键字typename之前，C++使用关键字class来创建模板。
+
+如果考虑向后兼容，函数模板应使用typename，而不是class。
+
+函数模板实例化可以让编译器自动推导，也可以在调用的代码中显式的指定。
+
+## 函数模板的注意事项
+
+1）可以为类的成员函数创建模板，但不能是虚函数和析构函数。
+
+2）使用函数模板时，必须明确数据类型，确保实参与函数模板能匹配上。
+
+3）使用函数模板时，推导的数据类型必须适应函数模板中的代码。
+
+4）使用函数模板时，如果是自动类型推导，不会发生隐式类型转换，如果显式指定了函数模板的数据类型，可以发生隐式类型转换。
+
+5）函数模板支持多个通用数据类型的参数。
+
+6）函数模板支持重载，可以有非通用数据类型的参数。
+
+## 函数模板的具体化
+
+可以提供一个具体化的函数定义，当编译器找到与函数调用匹配的具体化定义时，将使用该定义，不再寻找模板。
+
+具体化（特例化、特化）的语法：
+
+```
+template<> void 函数模板名<数据类型>(参数列表)
+template<> void 函数模板名 (参数列表)
+{
+	// 函数体。
+}
+```
+
+对于给定的函数名，可以有普通函数、函数模板和具体化的函数模板，以及它们的重载版本。
+
+编译器使用各种函数的规则：
+
+1）具体化优先于常规模板，普通函数优先于具体化和常规模板。
+
+2）如果希望使用函数模板，可以用空模板参数强制使用函数模板。
+
+3）如果函数模板能产生更好的匹配，将优先于普通函数。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+                      
+class CGirl            // 超女类。
+{
+public:
+	int m_bh;              // 编号。
+	string m_name;   // 姓名。
+	int m_rank;          // 排名。
+};
+              
+template <typename T>
+void Swap(T& a, T& b);      // 交换两个变量的值函数模板。
+            
+template<> 
+void Swap<CGirl>(CGirl& g1, CGirl& g2);      // 交换两个超女对象的排名。
+// template<> 
+// void Swap(CGirl& g1, CGirl& g2);      // 交换两个超女对象的排名。
+           
+int main()
+{
+	int a = 10, b = 20;
+	Swap(a, b);           // 使用了函数模板。
+	cout << "a=" << a << ",b=" << b << endl;
+            
+	CGirl g1, g2;
+	g1.m_rank = 1; g2.m_rank = 2;
+	Swap(g1, g2);     // 使用了超女类的具体化函数。
+	cout << "g1.m_rank=" << g1.m_rank << ",g2.m_rank=" << g2.m_rank << endl;
+}
+            
+template <typename T>
+void Swap(T& a, T& b)      // 交换两个变量的值函数模板。
+{
+	T tmp = a;
+	a = b;
+	b = tmp;
+	cout << "调用了Swap(T& a, T& b)\n";
+}
+        
+template<> 
+void Swap<CGirl>(CGirl& g1, CGirl& g2)      // 交换两个超女对象的排名。
+// template<> 
+// void Swap(CGirl& g1, CGirl& g2)      // 交换两个超女对象的排名。
+{
+	int tmp = g1.m_rank;
+	g1.m_rank = g2.m_rank;
+	g2.m_rank = tmp;
+	cout << "调用了Swap(CGirl& g1, CGirl& g2)\n";
+}
+//////////////////////////////////////////////////////
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+void Swap(int a, int b)      // 普通函数。
+{ 	
+	cout << "使用了普通函数。\n";  
+}
+template <typename T> 
+void Swap(T a, T b)          // 函数模板。
+{	
+	cout << "使用了函数模板。\n";  
+}
+template <> 
+void Swap(int a, int b)     // 函数模板的具体化版本。
+{ 	
+	cout << "使用了具体化的函数模板。\n";  
+}       
+int main()
+{
+	Swap('c', 'd');
+}
+```
+
+## 函数模板分文件编写
+
+函数模板只是函数的描述，没有实体，创建函数模板的代码放在头文件中。
+
+函数模板的具体化有实体，编译的原理和普通函数一样，所以，声明放在头文件中，定义放在源文件中。
+
+```
+/////////////////////////////////////////////////////////////////
+// public.h
+#pragma once
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+void Swap(int a, int b);      // 普通函数。
+
+template <typename T>
+void Swap(T a, T b)         // 函数模板。
+{
+	cout << "使用了函数模板。\n";
+}
+
+template <>
+void Swap(int a, int b);    // 函数模板的具体化版本。
+
+
+/////////////////////////////////////////////////////////////////
+// public.cpp
+#include "public.h"
+
+void Swap(int a, int b)      // 普通函数。
+{
+	cout << "使用了普通函数。\n";
+}
+
+template <>
+void Swap(int a, int b)     // 函数模板的具体化版本。
+{
+	cout << "使用了具体化的函数模板。\n";
+}
+
+
+/////////////////////////////////////////////////////////////////
+// demo01.cpp
+#include "public.h"
+
+int main()
+{
+	Swap(1,2);         // 将使用普通函数。
+	Swap(1.3, 3.5);  // 将使用具体化的函数模板。
+	Swap('c', 'd');    // 将使用函数模板。
+}
+```
+
+## 函数模板高级
+
+### decltype关键字
+
+在[C++](https://baike.baidu.com/item/C%2B%2B)11中，decltype[操作符](https://baike.baidu.com/item/操作符/8978896)，用于查询[表达式](https://baike.baidu.com/item/表达式/7655228)的数据类型。
+
+语法：decltype(expression) var;
+
+decltype分析表达式并得到它的类型，不会计算执行[表达式](https://so.csdn.net/so/search?q=表达式&spm=1001.2101.3001.7020)。函数调用也一种表达式，因此不必担心在使用decltype时执行了函数。
+
+decltype推导规则（按步骤）：
+
+1）如果expression是一个没有用括号括起来的标识符，则var的类型与该标识符的类型相同，包括const等限定符。
+
+2）如果expression是一个函数调用，则var的类型与函数的返回值类型相同（函数不能返回void，但可以返回void *）。
+
+3）如果expression是一个左值（能取地址）(要排除第一种情况)、或者用括号括起来的标识符，那么var的类型是expression的引用。
+
+4）如果上面的条件都不满足，则var的类型与expression的类型相同。
+
+如果需要多次使用decltype，可以结合typedef和using。
+
+### 函数后置返回类型
+
+```
+int func(int x,double y);
+```
+
+等同：
+
+```
+auto func(int x,double y) -> int;
+```
+
+将返回类型移到了函数声明的后面。
+
+auto是一个占位符（C++11给auto新增的角色）, 为函数返回值占了一个位置。
+
+这种语法也可以用于函数定义：
+
+```
+auto func(int x,double y) -> int
+{
+  // 函数体。
+}
+```
+
+### C++14的auto关键字
+
+C++14标准对函数返回类型推导规则做了优化，函数的返回值可以用auto，不必尾随返回类型。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template <typename T1, typename T2>
+auto func(T1 x, T2 y) -> decltype(x + y)
+{
+	// 其它的代码。
+	decltype(x+y)  tmp = x + y;
+	cout << "tmp=" << tmp << endl;
+
+	return tmp;
+}
+int main()
+{
+	func(3, 5.8);
+}
+```
+
+## 模板类的基本概念
+
+类模板是通用类的描述，使用任意类型（泛型）来描述类的定义。
+
+使用类模板的时候，指定具体的数据类型，让编译器生成该类型的类定义。
+
+```c++
+template <class T>
+class 类模板名
+{
+	类的定义;
+};
+```
+
+函数模板建议用typename描述通用数据类型，类模板建议用class。
+
+注意：
+
+1）在创建对象的时候，必须指明具体的数据类型。
+
+2）使用类模板时，数据类型必须适应类模板中的代码。
+
+3）类模板可以为通用数据类型指定缺省的数据类型（C++11标准的函数模板也可以）。
+
+4）模板类的成员函数可以在类外实现。
+
+5）可以用new创建模板类对象。
+
+6）在程序中，模板类的成员函数使用了才会创建。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+          
+template <class T1, class T2=string>
+class AA
+{
+public:
+	T1 m_a;      // 通用类型用于成员变量。
+	T2 m_b;      // 通用类型用于成员变量。
+          
+	AA() {  }        // 默认构造函数是空的。
+	// 通用类型用于成员函数的参数。
+	AA(T1 a,T2 b):m_a(a),m_b(b) {  }
+	// 通用类型用于成员函数的返回值。
+	T1 geta()            // 获取成员m_a的值。
+	{
+		T1 a = 2;        // 通用类型用于成员函数的代码中。
+		return m_a + a;
+	}
+	T2 getb();            // 获取成员m_b的值。
+};
+           
+template <class T1, class T2>
+T2 AA<T1,T2>::getb()            // 获取成员m_b的值。
+{
+	return m_b;
+}
+            
+int main()
+{
+	AA<int, string>* a = new AA<int, string>(3, "西施");     // 用模板类AA创建对象a。
+	
+	cout << "a->geta()=" << a->geta() << endl;
+	cout << "a->getb()=" << a->getb() << endl;
+         
+	delete a;
+}
+```
+
+## 模板类的示例
+
+### 栈
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+          
+// typedef string DataType;        // 定义栈元素的数据类型。
+          
+template <class DataType>
+class Stack       // 栈类
+{
+private:
+	DataType* items;               // 栈数组。
+	int   stacksize;         // 栈实际的大小。
+	int   top;                  // 栈顶指针。
+public:
+	// 构造函数：1）分配栈数组内存；2）把栈顶指针初始化为0。
+	Stack(int size) :stacksize(size), top(0) {
+		items = new DataType[stacksize];
+	}
+	~Stack() {
+		delete [] items; items = nullptr;
+	}
+	bool isempty() const {            // 判断栈是否为空。
+		return top == 0;
+	}
+	bool isfull() const {                 // 判断栈是否已满。
+		return top == stacksize;
+	}
+	bool push(const DataType& item) {   // 元素入栈。
+		if (top < stacksize) { items[top++] = item; return true; }
+		return false;
+	}
+	bool pop(DataType& item) {               // 元素出栈。
+		if (top > 0) { item = items[--top]; return true; }
+		return false;
+	}
+};
+       
+int main()
+{
+	Stack<string> ss(5);       // 创建栈对象，大小是5。
+           
+	// 元素入栈。
+	// ss.push(1); ss.push(2); ss.push(3); ss.push(4); ss.push(5);
+	ss.push("西施"); ss.push("冰冰"); ss.push("幂幂"); ss.push("金莲");
+          
+	// 元素出栈。
+	string item;
+	while (ss.isempty() == false)
+	{
+		ss.pop(item);   cout << "item = " << item << endl;
+	}
+}
+
+```
+
+### 数组
+
+类模板可以有非通用类型参数：1）通常是整型（C++20标准可以用其它的类型）；2）实例化模板时必须用常量表达式；3）模板中不能修改参数的值；4）可以为非通用类型参数提供默认值。
+
+优点：在栈上分配内存，易维护，执行速度快，合适小型数组。
+
+缺点：在程序中，不同的非通用类型参数将导致编译器生成不同的类。
+
+构造函数的方法更通用，因为数据的大小是类的成员（而不是硬编码），可以创建数组大小可变的类。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+           
+template <class T,int len=10>
+class Array
+{
+private:
+	T items[len];      // 数组元素。
+public:
+	Array()    {}    	   // 默认构造函数。
+	~Array() {}         // 析构函数
+	T& operator[](int ii) { return items[ii]; }  // 重载操作符[]，可以修改数组中的元素。
+	const T& operator[](int ii) const { return items[ii]; }  // 重载操作符[]，不能修改数组中的元素。
+};
+        
+template <class T>
+class Vector
+{
+private:
+	int len;               // 数组元素的个数。
+	T*  items;           // 数组元素。
+public:
+	// 默认构造函数，分配内存。
+	Vector(int size=10):len(size) {
+		items = new T[len];
+	}
+	~Vector() {         // 析构函数
+		delete[] items; items = nullptr;
+	}
+	void resize(int size) {         // 护展数组的内存空间。
+		if (size <= len) return;   // 只能往更大扩展。
+		T* tmp = new T[size];   // 分配更大的内存空间。
+		for (int ii = 0; ii < len; ii++) tmp[ii] = items[ii];     // 把原来数组中的元素复制到新数组。
+		delete[] items;    // 释放原来的数组。
+		items = tmp;      // 让数组指针指向新数组。
+		len = size;           // 扩展后的数组长度。
+	}
+	int size() const { return len; }     // 获取数组长度。
+	T& operator[](int ii) {   // 重载操作符[]，可以修改数组中的元素。
+		if (ii >= len) resize(ii + 1);    // 扩展数组。
+		return items[ii]; 
+	}
+	const T& operator[](int ii) const { return items[ii]; }  // 重载操作符[]，不能修改数组中的元素。
+};
+        
+int main()
+{
+	// Array<string,10> aa;  // 创建模板类Array的对象。
+	Vector<int> aa(1);     // 创建模板类Vector的对象。
+	aa[0] = 5; aa[1] = 8; aa[2] = 3; aa[3] = 2; aa[4] = 7; 
+	// aa[0] = "西施"; aa[1] = "冰冰"; aa[2] = "幂幂"; aa[3] = "金莲"; aa[4] = "小乔";
+           
+	for (int ii=0; ii<5;ii++) cout << "aa[" << ii << "]=" << aa[ii] << endl;
+}
+```
+
+## 嵌套和递归使用模板类
+
+在C++11之前，嵌套使用模板类的时候，> >之间要加空格。
+
+```c++
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+                   
+template <class DataType>
+class Stack       // 栈类
+{
+private:
+	DataType* items;               // 栈数组。
+	int   stacksize;         // 栈实际的大小。
+	int   top;                  // 栈顶指针。
+public:
+	// 构造函数：1）分配栈数组内存；2）把栈顶指针初始化为0。
+	Stack(int size = 3) :stacksize(size), top(0) {
+		items = new DataType[stacksize];
+	}
+	~Stack() {
+		delete[] items; items = nullptr;
+	}
+	Stack& operator=(const Stack& v)   // 重载赋值运算符函数，实现深拷贝。
+	{
+		delete[] items;         // 释放原内存。
+		stacksize = v.stacksize;     // 栈实际的大小。
+		items = new DataType[stacksize];   // 重新分配数组。
+		for (int ii = 0; ii < stacksize; ii++) items[ii] = v.items[ii];    // 复制数组中的元素。
+		top = v.top;     // 栈顶指针。
+		return *this;
+	}
+	bool isempty() const {            // 判断栈是否为空。
+		return top == 0;
+	}
+	bool isfull() const {                 // 判断栈是否已满。
+		return top == stacksize;
+	}
+	bool push(const DataType& item) {   // 元素入栈。
+		if (top < stacksize) { items[top++] = item; return true; }
+		return false;
+	}
+	bool pop(DataType& item) {               // 元素出栈。
+		if (top > 0) { item = items[--top]; return true; }
+		return false;
+	}
+};
+                
+template <class T>
+class Vector           // 动态数组。
+{
+private:
+	int len;               // 数组元素的个数。
+	T* items;           // 数组元素。
+public:
+	// 默认构造函数，分配内存。
+	Vector(int size = 2) :len(size) {
+		items = new T[len];
+	}
+	~Vector() {         // 析构函数
+		delete[] items; items = nullptr;
+	}
+	Vector& operator=(const Vector& v)   // 重载赋值运算符函数，实现深拷贝。
+	{
+		delete[] items;           // 释放原内存。
+		len = v.len;                // 数组实际的大小。
+		items = new T[len];  // 重新分配数组。
+		for (int ii = 0; ii < len; ii++) items[ii] = v.items[ii];    // 复制数组中的元素。
+		return *this;
+	}
+	void resize(int size) {         // 护展数组的内存空间。
+		if (size <= len) return;   // 只能往更大扩展。
+		T* tmp = new T[size];   // 分配更大的内存空间。
+		for (int ii = 0; ii < len; ii++) tmp[ii] = items[ii];     // 把原来数组中的元素复制到新数组。
+		delete[] items;    // 释放原来的数组。
+		items = tmp;      // 让数组指针指向新数组。
+		len = size;           // 扩展后的数组长度。
+	}
+	int size() const { return len; }     // 获取数组长度。
+	T& operator[](int ii) {   // 重载操作符[]，可以修改数组中的元素。
+		if (ii >= len) resize(ii + 1);    // 扩展数组。
+		return items[ii];
+	}
+	const T& operator[](int ii) const { return items[ii]; }  // 重载操作符[]，不能修改数组中的元素。
+};
+                   
+int main()
+{
+	// Vector容器的大小缺省值是2，Stack容器的大小缺省值是3。
+	// 创建Vector容器，容器中的元素用Stack<string>。
+	Vector<Stack<string>> vs;         // C++11之前，>>之间要加空格。
+               
+	// 手工的往容器中插入数据。
+	vs[0].push("西施1"); vs[0].push("西施2"); vs[0].push("西施3");        // vs容器中的第0个栈。
+	vs[1].push("西瓜1"); vs[1].push("西瓜2"); vs[1].push("西瓜3");        // vs容器中的第1个栈。
+	vs[2].push("冰冰");   vs[2].push("幂幂");                                            // vs容器中的第2个栈。 
+	
+	// 用嵌套的循环，把vs容器中的数据显示出来。
+	for (int ii = 0; ii < vs.size(); ii++)         // 遍历Vector容器。
+	{
+		while (vs[ii].isempty() == false)      // 遍历Stack容器。
+		{
+			string item; vs[ii].pop(item); cout << "item = " << item << endl;
+		}
+	}
+             
+	// 创建Stack容器，容器中的元素用Vector<string>。
+	Stack<Vector<string>> sv;
+              
+	Vector<string> tmp;       // 栈的元素，临时Vector<string>容器。
+	// 第一个入栈的元素。
+	tmp[0] = "西施1"; tmp[1] = "西施2";  sv.push(tmp);
+	// 第二个入栈的元素。
+	tmp[0] = "西瓜1"; tmp[1] = "西瓜2";  sv.push(tmp);
+	// 第三个入栈的元素。
+	tmp[0] = "冰冰1"; tmp[1] = "冰冰2";   tmp[2] = "冰冰3";  tmp[3] = "冰冰4";  sv.push(tmp);
+              
+	// 用嵌套的循环，把sv容器中的数据显示出来。
+	while (sv.isempty() == false)
+	{
+		sv.pop(tmp);   // 出栈一个元素，放在临时容器中。
+		for (int ii = 0; ii < tmp.size(); ii++)   // 遍历临时Vector<string>容器，显示容器中每个元素的值。
+			cout << " vs[" << ii << "] = " << tmp[ii] << endl;
+	}
+            
+	// 创建Vector容器，容器中的元素用Vector<string>。
+	Vector<Vector<string>> vv;       // 递归使用模板类。
+               
+	vv[0][0] = "西施1"; vv[0][1] = "西施2";  vv[0][2] = "西施3";
+	vv[1][0] = "西瓜1"; vv[1][1] = "西瓜2";
+	vv[2][0] = "冰冰1"; vv[2][1] = "冰冰2";   vv[2][2] = "冰冰3";  vv[2][3] = "冰冰4";
+            
+	// 用嵌套的循环，把vv容器中的数据显示出来。
+	for (int ii = 0; ii < vv.size(); ii++)
+	{
+		for (int jj = 0; jj < vv[ii].size(); jj++)
+			// cout << " vv[" << ii << "][" << jj << "] = " << vv[ii][jj] << endl;
+			cout << vv[ii][jj] << " ";
+		cout << endl;
+	}
+}
+```
+
+## 模板类具体化
+
+模板类具体化（特化、特例化）有两种：完全具体化和部分具体化。
+
+语法请见示例程序。
+
+具体化程度高的类优先于具体化程度低的类，具体化的类优先于没有具体化的类。
+
+具体化的模板类，成员函数类外实现的代码应该放在源文件中。
+
+```c++
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+// 类模板
+template<class T1, class T2>
+class AA {                 // 类模板。
+public:
+	T1 m_x;
+	T2 m_y;
+
+	AA(const T1 x, const T2 y) :m_x(x), m_y(y) { cout << "类模板：构造函数。\n"; }
+	void show() const;
+};
+
+template<class T1, class T2>
+void AA<T1, T2>::show() const {    // 成员函数类外实现。
+	cout << "类模板：x = " << m_x << ", y = " << m_y << endl;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// 类模板完全具体化
+template<>
+class AA<int, string> {
+public:
+	int      m_x;
+	string m_y;
+
+	AA(const int x, const string y) :m_x(x), m_y(y) { cout << "完全具体化：构造函数。\n"; }
+	void show() const;
+};
+
+void AA<int, string>::show() const {    // 成员函数类外实现。
+	cout << "完全具体化：x = " << m_x << ", y = " << m_y << endl;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+// 类模板部分具体化
+template<class T1>
+class AA<T1, string> {
+public:
+	T1       m_x;
+	string m_y;
+
+	AA(const T1 x, const string y) :m_x(x), m_y(y) { cout << "部分具体化：构造函数。\n"; }
+	void show() const;
+};
+
+template<class T1>
+void AA<T1, string>::show() const {    // 成员函数类外实现。
+	cout << "部分具体化：x = " << m_x << ", y = " << m_y << endl;
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+int main()
+{
+	// 具体化程度高的类优先于具体化程度低的类，具体化的类优先于没有具体化的类。
+	AA<int, string>    aa1(8, "我是一只傻傻鸟。");   // 将使用完全具体化的类。
+	AA<char, string> aa2(8, "我是一只傻傻鸟。");   // 将使用部分具体化的类。
+	AA<int, double> aa3(8, 999999);                      // 将使用模板类。
+}
+```
+
+## 模板类与继承
+
+1）模板类继承普通类（常见）。
+
+```c++
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+class AA     // 普通类AA。
+{
+public:
+	int m_a;
+	AA(int a) :m_a(a) { cout << "调用了AA的构造函数。\n"; }
+	void func1() { cout << "调用了func1()函数：m_a=" << m_a << endl;; }
+};
+
+template<class T1, class T2>
+class BB:public AA      // 模板类BB。
+{
+public:
+	T1 m_x;
+	T2 m_y;
+	BB(const T1 x, const T2 y,int a) : AA(a) , m_x(x), m_y(y) { cout << "调用了BB的构造函数。\n"; }
+	void func2() const { cout << "调用了func2()函数：x = " << m_x << ", y = " << m_y << endl; }
+};
+
+int main()
+{
+	BB<int, string> bb(8, "我是一只傻傻鸟。",3);
+	bb.func2();
+	bb.func1();
+}
+```
+
+2）普通类继承模板类的实例化版本。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class BB      // 模板类BB。
+{
+public:
+	T1 m_x;
+	T2 m_y;
+	BB(const T1 x, const T2 y) : m_x(x), m_y(y) { cout << "调用了BB的构造函数。\n"; }
+	void func2() const { cout << "调用了func2()函数：x = " << m_x << ", y = " << m_y << endl; }
+};
+
+class AA:public BB<int,string>     // 普通类AA。
+{
+public:
+	int m_a;
+	AA(int a,int x,string y) : BB(x,y),m_a(a) { cout << "调用了AA的构造函数。\n"; }
+	void func1() { cout << "调用了func1()函数：m_a=" << m_a << endl;; }
+};
+
+int main()
+{
+	AA aa(3,8, "我是一只傻傻鸟。");
+	aa.func1();
+	aa.func2();
+}
+
+```
+
+3）普通类继承模板类。(常见)
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class BB      // 模板类BB。
+{
+public:
+	T1 m_x;
+	T2 m_y;
+	BB(const T1 x, const T2 y) : m_x(x), m_y(y) { cout << "调用了BB的构造函数。\n"; }
+	void func2() const { cout << "调用了func2()函数：x = " << m_x << ", y = " << m_y << endl; }
+};
+
+template<class T1, class T2>
+class AA:public BB<T1,T2>     // 普通类AA变成了模板类，才能继承模板类。
+{
+public:
+	int m_a;
+	AA(int a, const T1 x, const T2 y) : BB<T1,T2>(x,y),m_a(a) { cout << "调用了AA的构造函数。\n"; }
+	void func1() { cout << "调用了func1()函数：m_a=" << m_a << endl;; }
+};
+
+int main()
+{
+	AA<int,string> aa(3,8, "我是一只傻傻鸟。");
+	aa.func1();
+	aa.func2();
+}
+```
+
+4）模板类继承模板类。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class BB      // 模板类BB。
+{
+public:
+	T1 m_x;
+	T2 m_y;
+	BB(const T1 x, const T2 y) : m_x(x), m_y(y) { cout << "调用了BB的构造函数。\n"; }
+	void func2() const { cout << "调用了func2()函数：x = " << m_x << ", y = " << m_y << endl; }
+};
+
+template<class T1, class T2>
+class AA:public BB<T1,T2>     // 普通类AA变成了模板类，才能继承模板类。
+{
+public:
+	int m_a;
+	AA(int a, const T1 x, const T2 y) : BB<T1,T2>(x,y),m_a(a) { cout << "调用了AA的构造函数。\n"; }
+	void func1() { cout << "调用了func1()函数：m_a=" << m_a << endl;; }
+};
+
+template<class T, class T1, class T2>
+class CC :public BB<T1, T2>   // 模板类继承模板类。
+{
+public:
+	T m_a;
+	CC(const T a, const T1 x, const T2 y) : BB<T1, T2>(x, y), m_a(a) { cout << "调用了CC的构造函数。\n"; }
+	void func3() { cout << "调用了func3()函数：m_a=" << m_a << endl;; }
+};
+
+int main()
+{
+	CC<int,int,string> cc(3,8, "我是一只傻傻鸟。");
+	cc.func3();
+	cc.func2();
+}
+```
+
+5）模板类继承模板参数给出的基类（不能是模板类）。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+class AA {
+public:
+    AA()         { cout << "调用了AA的构造函数AA()。\n"; }
+    AA(int a) { cout << "调用了AA的构造函数AA(int a)。\n"; }
+};
+
+class BB {
+public:
+    BB()         { cout << "调用了BB的构造函数BB()。\n"; }
+    BB(int a) { cout << "调用了BB的构造函数BB(int a)。\n"; }
+};
+
+class CC {
+public:
+    CC()         { cout << "调用了CC的构造函数CC()。\n"; }
+    CC(int a) { cout << "调用了CC的构造函数CC(int a)。\n"; }
+};
+
+template<class T>
+class DD {
+public:
+    DD()         { cout << "调用了DD的构造函数DD()。\n"; }
+    DD(int a) { cout << "调用了DD的构造函数DD(int a)。\n"; }
+};
+
+template<class T>
+class EE : public T {          // 模板类继承模板参数给出的基类。
+public:
+    EE() :T()           { cout << "调用了EE的构造函数EE()。\n"; }
+    EE(int a) :T(a) { cout << "调用了EE的构造函数EE(int a)。\n"; }
+};
+
+int main()
+{
+    EE<AA> ea1;                 // AA作为基类。
+    EE<BB> eb1;                 // BB作为基类。
+    EE<CC> ec1;                 // CC作为基类。
+    EE<DD<int>> ed1;      // EE<int>作为基类。
+    // EE<DD> ed1;                // DD作为基类，错误。
+}
+```
+
+## 模板类与函数
+
+模板类可以用于函数的参数和返回值，有三种形式：
+
+1）普通函数，参数和返回值是模板类的实例化版本。
+
+2）函数模板，参数和返回值是某种的模板类。
+
+3）函数模板，参数和返回值是任意类型（支持普通类和模板类和其它类型）。
+
+```c++
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class AA    // 模板类AA。
+{
+public:
+    T1 m_x;
+    T2 m_y;
+    AA(const T1 x, const T2 y) : m_x(x), m_y(y) { }
+    void show() const { cout << "show()  x = " << m_x << ", y = " << m_y << endl; }
+};
+
+// 采用普通函数，参数和返回值是模板类AA的实例化版本。
+AA<int, string> func(AA<int, string>& aa)
+{
+    aa.show();
+    cout << "调用了func(AA<int, string> &aa)函数。\n";
+    return aa;
+}
+
+// 函数模板，参数和返回值是的模板类AA。
+template <typename T1,typename T2>
+AA<T1, T2> func(AA<T1, T2>& aa)
+{
+    aa.show();
+    cout << "调用了func(AA<T1, T2> &aa)函数。\n";
+    return aa;
+}
+
+// 函数模板，参数和返回值是任意类型。
+template <typename T>
+T func(T &aa)
+{
+    aa.show();
+    cout << "调用了func(AA<T> &aa)函数。\n";
+    return aa;
+}
+
+int main()
+{
+    AA<int, string> aa(3, "我是一只傻傻鸟。");
+    func(aa);
+}
+```
+
+## 模板类与友元
+
+模板类的友元函数有三类：
+
+1）非模板友元：友元函数不是模板函数，而是利用模板类参数生成的函数。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class AA    
+{
+    T1 m_x;
+    T2 m_y;
+public:
+    AA(const T1 x, const T2 y) : m_x(x), m_y(y) { }
+    // 非模板友元：友元函数不是模板函数，而是利用模板类参数生成的函数，只能在类内实现。
+    friend void show(const AA<T1, T2>& a)
+    {
+        cout << "x = " << a.m_x << ", y = " << a.m_y << endl;
+    }
+   /* friend void show(const AA<int, string>& a);
+    friend void show(const AA<char, string>& a);*/
+};
+
+//void show(const AA<int, string>& a)
+//{
+//    cout << "x = " << a.m_x << ", y = " << a.m_y << endl;
+//}
+//
+//void show(const AA<char, string>& a)
+//{
+//    cout << "x = " << a.m_x << ", y = " << a.m_y << endl;
+//}
+
+int main()
+{
+    AA<int, string> a(88, "我是一只傻傻鸟。");
+    show(a);
+
+    AA<char, string> b(88, "我是一只傻傻鸟。");
+    show(b);
+}
+```
+
+2）约束模板友元：模板类实例化时，每个实例化的类对应一个友元函数。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+// 约束模板友元：模板类实例化时，每个实例化的类对应一个友元函数。
+template <typename T>
+void show(T& a);                                                 // 第一步：在模板类的定义前面，声明友元函数模板。
+
+template<class T1, class T2>
+class AA    // 模板类AA。
+{
+    friend void show<>(AA<T1, T2>& a);          // 第二步：在模板类中，再次声明友元函数模板。
+    T1 m_x;
+    T2 m_y;
+
+public:
+
+    AA(const T1 x, const T2 y) : m_x(x), m_y(y) { }
+};
+
+template<class T1, class T2>
+class BB    // 模板类BB。
+{
+    friend void show<>(BB<T1, T2>& a);          // 第二步：在模板类中，再次声明友元函数模板。
+    T1 m_x;
+    T2 m_y;
+
+public:
+
+    BB(const T1 x, const T2 y) : m_x(x), m_y(y) { }
+};
+
+template <typename T>                                 // 第三步：友元函数模板的定义。
+void show(T& a)
+{
+    cout << "通用：x = " << a.m_x << ", y = " << a.m_y << endl;
+}
+
+template <>                                                    // 第三步：具体化版本。
+void show(AA<int, string>& a)
+{
+    cout << "具体AA<int, string>：x = " << a.m_x << ", y = " << a.m_y << endl;
+}
+
+template <>                                                    // 第三步：具体化版本。
+void show(BB<int, string>& a)
+{
+    cout << "具体BB<int, string>：x = " << a.m_x << ", y = " << a.m_y << endl;
+}
+
+int main()
+{
+    AA<int, string> a1(88, "我是一只傻傻鸟。");
+    show(a1);         // 将使用具体化的版本。
+
+    AA<char, string> a2(88, "我是一只傻傻鸟。");
+    show(a2);        // 将使用通用的版本。
+
+    BB<int, string> b1(88, "我是一只傻傻鸟。");
+    show(b1);         // 将使用具体化的版本。
+
+    BB<char, string> b2(88, "我是一只傻傻鸟。");
+    show(b2);        // 将使用通用的版本。
+}
+```
+
+3）非约束模板友元：模板类实例化时，如果实例化了n个类，也会实例化n个友元函数，每个实例化的类都拥有n个友元函数。
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+// 非类模板约束的友元函数，实例化后，每个函数都是每个每个类的友元。
+template<class T1, class T2>
+class AA    
+{
+    template <typename T> friend void show(T& a);     // 把函数模板设置为友元。
+    T1 m_x;
+    T2 m_y;
+public:
+    AA(const T1 x, const T2 y) : m_x(x), m_y(y) { }
+};
+
+template <typename T> void show(T& a)                     // 通用的函数模板。
+{
+    cout << "通用：x = " << a.m_x << ", y = " << a.m_y << endl;
+}
+
+template <>void show(AA<int, string>& a)                 // 函数模板的具体版本。
+{
+    cout << "具体<int, string>：x = " << a.m_x << ", y = " << a.m_y << endl;
+}
+
+int main()
+{
+    AA<int, string> a(88, "我是一只傻傻鸟。");
+    show(a);         // 将使用具体化的版本。
+
+    AA<char, string> b(88, "我是一只傻傻鸟。");
+    show(b);        // 将使用通用的版本。
+}
+```
+
+## 成员模板类
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template<class T1, class T2>
+class AA              // 类模板AA。
+{
+public:
+    T1 m_x;
+    T2 m_y;
+
+    AA(const T1 x, const T2 y) : m_x(x), m_y(y) {}
+    void show() { cout << "m_x=" << m_x << "，m_y=" << m_y << endl; }
+
+    template<class T>
+    class BB
+    {
+    public:
+        T m_a;
+        T1 m_b;
+        BB() {}
+        void show();
+    };
+    BB<string> m_bb;
+
+    template<typename T>
+    void show(T tt);
+};
+
+template<class T1, class T2>
+template<class T>
+void AA<T1,T2>::BB<T>::show() { 
+    cout << "m_a=" << m_a << "，m_b=" << m_b << endl; 
+}
+
+template<class T1, class T2>
+template<typename T>
+void AA<T1,T2>::show(T tt) {
+    cout << "tt=" << tt << endl;
+    cout << "m_x=" << m_x << "，m_y=" << m_y << endl;
+    m_bb.show();
+}
+
+int main()
+{
+    AA<int, string> a(88, "我是一只傻傻鸟。");
+    a.show();
+    a.m_bb.m_a = "我有一只小小鸟。";
+    a.m_bb.show();
+    a.show("你是一只什么鸟？");
+}
+```
+
+## 将模板类用作参数
+
+```
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+
+template <class T, int len>
+class LinkList             // 链表类模板。
+{
+public:
+    T*   m_head;          // 链表头结点。
+    int  m_len = len;   // 表长。
+    void insert()     { cout << "向链表中插入了一条记录。\n"; }
+    void ddelete()  { cout << "向链表中删除了一条记录。\n"; }
+    void update()   { cout << "向链表中更新了一条记录。\n"; }
+};
+
+template <class T, int len>
+class Array                // 数组类模板。
+{
+public:
+    T*   m_data;          // 数组指针。
+    int  m_len = len;   // 表长。
+    void insert()     { cout << "向数组中插入了一条记录。\n"; }
+    void ddelete()  { cout << "向数组中删除了一条记录。\n"; }
+    void update()   { cout << "向数组中更新了一条记录。\n"; }
+};
+
+// 线性表模板类：tabletype-线性表类型，datatype-线性表的数据类型。
+template<template<class, int >class tabletype, class datatype, int len>
+class LinearList
+{
+public:
+    tabletype<datatype, len> m_table;     // 创建线性表对象。
+
+    void insert()    { m_table.insert(); }         // 线性表插入操作。
+    void ddelete() { m_table.ddelete(); }      // 线性表删除操作。
+    void update()  { m_table.update(); }      // 线性表更新操作。
+
+    void oper()     // 按业务要求操作线性表。
+    {
+        cout << "len=" << m_table.m_len << endl;
+        m_table.insert();
+        m_table.update();
+    }
+};
+
+int main()
+{
+    // 创建线性表对象，容器类型为链表，链表的数据类型为int，表长为20。
+    LinearList<LinkList, int, 20>  a;   
+    a.insert();   
+    a.ddelete();   
+    a.update();
+
+    // 创建线性表对象，容器类型为数组，数组的数据类型为string，表长为20。
+    LinearList<Array, string, 20>  b;
+    b.insert();   
+    b.ddelete();   
+    b.update();
+}
+```
+
