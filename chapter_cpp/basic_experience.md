@@ -6192,3 +6192,7172 @@ int main()
 }
 ```
 
+## 编译预处理
+
+C++程序编译的过程：预处理 -> 编译（优化、汇编）-> 链接
+
+预处理指令主要有以下三种：
+
+- 包含头文件：#include
+
+- 宏定义：#define（定义宏）、#undef（删除宏）。
+
+- 条件编译：#ifdef、#ifndef
+
+### 包含头文件
+
+\#include 包含[头文件](https://so.csdn.net/so/search?q=头文件&spm=1001.2101.3001.7020)有两种方式：
+
+- #include <文件名>：直接从编译器自带的函数库目录中寻找文件。
+
+- #include "文件名"：先从自定义的目录中寻找文件，如果找不到，再从编译器自带的函数库目录中寻找。
+
+\#include也包含其它的文件，如：*.h、*.cpp或其它的文件。
+
+**C++98标准后的头文件：**
+
+- C的标准库：老版本的有.h后缀；新版本没有.h的后缀，增加了字符c的前缀。例如：老版本是<stdio.h>，新版本是<cstdio>，新老版本库中的内容是一样的。在程序中，不指定std命名空间也能使用库中的内容。
+
+- C++的标准库：老版本的有.h后缀；新版本没有.h的后缀。例如：老版本是<iostream.h>，新版本是<iostream>，老版本已弃用，只能用新版本。在程序中，必须指定std命名空间才能使用库中的内容。
+
+**注意：用户自定义的头文件还是用.h为后缀。**
+
+ 
+
+### 宏定义指令
+
+无参数的宏：#define 宏名 宏内容
+
+有参数的宏：#define MAX(x,y) ((x)>(y) ? (x) : (y))   MAX(3,5) ((3)>(5) ? (3) : (5))
+
+编译的时候，编译器把程序中的宏名用宏内容替换，是为宏展开（宏替换）。
+
+宏可以只有宏名，没有宏内容。
+
+在C++中，内联函数可代替有参数的宏，效果更好。
+
+C++中常用的宏：
+
+- 当前源代码文件名：__FILE__
+
+- 当前源代码函数名：__FUNCTION__
+
+- 当前源代码行号：__LINE__
+
+- 编译的日期：__DATE__
+
+- 编译的时间：__TIME__
+
+- 编译的时间戳：__TIMESTAMP__
+
+- 当用C++编译程序时，宏__cplusplus就会被定义。
+
+ 
+
+### 条件编译
+
+最常用的两种：#ifdef、#ifndef  、if #define if not #define
+
+```c++
+#ifdef 宏名
+ 程序段一
+#else
+ 程序段二
+#endif
+```
+
+含义：如果#ifdef后面的宏名已存在，则使用程序段一，否则使用程序段二。
+
+```c++
+#ifndef 宏名
+ 程序段一
+#else
+ 程序段二 
+#endif
+```
+
+含义：如果#ifndef后面的宏名不存在，则使用程序段一，否则使用序段二。
+
+ 
+
+### 解决头文件中代码重复包含的问题
+
+在C/C++中，在使用预编译指令#include的时候，为了防止头文件被重复包含，有两种方式。
+
+第一种：用#ifndef指令。
+
+```c++
+#ifndef _GIRL_
+  #define _GIRL_
+  //代码内容。
+#endif 
+```
+
+第二种：把#pragma once指令放在文件的开头。
+
+\#ifndef方式受C/C++语言标准的支持，不受编译器的任何限制；而#pragma once方式有些编译器不支持。
+
+\#ifndef可以针对文件中的部分代码；而#pragma once只能针对整个文件。
+
+\#ifndef更加灵活，兼容性好；#pragma once操作简单，效率高。
+
+## 编译和链接
+
+### 源代码的组织
+
+**头文件（\*.h）：**#include头文件、函数的声明、结构体的声明、类的声明、模板的声明、内联函数、#define和const定义的常量等。
+
+**源文件（\*.cpp）：**函数的定义、类的定义、模板具体化的定义。
+
+**主程序（main函数所在的程序）：**主程序负责实现框架和核心流程，把需要用到的头文件用#include包含进来。
+
+### 编译预处理
+
+预处理的包括以下方面： 
+
+1）处理#include头文件包含指令。
+
+2）处理#ifdef #else #endif、#ifndef #else #endif条件编译指令。
+
+3）处理#define宏定义。
+
+4）为代码添加行号、文件名和函数名。
+
+5）删除注释。
+
+6）保留部分#pragma编译指令（编译的时候会用到）。
+
+### 编译
+
+将预处理生成的文件，经过词法分析、语法分析、语义分析以及优化和汇编后，编译成若干个目标文件（二进制文件）。
+
+### 链接
+
+将编译后的目标文件，以及它们所需要的库文件链接在一起，形成一个体整。
+
+### 更多细节
+
+1）分开编译的好处：每次只编译修改过的源文件，然后再链接，效率最高。
+
+2）编译单个*.cpp文件的时候，必须要让编译器知道名称的存在，否则会出现找不到标识符的错误。（直接和间接包含头文件都可以）
+
+3）编译单个*.cpp文件的时候，编译器只需要知道名称的存在，**不会把它们的定义一起编译**。
+
+4）如果函数和类的定义不存在，编译不会报错，但链接会出现无法解析的外部命令。
+
+5）链接的时候，变量、函数和类的定义只能有一个，否则会出现重定义的错误。（如果把变量、函数和类的定义放在*.h文件中，*.h会被多次包含，链接前可能存在多个副本；如果放在*.cpp文件中，*.cpp文件不会被包含，只会被编译一次，链接前只存在一个版本）
+
+6）把变量、函数和类的定义放在*.h中是不规范的做法，如果*.h被多个*.cpp包含，会出现重定义。
+
+7）用#include包含*.cpp也是不规范的做法，原理同上。
+
+8）尽可能不使用全局变量，如果一定要用，要在*.h文件中声明（需要加extern关键字），在*.cpp文件中定义。
+
+9）全局的const常量在头文件中定义（const常量仅在单个文件内有效）。
+
+10）*.h文件重复包含的处理方法只对单个的*.cpp文件有效，不是整个项目。
+
+11）函数模板和类模板的声明和定义可以分开书写，但它们的定义并不是真实的定义，只能放在*.h文件中；函数模板和类模板的具体化版本的代码是真实的定义，所以放在*.cpp文件中。
+
+12）Linux下C++编译和链接的原理与VS一样。
+
+## 命名空间
+
+在实际开发中，较大型的项目会使用大量的全局名字，如类、函数、模板、变量等，很容易出现名字冲突的情况。
+
+命名空间分割了全局空间，每个命名空间是一个作用域，防止名字冲突。
+
+### 语法
+
+创建命名空间：
+
+```
+namespace 命名空间的名字
+{
+    // 类、函数、模板、变量的声明和定义。
+}
+```
+
+创建命名空间的别名：
+
+```
+namespace 别名=原名;
+```
+
+### 使用命名空间
+
+在同一命名空间内的名字可以直接访问，该命名空间之外的代码则必须明确指出命名空间。
+
+1）运算符::
+
+语法：命名空间::名字
+
+简单明了，且不会造成任何冲突，但使用起来比较繁琐。
+
+2）using声明
+
+语法：using 命名空间::名字
+
+用using声明名后，就可以进行直接使用名称。
+
+如果该声明区域有相同的名字，则会报错。
+
+3）using编译指令
+
+语法：using namespace命名空间
+
+using编译指令将使整个命名空间中的名字可用。如果声明区域有相同的名字，局部版本将隐藏命名空间中的名字，不过，可以使用域名解析符使用命名空间中的名称。
+
+### 注意事项
+
+1）命名空间是全局的，可以分布在多个文件中。
+
+2）命名空间可以嵌套。
+
+3）在命名空间中声明全局变量，而不是使用外部全局变量和静态变量。
+
+4）对于using声明，首选将其作用域设置为局部而不是全局。
+
+5）不要在头文件中使用using编译指令，如果非要使用，应将它放在所有的#include之后。
+
+6）匿名的命名空间，从创建的位置到文件结束有效。
+
+```
+// demo01.cpp ///////////////////////////////////////
+#include <iostream>         // 包含头文件。
+#include "public1.h"
+#include "public2.h"
+using namespace std;        // 指定缺省的命名空间。
+
+int main()
+{
+	using namespace aa;
+	using namespace bb;
+	using bb::ab;
+	cout << "aa::ab=" << aa::ab << endl;
+	aa::func1();
+	aa::A1 a;
+	a.show();
+	cout << "bb::ab=" << bb::ab << endl;
+}
+
+// public2.cpp ///////////////////////////////////////
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+#include "public2.h"
+
+namespace aa
+{
+	int    ab = 1;        // 全局变量。
+}
+
+namespace bb
+{
+	int    ab = 2;        // 全局变量。
+	
+	void func1() {          // 全局函数的定义。
+		cout << "调用了bb::func1()函数。\n";
+	}
+
+	void A1::show() {    // 类成员函数的类外实现。
+		cout << "调用了bb::A1::show()函数。\n";
+	}
+}
+
+// public1.cpp ///////////////////////////////////////
+#include <iostream>         // 包含头文件。
+using namespace std;        // 指定缺省的命名空间。
+#include "public1.h"
+
+namespace aa
+{
+	void func1() {          // 全局函数的定义。
+		cout << "调用了aa::func1()函数。\n";
+	}
+
+	void A1::show() {    // 类成员函数的类外实现。
+		cout << "调用了aa::A1::show()函数。\n";
+	}
+}
+// public2.h ///////////////////////////////////////
+#pragma once
+
+namespace aa
+{
+	extern int    ab;        // 全局变量。
+}
+
+namespace bb
+{
+	extern int    ab ;        // 全局变量。
+
+	void func1();       // 全局函数的声明。
+
+	class A1              // 类。
+	{
+	public:
+		void show();    // 类的成员函数。
+	};
+}
+
+// public1.h ///////////////////////////////////////
+#pragma once
+
+namespace aa
+{
+	void func1();       // 全局函数的声明。
+
+	class A1              // 类。
+	{
+	public:
+		void show();    // 类的成员函数。
+	};
+}
+```
+
+## C++强制类型转换
+
+C风格的强制类型转换很容易理解，不管什么类型都可以直接进行转换，使用格式如下：
+
+目标类型 b = (目标类型) a;
+
+C++也是支持C风格的强制类型转换，但是C风格的强制类型转换可能会带来一些隐患，出现一些难以察觉的问题，所以C++又推出了四种新的强制类型转换来替代C风格的强制类型转换，降低使用风险。
+
+在C++中，新增了四个关键字static_cast、const_cast、reinterpret_cast和dynamic_cast，用于支持C++风格的强制类型转换。
+
+C++风格的强制类型转换能更清晰的表明它们要干什么，程序员只要看一眼这样的代码，立即能知道强制转换的目的，并且，在多态场景也只能使用C++风格的强制类型转换。
+
+### static_cast
+
+static_cast是最常用的C++风格的强制类型转换，主要是为了执行那些较为合理的强制类型转换，使用格式如下：
+
+```
+static_cast<目标类型>(表达式);
+```
+
+**1）用于基本内置数据类型之间的转换**
+
+C风格：编译器可能会提示警告信息。
+static_cast：不会提示警告信息。
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+    char cc = 'X';
+    float ff = cc;     // 隐式转换，不会告警。
+    float ffc = static_cast<float>(cc);  // 显式地使用static_cast进行强制类型转换，不会告警。
+
+    double dd = 3.38;
+    long ll = dd;    // 隐式转换，会告警。
+    long llc = static_cast<long>(dd);  // 显式地使用static_cast进行强制类型转换，不会告警。
+}
+```
+
+**2）用于指针之间的转换**
+
+C风格：可用于各种类型指针之间的转换。
+
+static_cast：各种类型指针之间的不允许转换，必须借助void*类型作为中间介质。
+
+```
+#include <iostream>
+int main(int argc, char* argv[])
+{
+    int type_int = 10;
+    float* float_ptr1 = (float *) & type_int; // int* -> float* 隐式转换无效
+    // float* float_ptr2 = static_cast<float*>(&type_int); // int* -> float* 使用static_cast转换无效
+    char* char_ptr1 = (char *) & type_int; // int* -> char* 隐式转换无效
+    // char* char_ptr2 = static_cast<char*>(&type_int); // int* -> char* 使用static_cast转换无效
+
+    void* void_ptr = &type_int; // 任何指针都可以隐式转换为void*
+    float* float_ptr3 = (float *)void_ptr; // void* -> float* 隐式转换无效
+    float* float_ptr4 = static_cast<float*>(void_ptr); // void* -> float* 使用static_cast转换成功
+    char* char_ptr3 = (char *)void_ptr; // void* -> char* 隐式转换无效
+    char* char_ptr4 = static_cast<char*>(void_ptr); // void* -> char* 使用static_cast转换成功
+}
+```
+
+**3）不能转换掉expression的const或volitale属性**
+
+```
+#include <iostream>
+int main(int argc, char* argv[])
+{
+    int temp = 10;
+
+    const int* a_const_ptr = &temp;
+    int* b_const_ptr = static_cast<int*>(a_const_ptr); // const int* -> int* 无效
+
+    const int a_const_ref = 10;
+    int& b_const_ref = static_cast<int&>(a_const_ref); // const int& -> int& 无效
+
+    volatile int* a_vol_ptr = &temp;
+    int* b_vol_ptr = static_cast<int*>(a_vol_ptr); // volatile int* -> int* 无效
+
+    volatile int a_vol_ref = 10;
+    int& b_vol_ref = static_cast<int&>(a_vol_ref); // volatile int& -> int& 无效
+}
+```
+
+## C++类型转换-static_cast
+
+C风格的类型转换很容易理解：
+
+语法：(目标类型)表达式或目标类型(表达式);
+
+C++认为C风格的类型转换过于松散，可能会带来隐患，不够安全。
+
+C++推出了新的类型转换来替代C风格的类型转换，采用更严格的语法检查，降低使用风险。
+
+C++新增了四个关键字static_cast、const_cast、reinterpret_cast和dynamic_cast，用于支持C++风格的类型转换。
+
+C++的类型转换只是语法上的解释，本质上与C风格的类型转换没什么不同，C语言做不到事情的C++也做不到。
+
+```
+static_cast<目标类型>(表达式);
+const_cast<目标类型>(表达式);
+reinterpret_cast<目标类型>(表达式);
+dynamic_cast<目标类型>(表达式);
+```
+
+### static_cast
+
+**1）用于内置数据类型之间的转换**
+
+除了语法不同，C和C++没有区别。
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+    int    ii = 3;
+    long ll = ii;                     // 绝对安全，可以隐式转换，不会出现警告。
+
+    double dd = 1.23;
+    long ll1 = dd;                  // 可以隐式转换，但是，会出现可能丢失数据的警告。
+    long ll2 = (long)dd;              // C风格：显式转换，不会出现警告。
+    long ll3 = static_cast<long>(dd);    // C++风格：显式转换，不会出现警告。
+    cout << "ll1=" << ll1 << ",ll2=" << ll2 << ",ll3=" << ll3 << endl;
+}
+```
+
+**2）用于指针之间的转换**
+
+C风格可以把不同类型的指针进行转换。
+
+C++不可以，需要借助void *。
+
+```
+#include <iostream>
+using namespace std;
+
+void func(void* ptr) {   // 其它类型指针 -> void *指针 -> 其它类型指针
+    double* pp = static_cast<double*>(ptr);
+}
+
+int main(int argc, char* argv[])
+{
+    int ii = 10;
+
+    //double* pd1 = &ii;                      // 错误，不能隐式转换。
+    double* pd2 = (double*) &ii;      // C风格，强制转换。
+    //double* pd3 = static_cast<double*>(&ii);    // 错误，static_cast不支持不同类型指针的转换。
+
+    void* pv = &ii;                               // 任何类型的指针都可以隐式转换成void*。
+    double* pd4 = static_cast<double*>(pv);  // static_cast可以把void *转换成其它类型的指针。
+    func(&ii);
+}
+```
+
+### const_cast
+
+static_cast不能丢掉指针（引用）的const和volitale属性，const_cast可以。
+
+```
+#include <iostream>
+using namespace std;
+
+void func(int *ii)
+{}
+
+int main(int argc, char* argv[])
+{
+	const int *aa=nullptr;
+	int *bb = (int *)aa;                          // C风格，强制转换，丢掉const限定符。
+	int* cc = const_cast<int*>(aa);      // C++风格，强制转换，丢掉const限定符。
+
+	func(const_cast<int *>(aa));
+}
+```
+
+### reinterpret_cast
+
+static_cast不能用于转换不同类型的指针（引用）（不考虑有继承关系的情况），reinterpret_cast可以。
+
+reinterpret_cast的意思是**重新解释**，能够将一种对象类型转换为另一种，不管它们是否有关系。
+
+语法：reinterpret_cast<目标类型>(表达式);
+
+<目标类型>和(表达式)中必须有一个是指针（引用）类型。
+
+reinterpret_cast不能丢掉(表达式)的const或volitale属性。
+
+应用场景：
+
+1）reinterpret_cast的第一种用途是改变指针（引用）的类型。
+
+2）reinterpret_cast的第二种用途是将指针（引用）转换成整型变量。整型与指针占用的字节数必须一致，否则会出现警告，转换可能损失精度。
+
+3）reinterpret_cast的第三种用途是将一个整型变量转换成指针（引用）。
+
+```
+#include <iostream>
+using namespace std;
+
+void func(void* ptr) {  
+    long long ii = reinterpret_cast<long long>(ptr);
+    cout << "ii=" << ii << endl;
+}
+
+int main(int argc, char* argv[])
+{
+    long long ii = 10;
+
+    func(reinterpret_cast<void *>(ii));
+}
+```
+
+## string容器 
+
+string是字符容器，内部维护了一个动态的字符数组。
+
+与普通的字符数组相比，string容器有三个优点：1）使用的时候，不必考虑内存分配和释放的问题；2）动态管理内存（可扩展）；3）提供了大量操作容器的API。缺点是效率略有降低，占用的资源也更多。
+
+string类是std::basic_string类模板的一个具体化版本的别名。
+
+```
+using std::string=std::basic_string<char, std::char_traits<char>, std::allocator<char>>
+```
+
+### 构造和析构
+
+静态常量成员string::npos为字符数组的最大长度（通常为unsigned int的最大值）；
+
+NBTS（null-terminated string）：C风格的字符串（以空字符0结束的字符串）。
+
+**string****类有七个构造函数（C++11新增了两个）：**
+
+1）string(); // 创建一个长度为0的string对象（默认构造函数）。
+
+2）string(const char *s); // 将string对象初始化为s指向的NBTS（转换函数）。
+
+3）string(const string &str); // 将string对象初始化为str（拷贝构造函数）。
+
+4）string(const char *s,size_t n); // 将string对象初始化为s指向的地址后n字节的内容。
+
+5）string(const string &str,size_t pos=0,size_t n=npos); // 将sring对象初始化为str从位置pos开始到结尾的字符（或从位置pos开始的n个字符）。
+
+6）template<class T> string(T begin,T end); // 将string对象初始化为区间[begin,end]内的字符，其中begin和end的行为就像指针，用于指定位置，范围包括begin在内，但不包括end。
+
+7）string(size_t n,char c); // 创建一个由n个字符c组成的string对象。
+
+析构函数~string()释放内存空间。
+
+**C++11****新增的构造函数：**
+
+1）string(string && str) noexcept：它将一个string对象初始化为string对象str，并可能修改str（移动构造函数）。
+
+2）string(initializer_list<char> il)：它将一个string对象初始化为初始化列表il中的字符。
+
+例如：string ss = { 'h','e','l','l','o' };
+
+```c++
+#include <iostream>
+using  namespace std;
+
+int main()
+{
+    // 1）string()：创建一个长度为0的string对象（默认构造函数）。
+    string s1;        // 创建一个长度为0的string对象
+    cout << "s1=" << s1 << endl;       // 将输出s1=
+    cout << "s1.capacity()=" << s1.capacity() << endl;    // 返回当前容量，可以存放字符的总数。
+    cout << "s1.size()=" << s1.size() << endl;                   // 返回容器中数据的大小。
+    cout << "容器动态数组的首地址=" << (void *)s1.c_str() << endl;
+    s1 = "xxxxxxxxxxxxxxxxxxxx";
+    cout << "s1.capacity()=" << s1.capacity() << endl;    // 返回当前容量，可以存放字符的总数。
+    cout << "s1.size()=" << s1.size() << endl;                   // 返回容器中数据的大小。
+    cout << "容器动态数组的首地址=" << (void *)s1.c_str() << endl;
+
+    // 2）string(const char *s)：将string对象初始化为s指向的NBTS（转换函数）。
+    string s2("hello world");
+    cout << "s2=" << s2 << endl;       // 将输出s2=hello world
+    string s3 = "hello world";
+    cout << "s3=" << s3 << endl;       // 将输出s3=hello world
+
+    // 3）string(const string & str)：将string对象初始化为str（拷贝构造函数）。
+    string s4(s3);                                     // s3 = "hello world";
+    cout << "s4=" << s4 << endl;       // 将输出s4=hello world
+    string s5 = s3;
+    cout << "s5=" << s5 << endl;       // 将输出s5=hello world
+
+    // 4）string(const char* s, size_t n)：将string对象初始化为s指向的NBTS的前n个字符，即使超过了NBTS结尾。
+    string s6("hello world", 5);
+    cout << "s6=" << s6 << endl;       // 将输出s6=hello
+    cout << "s6.capacity()=" << s6.capacity() << endl;    // 返回当前容量，可以存放字符的总数。
+    cout << "s6.size()=" << s6.size() << endl;                   // 返回容器中数据的大小。
+    string s7("hello world", 50); 
+    cout << "s7=" << s7 << endl;       // 将输出s7=hello未知内容
+    cout << "s7.capacity()=" << s7.capacity() << endl;    // 返回当前容量，可以存放字符的总数。
+    cout << "s7.size()=" << s7.size() << endl;                   // 返回容器中数据的大小。
+
+    // 5）string(const string & str, size_t pos = 0, size_t n = npos)：
+    // 将string对象初始化为str从位置pos开始到结尾的字符，或从位置pos开始的n个字符。
+    string s8(s3, 3, 5);                               // s3 = "hello world";
+    cout << "s8=" << s8 << endl;         // 将输出s8=lo wo
+    string s9(s3, 3);          
+    cout << "s9=" << s9 << endl;         // 将输出s9=lo world
+    cout << "s9.capacity()=" << s9.capacity() << endl;    // 返回当前容量，可以存放字符的总数。
+    cout << "s9.size()=" << s9.size() << endl;                   // 返回容器中数据的大小。
+    string s10("hello world", 3, 5);
+    cout << "s10=" << s10 << endl;       // 将输出s10=lo wo
+    string s11("hello world", 3);                // 注意：不会用构造函数5），而是用构造函数4）
+    cout << "s11=" << s11 << endl;       // 将输出s11=hel
+
+    // 6）template<class T> string(T begin, T end)：将string对象初始化为区间[begin, end]内的字符，
+    //      其中begin和end的行为就像指针，用于指定位置，范围包括begin在内，但不包括end。
+
+    // 7）string(size_t n, char c)：创建一个由n个字符c组成的string对象。
+    string s12(8, 'x');
+    cout << "s12=" << s12 << endl;       // 将输出s12=xxxxxxxx
+    cout << "s12.capacity()=" << s12.capacity() << endl;    // s12.capacity()=15
+    cout << "s12.size()=" << s12.size() << endl;                   // s12.size()=8
+    string s13(30, 0);
+    cout << "s13=" << s13 << endl;       // 将输出s13=
+    cout << "s13.capacity()=" << s13.capacity() << endl;    // s13.capacity()=31
+    cout << "s13.size()=" << s13.size() << endl;                   // s12.size()=30 
+}
+```
+
+```
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+using  namespace std;
+
+int main()
+{
+	char cc[8];   // 在栈上分配8字节的内存空间。
+
+	// 把cc的内存空间用于字符串。
+	strcpy(cc, "hello");
+	cout << "cc=" << cc << endl << endl;
+
+	// 把cc的内存空间用于int型整数。
+	int* a, * b;
+	a = (int *)cc;          // 前4个字节的空间用于整数a。
+	b = (int *)cc + 4;   // 后4个字节的空间用于整数b。
+	*a = 12345;
+	*b = 54321;
+	cout << "*a=" << *a << endl;
+	cout << "*b=" << *b << endl << endl;
+	
+	// 把cc的内存空间用于double。
+	double* d = (double*)cc;
+	*d = 12345.7;
+	cout << "*d=" << *d << endl << endl;
+
+	// 把cc的内存空间用于结构体。
+	struct stt
+	{
+		int a;
+		char b[4];
+	}*st;
+	st = (struct stt*)cc;
+	st->a = 38;
+	strcpy(st->b, "abc");
+	cout << "st->a=" << st->a << endl;
+	cout << "st->b=" << st->b << endl << endl;
+	
+	// void* malloc(size_t size);
+	//char* cc1 = (char*)malloc(8);
+	//int* cc1 = (int*)malloc(8);
+}
+```
+
+```
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+using  namespace std;
+
+int main()
+{
+    struct st_girl {   // 超女结构体。
+        int    bh;
+        char name[30];
+        bool yz;
+        double weight;
+        string memo;
+    } girl;
+
+    cout << "超女结构体的大小：" << sizeof(struct st_girl) << endl;
+
+    string buffer;  // 创建一个空的string容器buffer。
+
+    // 生成10名超女的信息，存入buffer中。
+    for (int ii = 1; ii <= 10; ii++)
+    {
+        // 对超女结构体成员赋值。    
+        memset(&girl, 0, sizeof(struct st_girl));  
+        girl.bh = ii;
+        sprintf(girl.name, "西施%02d", ii);
+        girl.yz = true;
+        girl.weight = 48.5 + ii;
+        girl.memo = "中国历史第一美女。";
+
+        // 把超女结构追加到buffer中。
+        buffer.append((char*)&girl, sizeof(struct st_girl));
+    }
+
+    cout << "buffer.capacity()=" << buffer.capacity() << endl;  // 显示容量。
+    cout << "buffer.size()=" << buffer.size() << endl;  // 显示实际大小。
+
+    // 用一个循环，把buffer容器中全部的数据取出来。
+    for (int ii = 0; ii < buffer.size() / sizeof(struct st_girl); ii++)
+    {
+        memset(&girl, 0, sizeof(struct st_girl));  // 初始化超女结构体。
+
+        // 把容器中的数据复制到超女结构体。
+        memcpy(&girl , buffer.data() + ii * sizeof(struct st_girl), sizeof(struct st_girl));
+        // buffer.copy((char*)&girl, sizeof(struct st_girl), ii * sizeof(struct st_girl));
+
+        // 显示超女结构体成员的值。
+        cout << "bh=" << girl.bh <<  ",name=" << girl.name << ",yz=" << girl.yz << ",weight=" 
+                << girl.weight << ",memo=" << girl.memo << endl;
+    }
+}
+```
+
+### 特性操作
+
+```
+小（字符串语义）。
+size_t size() const;         // 返回容器中数据的大小（容器语义）。
+bool empty() const;     // 判断容器是否为空。
+void clear();             // 清空容器，清空后，size()将返回0。
+void shrink_to_fit();	      // 将容器的容量降到实际大小（需要重新分配内存）。
+void reserve( size_t size=0);  // 将容器的容量设置为至少size。
+void resize(size_t len,char c=0);  // 把容器的实际大小置为len，如果len<实际大小，会截断多出的部分；如果len>实际大小，就用字符c填充。resize()后，length()和size()将返回len。
+```
+
+### 字符操作
+
+```
+char &operator[](size_t n); 
+const char &operator[](size_t n) const;  // 只读。
+char &at(size_t n); 
+const char &at(size_t n) const;          // 只读。
+operator[]和at()返回容器中的第n个元素，但at函数提供范围检查，当越界时会抛出out_of_range异常，operator[]不提供范围检查。
+const char *c_str() const; // 返回容器中动态数组的首地址，语义：寻找以null结尾的字符串。
+const char *data() const; // 返回容器中动态数组的首地址，语义：只关心容器中的数据。
+int copy(char *s, int n, int pos = 0) const; // 把当前容器中的内容，从pos开始的n个字节拷贝到s中，返回实际拷贝的数目。
+```
+
+### 赋值操作
+
+给已存在的容器赋值，将覆盖容器中原有的内容。
+
+```
+1）string &operator=(const string &str); // 把容器str赋值给当前容器。
+2）string &assign(const char *s); // 将string对象赋值为s指向的NBTS。
+3）string &assign(const string &str); // 将string对象赋值为str。
+4）string &assign(const char *s,size_t n); // 将string对象赋值为s指向的地址后n字节的内容。
+5）string &assign(const string &str,size_t pos=0,size_t n=npos); // 将sring对象赋值为str从位置pos开始到结尾的字符（或从位置pos开始的n个字符）。
+6）template<class T> string &assign(T begin,T end); // 将string对象赋值为区间[begin,end]内的字符。
+7）string &assign(size_t n,char c); // 将string对象赋值为由n个字符c。
+```
+
+### 连接操作
+
+把内容追加到已存在容器的后面。
+
+```
+1）string &operator+=(const string &str); //把容器str连接到当前容器。
+2）string &append(const char *s); // 把指向s的NBTS连接到当前容器。
+3）string &append(const string &str); // 把容器str连接到当前容器。
+4）string &append(const char *s,size_t n); // 将s指向的地址后n字节的内容连接到当前容器。
+5）string &append(const string &str,size_t pos=0,size_t n=npos); // 将str从位置pos开始到结尾的字符（或从位置pos开始的n个字符）连接到当前容器。
+6）template<class T> string &append (T begin,T end); // 将区间[begin,end]内的字符连接到容器。
+7）string &append(size_t n,char c); // 将n个字符c连接到当前容器。
+```
+
+### 交换操作
+
+```
+void swap(string &str);    // 把当前容器与str交换。
+```
+
+如果数据量很小，交换的是动态数组中的内容，如果数据量比较大，交换的是动态数组的地址。
+
+### 截取操作
+
+```
+string substr(size_t pos = 0,size_t n = npos) const; // 返回pos开始的n个字节组成的子容器。
+```
+
+### 比较操作
+
+```
+bool operator==(const string &str1,const string &str2) const; // 比较两个字符串是否相等。
+int compare(const string &str) const; // 比较当前字符串和str1的大小。
+int compare(size_t pos, size_t n,const string &str) const; // 比较当前字符串从pos开始的n个字符组成的字符串与str的大小。
+int compare(size_t pos, size_t n,const string &str,size_t pos2,size_t n2)const; // 比较当前字符串从pos开始的n个字符组成的字符串与str中pos2开始的n2个字符组成的字符串的大小。
+```
+
+以下几个函数用于和C风格字符串比较。
+
+```
+int compare(const char *s) const; 
+int compare(size_t pos, size_t n,const char *s) const;
+int compare(size_t pos, size_t n,const char *s, size_t pos2) const;
+compre()函数有异常，慎用
+```
+
+### 查找操作
+
+```
+size_t find(const string& str, size_t pos = 0) const;
+size_t find(const char* s, size_t pos = 0) const;
+size_t find(const char* s, size_t pos, size_t n) const;
+size_t find(char c, size_t pos = 0) const;
+
+size_t rfind(const string& str, size_t pos = npos) const;
+size_t rfind(const char* s, size_t pos = npos) const;
+size_t rfind(const char* s, size_t pos, size_t n) const;
+size_t rfind(char c, size_t pos = npos) const;
+
+size_t find_first_of(const string& str, size_t pos = 0) const;
+size_t find_first_of(const char* s, size_t pos = 0) const;
+size_t find_first_of(const char* s, size_t pos, size_t n) const;
+size_t find_first_of(char c, size_t pos = 0) const;
+
+size_t find_last_of(const string& str, size_t pos = npos) const;
+size_t find_last_of(const char* s, size_t pos = npos) const;
+size_t find_last_of(const char* s, size_t pos, size_t n) const;
+size_t find_last_of(char c, size_t pos = npos) const;
+
+size_t find_first_not_of(const string& str, size_t pos = 0) const;
+size_t find_first_not_of(const char* s, size_t pos = 0) const;
+size_t find_first_not_of(const char* s, size_t pos, size_t n) const;
+size_t find_first_not_of(char c, size_t pos = 0) const;
+
+size_t find_last_not_of(const string& str, size_t pos = npos) const;
+size_t find_last_not_of(const char* s, size_t pos = npos) const;
+size_t find_last_not_of(const char* s, size_t pos, size_t n) const;
+size_t find_last_not_of(char c, size_t pos = npos) const;
+```
+
+### 替换操作
+
+```
+string& replace(size_t pos, size_t len, const string& str);
+string& replace(size_t pos, size_t len, const string& str, size_t subpos, size_t sublen = npos);
+string& replace(size_t pos, size_t len, const char* s);
+string& replace(size_t pos, size_t len, const char* s, size_t n);
+string& replace(size_t pos, size_t len, size_t n, char c);
+以下函数意义不大。
+string& replace(iterator i1, iterator i2, const string& str);
+string& replace(iterator i1, iterator i2, const char* s);
+string& replace(iterator i1, iterator i2, const char* s, size_t n);
+string& replace(iterator i1, iterator i2, size_t n, char c);
+template <class InputIterator>
+string& replace(iterator i1, iterator i2, InputIterator first, InputIterator last);
+```
+
+### 插入操作
+
+```
+string& insert(size_t pos, const string& str);
+string& insert(size_t pos, const string& str, size_t subpos, size_t sublen = npos);
+string& insert(size_t pos, const char* s);
+string& insert(size_t pos, const char* s, size_t n);
+string& insert(size_t pos, size_t n, char c);
+以下函数意义不大。
+iterator insert(iterator p, size_t n, char c);
+iterator insert(iterator p, char c);
+template <class InputIterator>
+iterator insert(iterator p, InputIterator first, InputIterator last);
+```
+
+### 删除操作
+
+```
+string &erase(size_t pos = 0, size_t n = npos); // 删除pos开始的n个字符。
+以下函数意义不大。
+iterator erase(iterator it); // 删除it指向的字符，返回删除后迭代器的位置。
+iterator erase(iterator first, iterator last); / /删除[first，last）之间的所有字符，返回删除后迭代器的位置。
+```
+
+## vector容器
+
+vector容器封装了动态数组。
+
+包含头文件： #include<vector>
+
+vector类模板的声明：
+
+```
+template<class T, class Alloc = allocator<T>>
+class vector{
+private:
+	T *start_; 
+	T *finish_;
+	T *end_;
+	……
+}
+```
+
+**分配器**
+
+各种STL容器模板都接受一个可选的模板参数，该参数指定使用哪个分配器对象来管理内存
+
+如果省略该模板参数的值，将默认使用allocator<T>，用new和delete分配和释放内存。
+
+![image-20231016160452993](./photo/image-20231016160452993.png)
+
+### 构造函数
+
+```
+1）vector();  // 创建一个空的vector容器。
+2）vector(initializer_list<T> il); // 使用统一初始化列表。
+3）vector(const vector<T>& v);  // 拷贝构造函数。
+4）vector(Iterator first, Iterator last);  // 用迭代器创建vector容器。
+5）vector(vector<T>&& v);  // 移动构造函数（C++11标准）。
+6）explicit vector(const size_t n);   // 创建vector容器，元素个数为n（容量和实际大小都是n）。
+7）vector(const size_t n, const T& value);  // 创建vector容器，元素个数为n，值均为value。
+```
+
+析构函数~vector()释放内存空间。
+
+### 特性操作
+
+```
+size_t max_size() const;     // 返回容器的最大长度，此函数意义不大。
+size_t capacity() const;      // 返回容器的容量。
+size_t size() const;          // 返回容器的实际大小（已使用的空间）。
+bool empty() const;        // 判断容器是否为空。
+void clear();               // 清空容器。
+void reserve(size_t size);   // 将容器的容量设置为至少size。
+void shrink_to_fit();	       // 将容器的容量降到实际大小（需要重新分配内存）。
+void resize(size_t size);    // 把容器的实际大小置为size。
+void resize(size_t size,const T &value);  // 把容器的实际大小置为size，如果size<实际大小，会截断多出的部分；如果size>实际大小，就用value填充。
+```
+
+### 元素操作
+
+```
+T &operator[](size_t n); 
+const T &operator[](size_t n) const;  // 只读。
+T &at(size_t n); 
+const T &at(size_t n) const;          // 只读。
+T *data();            // 返回容器中动态数组的首地址。
+const T *data() const; // 返回容器中动态数组的首地址。
+T &front();        // 第一个元素。
+const T &front();  // 第一个元素，只读。
+const T &back();  // 最后一个元素，只读。
+T &back();        // 最后一个元素。
+```
+
+### 赋值操作
+
+给已存在的容器赋值，将覆盖容器中原有的内容。
+
+```
+1）vector &operator=(const vector<T> &v);    // 把容器v赋值给当前容器。
+2）vector &operator=(initializer_list<T> il); // 用统一初始化列表给当前容器赋值。
+3）void assign(initializer_list<T> il);        // 使用统一初始化列表赋值。
+4）void assign(Iterator first, Iterator last);  // 用迭代器赋值。
+5）void assign(const size_t n, const T& value);  // 把n个value给容器赋值。
+```
+
+```
+#include <iostream>
+#include <vector>
+using  namespace std;
+
+int main()
+{
+	vector<int> v1;
+	v1 = { 1,2,3,4,5 };     // 使用统一初始化列表赋值。
+	for (int ii = 0; ii < v1.size(); ii++) cout << v1[ii] << "  ";
+	cout << endl;
+
+	vector<int> v2;
+	v2 = v1;                    // 把容器v1赋值给当前容器。
+	for (int ii = 0; ii < v2.size(); ii++) cout << v2[ii] << "  ";
+	cout << endl;
+
+	vector<int> v3;
+	v3.assign({ 1,2,3,4,5 });   // 用assign()函数给当前容器赋值，参数是统一初始化列表。
+	for (int ii = 0; ii < v3.size(); ii++) cout << v3[ii] << "  ";
+	cout << endl;
+}
+```
+
+### 交换操作
+
+```
+void swap(vector<T> &v);    // 把当前容器与v交换。
+```
+
+交换的是动态数组的地址。
+
+### 比较操作
+
+```
+bool operator == (const vector<T> & v) const;
+bool operator != (const vector<T> & v) const;
+```
+
+### 插入和删除
+
+```
+1）void push_back(const T& value);  // 在容器的尾部追加一个元素。
+2）void emplace_back(…);           // 在容器的尾部追加一个元素，…用于构造元素。C++11
+3）iterator insert(iterator pos, const T& value);  // 在指定位置插入一个元素，返回指向插入元素的迭代器。
+4）iterator emplace (iterator pos, …);  // 在指定位置插入一个元素，…用于构造元素，返回指向插入元素的迭代器。C++11
+5）iterator insert(iterator pos, iterator first, iterator last);  // 在指定位置插入一个区间的元素，返回指向第一个插入元素的迭代器。
+6）void pop_back();                      // 从容器尾部删除一个元素。
+7）iterator erase(iterator pos);             // 删除指定位置的元素，返回下一个有效的迭代器。
+8）iterator erase(iterator first, iterator last); // 删除指定区间的元素，返回下一个有效的迭代器。
+```
+
+```
+#include <iostream>
+#include <vector>
+using  namespace std;
+
+class AA
+{
+public:
+	int m_bh;               // 编号。
+	string m_name;     // 姓名。
+
+	AA()      // 默认构造函数。
+	{ 
+		//cout << "默认构造函数AA()。\n"; 
+	}
+
+	AA(const int &bh,const string& name) : m_bh(bh),m_name(name)   // 有两个参数的构造函数。
+	{
+		//cout << "构造函数，name=" << m_name << "。\n"; 
+	}
+	AA(const AA& g) :m_bh(g.m_bh), m_name(g.m_name)                       // 拷贝构造函数。
+	{ 
+		//cout << "拷贝构造函数，name=" << m_name << "。\n"; 
+	}
+	//~AA() { cout << "析构函数。\n"; }
+};
+
+int main()
+{
+	vector<AA> v(10);
+	cout << v.size() << v.data() << endl;
+	//AA a(18,"西施"); 
+	//v.push_back(a);
+	//v.emplace_back(a);
+	v.emplace_back(18,"西施");
+
+	cout << "bh=" << v[0].m_bh << ",name=" << v[0].m_name << endl;
+}
+```
+
+### vector的嵌套
+
+vector容器可以嵌套使用。
+
+```
+#include <iostream>
+#include <vector>
+using  namespace std;
+
+int main()
+{
+	vector<vector<int>> vv;   // 创建一个vector容器vv，元素的数据类型是vector<int>。
+
+	vector<int> v;        // 创建一个容器v，它将作为容器vv的元素。
+
+	v = { 1,2,3,4,5 };      // 用统一初始化列表给v赋值。
+	vv.push_back(v);    // 把容器v作为元素追加到vv中。
+
+	v = { 11,12,13,14,15,16,17 };   // 用统一初始化列表给v赋值。
+	vv.push_back(v);                      // 把容器v作为元素追加到vv中。
+
+	v = { 21,22,23 };     // 用统一初始化列表给v赋值。
+	vv.push_back(v);    // 把容器v作为元素追加到vv中。
+
+	// 用嵌套的循环，把vv容器中的数据显示出来。
+	for (int ii = 0; ii < vv.size(); ii++)
+	{
+		for (int jj = 0; jj < vv[ii].size(); jj++)
+			cout << vv[ii][jj] << " ";      // 像二维数组一样使用容器vv。
+
+		cout << endl;
+	}
+}
+```
+
+### 注意事项
+
+**1）迭代器失效的问题**
+
+resize()、reserve()、assign()、push_back()、pop_back()、insert()、erase()等函数会引起vector容器的动态数组发生变化，可能导致vector迭代器失效。
+
+## 迭代器 
+
+迭代器是访问容器中元素的通用方法。
+
+如果使用迭代器，不同的容器，访问元素的方法是相同的。
+
+迭代器支持的基本操作：赋值（=）、解引用（*）、比较（==和!=）、从左向右遍历（++）。
+
+一般情况下，迭代器是指针和移动指针的方法。
+
+**迭代器有五种分类：**
+
+**1）正向迭代器**
+
+只能使用++运算符从左向右遍历容器，每次沿容器向右移动一个元素。
+
+```
+容器名<元素类型>::iterator 迭代器名;        // 正向迭代器。
+容器名<元素类型>::const_iterator 迭代器名;  // 常正向迭代器。
+```
+
+相关的成员函数：
+
+```
+iterator begin();
+const_iterator begin();
+const_iterator cbegin();  // 配合auto使用。
+iterator end();
+const_iterator end();
+const_iterator cend();
+```
+
+**2）双向迭代器**
+
+具备正向迭代器的功能，还可以反向（从右到左）遍历容器（也是用++），不管是正向还是反向遍历，都可以用--让迭代器后退一个元素。
+
+```
+容器名<元素类型>:: reverse_iterator 迭代器名;        // 反向迭代器。
+容器名<元素类型>:: const_reverse_iterator 迭代器名;  // 常反向迭代器。
+```
+
+相关的成员函数：
+
+```
+reverse_iterator rbegin();
+const_reverse_iterator crbegin();
+reverse_iterator rend();
+const_reverse_iterator crend();
+```
+
+**3）随机访问迭代器**
+
+具备双向迭代器的功能，还支持以下操作：
+
+- 用于比较两个迭代器相对位置的关系运算（<、<=、>、>=）。
+
+- 迭代器和一个整数值的加减法运算（+、+=、-、-=）。
+
+- 支持下标运算（iter[n]）。
+
+数组的指针是纯天然的随机访问迭代器。
+
+**4) 输入和输出迭代器**
+
+这两种迭代器比较特殊，它们不是把容器当做操作对象，而是把输入/输出流作为操作对象。
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+using  namespace std;
+
+struct Node   // 单链表的结点。
+{
+	int item;
+	Node* next;
+};
+
+int* find_(int* arr, int n, const int& val)  // 在整型数组arr中查找值为val的元素。
+{
+	for (int ii = 0; ii < n; ii++)                     // 遍历数组。
+		if (arr[ii] == val) return &arr[ii];       // 如果找到了，返回数组中元素的地址。
+
+	return nullptr;
+}
+
+int* find_(int* begin, int* end, const int& val)  // 在整型数组的区间中查找值为val的元素。
+{
+	for (int* iter = begin; iter != end; iter++)      // 遍历查找区间。
+		if (*iter == val) return iter;                         // 如果找到了元素，返回区间中的位置。
+
+	return nullptr;
+}
+
+Node* find_(Node* begin, Node* end, const Node& val)         // 在单链表中查找值为val的元素。
+{
+	for (Node * iter = begin; iter != end; iter = iter->next)     // 遍历链表。
+		if (iter->item == val.item) return iter;           // 如果找到了，返回链表中结点的地址。
+
+	return nullptr;
+}
+
+// 查找元素的算法。
+template<typename T1, typename T2>  
+// begin-查找区间开始的位置；end-查找区间结束的位置；val-待查找的值。
+T1 find_(T1 begin, T1 end, const T2 &val)      
+{
+	for (T1 iter = begin; iter != end; iter++)     // 遍历查找区间。
+		if (*iter == val) return iter;                       // 如果找到了元素，返回区间中的位置。
+
+	return end;
+}
+
+int main()
+{
+	// 在vector容器中查找元素。
+	vector<int> vv = { 1,2,3,4,5 };      // 初始化vector容器。
+	vector<int>::iterator it2 = find_(vv.begin(), vv.end(), 3); 
+	if (it2 != vv.end()) cout << "查找成功。\n";
+	else cout << "查找失败。\n";
+
+	// 在list容器中查找元素。
+	list<int> ll = {1,2,3,4,5};               // 初始化vector容器。
+	list<int>::iterator it3 = find_(ll.begin(), ll.end(), 3);
+	if (it3 != ll.end()) cout << "查找成功。\n";
+	else cout << "查找失败。\n";
+}
+```
+
+## 基于范围的for循环
+
+对于一个有范围的[集合](https://so.csdn.net/so/search?q=集合&spm=1001.2101.3001.7020)来说，在程序代码中指定循环的范围有时候是多余的，还可能犯错误。
+
+C++11中引入了基于范围的for循环。
+
+语法：
+
+```
+for (迭代的变量 : 迭代的范围)
+{
+	// 循环体。
+}
+```
+
+注意：
+
+1）迭代的范围可以是数组名、容器名、初始化列表或者可迭代的对象（支持begin()、end()、++、==）。
+
+2）数组名传入函数后，已退化成指针，不能作为容器名。
+
+3）如果容器中的元素是结构体和类，迭代器变量应该申明为引用，加const约束表示只读。
+
+4）注意迭代器失效的问题。
+
+```
+#include <iostream>
+#include <vector>
+using  namespace std;
+
+class AA
+{
+public:
+	string m_name;
+
+	AA() { cout << "默认构造函数AA()。\n"; }
+
+	AA(const string& name) : m_name(name) { cout << "构造函数，name=" << m_name << "。\n"; }
+
+	AA(const AA& a) : m_name(a.m_name) { cout << "拷贝构造函数，name=" << m_name << "。\n"; }
+
+	AA& operator=(const AA& a) { m_name = a.m_name;  cout << "赋值函数，name=" << m_name << "。\n";  return *this; }
+
+	~AA() { cout << "析构函数，name=" << m_name<<"。\n"; }
+};
+
+int main()
+{
+	vector<int> vv = { 1,2,3,4,5,6,7,8,9,10 };
+
+	//for (auto it = vv.begin(); it != vv.end(); it++)     // 用迭代器遍历容器vv。
+	//{
+	//	cout << *it << " ";
+	//}
+	//cout << endl;
+
+	for (auto val : vv)      // 用基于范围的for循环遍历数组vv。
+	{
+		cout << val << " ";
+		vv.push_back(10);
+	}
+	cout << endl;
+
+	/*vector<AA> v;
+	cout << "1111，v.capacity()=" << v.capacity() << "\n";
+	v.emplace_back("西施");
+	cout << "2222，v.capacity()=" << v.capacity() << "\n";
+	v.emplace_back("冰冰");
+	cout << "3333，v.capacity()=" << v.capacity() << "\n";
+	v.emplace_back("幂幂");
+	cout << "4444，v.capacity()=" << v.capacity() << "\n";
+
+	for (const auto &a : v)
+		cout << a.m_name << " ";
+	cout << endl;*/
+}
+```
+
+## list容器 
+
+list容器封装了双链表。
+
+包含头文件： #include<list>
+
+list类模板的声明：
+
+```
+template<class T, class Alloc = allocator<T>>
+class list{
+private:
+	iterator head;
+	iterator tail;
+	……
+}
+```
+
+### 构造函数
+
+```
+1）list();  // 创建一个空的list容器。
+2）list(initializer_list<T> il); // 使用统一初始化列表。
+3）list(const list<T>& l);  // 拷贝构造函数。
+4）list(Iterator first, Iterator last);  // 用迭代器创建list容器。
+5）list(list<T>&& l);  // 移动构造函数（C++11标准）。
+6）explicit list(const size_t n);   // 创建list容器，元素个数为n。
+7）list(const size_t n, const T& value);  // 创建list容器，元素个数为n，值均为value。
+```
+
+析构函数~list()释放内存空间。
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+using  namespace std;
+
+int main()
+{
+	// 1）list();  // 创建一个空的list容器。
+	list<int> l1;
+	// cout << "li.capacity()=" << l1.capacity() << endl;  // 链表没有容量说法。
+	cout << "li.size()=" << l1.size() << endl;
+
+	// 2）list(initializer_list<T> il); // 使用统一初始化列表。
+	list<int> l2({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+	// list<int> l2={ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	// list<int> l2  { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	for (int value : l2)       // 用基于范围的for循环遍历容器。
+		cout << value << " ";
+	cout << endl;
+
+	// 3）list(const list<T>& l);  // 拷贝构造函数。
+	list<int> l3(l2);
+	// list<int> l3=l2;
+	for (int value : l3)    
+		cout << value << " ";
+	cout << endl;
+
+	// 4）list(Iterator first, Iterator last);  // 用迭代器创建list容器。
+	list<int> l4(l3.begin(), l3.end());      // 用list容器的迭代器。
+	for (int value : l4)  
+		cout << value << " ";
+	cout << endl;
+
+	vector<int> v1 = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };  // 创建vector容器。
+	list<int> l5(v1.begin() + 2, v1.end() - 3);          // 用vector容器的迭代器创建list容器。
+	for (int value : l5)   
+		cout << value << " ";
+	cout << endl;
+
+	int a1[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };   // 创建数组。
+	list<int> l6(a1 + 2, a1 + 10 - 3);           // 用数组的指针作为迭代器创建list容器。
+	for (int value : l6)     
+		cout << value << " ";
+	cout << endl;
+
+	char str[] = "hello world";         // 定义C风格字符串。
+	string s1(str + 1, str + 7);          // 用C风格字符串创建string容器。
+	for (auto value : s1)                   // 遍历string容器。
+		cout << value << " ";
+	cout << endl;
+	cout << s1 << endl;                 // 以字符串的方式显示string容器。
+
+	vector<int> v2(l3.begin(), l3.end());   // 用list迭代器创建vector容器。
+	for (auto value : v2)                               // 遍历vector容器。
+		cout << value << " ";
+	cout << endl;
+}
+```
+
+### 特性操作
+
+```
+size_t max_size() const;     // 返回容器的最大长度，此函数意义不大。
+size_t size() const;        // 返回容器的实际大小（已使用的空间）。
+bool empty() const;      // 判断容器是否为空。
+void clear();             // 清空容器。
+void resize(size_t size);   // 把容器的实际大小置为size。
+void resize(size_t size,const T &value);  // 把容器的实际大小置为size，如果size<实际大小，会截断多出的部分；如果size>实际大小，就用value填充。
+```
+
+### 元素操作
+
+```
+T &front();        // 第一个元素。
+const T &front();  // 第一个元素，只读。
+const T &back();  // 最后一个元素，只读。
+T &back();        // 最后一个元素。
+```
+
+### 赋值操作
+
+给已存在的容器赋值，将覆盖容器中原有的内容。
+
+```
+1）list &operator=(const list<T> &l);         // 把容器l赋值给当前容器。
+2）list &operator=(initializer_list<T> il);  // 用统一初始化列表给当前容器赋值。
+3）list assign(initializer_list<T> il);        // 使用统一初始化列表赋值。
+4）list assign(Iterator first, Iterator last);  // 用迭代器赋值。
+5）void assign(const size_t n, const T& value);  // 把n个value给容器赋值。
+```
+
+### 交换、反转、排序、归并
+
+```
+void swap(list<T> &l);   // 把当前容器与l交换，交换的是链表结点的地址。
+void reverse();           // 反转链表。
+void sort();              // 对容器中的元素进行升序排序。
+void sort(_Pr2 _Pred);    // 对容器中的元素进行排序，排序的方法由_Pred决定（二元函数）。
+void merge(list<T> &l);  // 采用归并法合并两个已排序的list容器，合并后的list容器仍是有序的。
+```
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+using  namespace std;
+
+int main()
+{
+	list<int>  la = { 8,2,6,4,5 };
+
+	for (auto &val : la)
+		cout << val << " ";
+	cout << endl;
+
+	la.reverse();      // 反转链表。
+
+	for (auto& val : la)
+		cout << val << " ";
+	cout << endl;
+
+	la.sort();            // 链表排序。
+
+	for (auto& val : la)
+		cout << val << " ";
+	cout << endl;
+
+	list<int>  lb = { 3,7,9,10,1 };
+	lb.sort();            // 链表排序。
+
+	la.merge(lb);    // 归并链表。
+	 
+	for (auto& val : la)
+		cout << val << " ";
+	cout << endl;
+}
+```
+
+### 比较操作
+
+```
+bool operator == (const vector<T> & l) const;
+bool operator != (const vector<T> & l) const;
+```
+
+### 插入和删除
+
+```
+1）void push_back(const T& value);  // 在链表的尾部追加一个元素。
+2）void emplace_back(…);           // 在链表的尾部追加一个元素，…用于构造元素。C++11
+3）iterator insert(iterator pos, const T& value);  // 在指定位置插入一个元素，返回指向插入元素的迭代器。
+4）iterator emplace (iterator pos, …);  // 在指定位置插入一个元素，…用于构造元素，返回指向插入元素的迭代器。C++11
+5）iterator insert(iterator pos, iterator first, iterator last);  // 在指定位置插入一个区间的元素，返回指向第一个插入元素的迭代器。
+6）void pop_back();                      // 从链表尾部删除一个元素。
+7）iterator erase(iterator pos);             // 删除指定位置的元素，返回下一个有效的迭代器。
+8）iterator erase(iterator first, iterator last); // 删除指定区间的元素，返回下一个有效的迭代器。
+9）push_front(const T& value);  // 在链表的头部插入一个元素。
+10）emplace_front(…);          // 在链表的头部插入一个元素，…用于构造元素。C++11
+11）splice(iterator pos, const vector<T> & l);	  // 把另一个链表连接到当前链表。
+12）splice(iterator pos, const vector<T> & l, iterator first, iterator last);	// 把另一个链表指定的区间连接到当前链表。
+13）splice(iterator pos, const vector<T> & l, iterator first);	// 把另一个链表从first开始的结点连接到当前链表。
+14）void remove(const T& value);	 // 删除链表中所有值等于value的元素。
+15）void remove_if(_Pr1 _Pred);    // 删除链表中满足条件的元素，参数_Pred是一元函数。
+16）void unique();                 // 删除链表中相邻的重复元素，只保留一个。
+17）void pop_front();              // 从链表头部删除一个元素。
+```
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+using  namespace std;
+
+int main()
+{
+	list<int>  la = { 8,2,6,4,5 };
+	for (auto& val : la) 	cout << val << " ";
+	cout << endl;
+
+	list<int>  lb = { 3,7,9,10,1 };
+	for (auto& val : lb) 	cout << val << " ";
+	cout << endl;
+
+	auto first = lb.begin();
+	first++;
+	auto last = lb.end();
+	last--;
+
+	la.splice(la.begin(), lb, first, last);
+
+	for (auto& val : la) 	cout << val << " ";
+	cout << endl;
+
+	cout << "lb.size()=" << lb.size() << endl;
+	for (auto& val : lb) 	cout << val << " ";
+	cout << endl;
+}
+```
+
+### list链表的简单实现
+
+```
+
+以下demo程序简单的实现了list容器。
+示例：
+#include<iostream>
+using namespace std;
+
+namespace 
+{
+	template<class _Ty> class List;
+
+	template<class _Ty> class ListIterator;
+
+	// 节点类。
+	template<class _Ty>
+	class ListNode
+	{
+		friend class List<_Ty>;
+		friend class ListIterator<_Ty>;
+	public:
+		ListNode() :_Value(_Ty()), _Next(nullptr), _Prev(nullptr) {}
+		ListNode(_Ty V, ListNode* next = nullptr, ListNode* prev = nullptr) :_Value(V), _Next(next), _Prev(prev) {}
+	private:
+		_Ty           _Value;
+		ListNode* _Next;
+		ListNode* _Prev;
+	};
+
+	// 迭代器。
+	template<class _Ty>
+	class ListIterator
+	{
+		typedef ListIterator<_Ty> _It;
+	public:
+		ListIterator() :_Ptr(nullptr) {}
+		ListIterator(ListNode<_Ty>* _P) :_Ptr(_P) {}
+	public:
+		_It& operator++()
+		{
+			_Ptr = _Ptr->_Next;
+			return *this;
+		}
+		_It& operator--()
+		{
+			_Ptr = _Ptr->Prev;
+			return *this;
+		}
+		_Ty& operator*()
+		{
+			return (_Ptr->_Value);
+		}
+		bool operator!=(const _It& it)
+		{
+			return _Ptr != it._Ptr;
+		}
+		bool operator==(const _It& it)
+		{
+			return _Ptr == it._Ptr;
+		}
+		ListNode<_Ty>* _Mynode()
+		{
+			return _Ptr;
+		}
+	private:
+		ListNode<_Ty>* _Ptr;
+	};
+
+	// 链表类。
+	template<class _Ty>
+	class List
+	{
+	public:
+		typedef ListNode<_Ty>* _Nodeptr;
+		typedef ListIterator<_Ty> iterator;
+	public:
+		List() :_Size(0)
+		{
+			CreateHead();
+		}
+		List(size_t n, const _Ty& x = _Ty()) :_Size(0)
+		{
+			CreateHead(),
+				insert(begin(), n, x);
+		}
+		List(const _Ty* first, const _Ty* last) :_Size(0)
+		{
+			CreateHead();
+			while (first != last)
+				push_back(*first++);
+		}
+		List(iterator first, iterator last)
+		{
+			CreateHead();
+			while (first != last)
+			{
+				push_back(*first);
+				++first;
+			}
+		}
+		List(List<_Ty>& lt) :_Size(0)
+		{
+			CreateHead();
+			List<_Ty>tmp(lt.begin(), lt.end());
+			this->swap(tmp);
+		}
+		~List()
+		{
+			clear();
+			delete _Head;
+			_Size = 0;
+		}
+	public:
+		void push_back(const _Ty& x)
+		{
+			insert(end(), x);
+		}
+		void pop_back()
+		{
+			erase(--end());
+		}
+		void push_front(const _Ty& x)
+		{
+			insert(begin(), x);
+		}
+		void pop_front()
+		{
+			erase(begin());
+		}
+		_Ty& front()
+		{
+			return *begin();
+		}
+		const _Ty& front()const
+		{
+			return *begin();
+		}
+		_Ty& back()
+		{
+			return *--end();
+		}
+		const _Ty& back()const
+		{
+			return *--end();
+		}
+	public:
+		size_t size()const
+		{
+			return _Size;
+		}
+		bool empty()const
+		{
+			return (size() == 0);
+		}
+	public:
+		iterator begin()
+		{
+			return iterator(_Head->_Next);
+		}
+		iterator end()
+		{
+			return iterator(_Head);
+		}
+		void clear()
+		{
+			erase(begin(), end());
+		}
+	public:
+		//在_P位置前插入值为x的节点
+		iterator insert(iterator _P, const _Ty& x)
+		{
+			_Nodeptr cur = _P._Mynode();
+			_Nodeptr _S = new ListNode<_Ty>(x);
+
+			_S->_Next = cur;
+			_S->_Prev = cur->_Prev;
+			_S->_Prev->_Next = _S;
+			_S->_Next->_Prev = _S;
+
+			_Size++;
+			return iterator(_S);
+		}
+		void insert(iterator _P, size_t n, const _Ty& x = _Ty())
+		{
+			while (n--)
+				insert(_P, x);
+		}
+		//删除_P位置的节点，返回该节点的下一个节点位置
+		iterator erase(iterator _P)
+		{
+			_Nodeptr cur = _P._Mynode();
+			_Nodeptr next_node = cur->_Next;
+
+			cur->_Prev->_Next = cur->_Next;
+			cur->_Next->_Prev = cur->_Prev;
+			delete cur;
+
+			_Size--;
+
+			return iterator(next_node);
+		}
+		iterator erase(iterator first, iterator last)
+		{
+			while (first != last)
+			{
+				first = erase(first);
+			}
+			return first;
+		}
+		void swap(List<_Ty>& lt)
+		{
+			std::swap(_Head, lt._Head);
+			std::swap(_Size, lt._Size);
+		}
+	protected:
+		void CreateHead()
+		{
+			_Head = new ListNode<_Ty>;
+			_Head->_Prev = _Head->_Next = _Head;
+		}
+	private:
+		_Nodeptr       _Head;
+		size_t         _Size;
+
+	};
+};
+
+int main()
+{
+	int arr[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+	List<int>la(arr+2, arr + 10);
+	List<int>lb(la);
+
+	for (auto elem:la)
+		cout << elem << " ";
+	cout << endl;
+
+	for (auto elem : lb)
+		cout << elem << " ";
+	cout << endl;
+}
+```
+
+## pair键值对
+
+pair是类模板，一般用于表示key/value数据，其实现是结构体。
+
+pair结构模板的定义如下：
+
+```
+template <class T1, class T2>
+struct pair 
+{ 
+    T1 first;     // 第一个成员，一般表示key。
+    T2 second;  // 第二个成员，一般表示value。
+	pair();       // 默认构造函数。
+	pair(const T1 &val1,const T2 &val2);   // 有两个参数的构造函数。
+	pair(const pair<T1,T2> &p);           // 拷贝构造函数。
+	void swap(pair<T1,T2> &p);           // 交换两个pair。
+};
+```
+
+make_pair函数模板的定义如下：
+
+```
+template <class T1, class T2>
+make_pair(const T1 &first,const T2 &second)
+{
+	return pair<T1,T2>(first, second);
+}
+```
+
+```
+#include <iostream>
+using  namespace std;
+
+template <class T1, class T2>
+struct Pair
+{
+	T1 first;        // 第一个成员，一般表示key。
+	T2 second;  // 第二个成员，一般表示value。
+	Pair()  {
+		cout << "调用了有默认的构造函数。\n";
+	}
+	Pair(const T1& val1, const T2& val2) :first(val1), second(val2)  {
+		cout << "调用了有两个参数的构造函数。\n";
+	}
+	Pair(const Pair<T1, T2>& p) : first(p.first),second(p.second)  {
+		cout << "调用了拷贝构造函数。\n";
+	}
+};
+
+template <class T1, class T2>
+Pair<T1, T2> make_Pair(const T1& first, const T2& second)
+{
+	// Pair<T1, T2> p(first, second);
+	// return p;        // 返回局部对象。
+	return Pair<T1, T2>(first, second);  // 返回临时对象。
+}
+
+int main()
+{
+	//pair<int, string> p0;
+	//cout << "p0 first=" << p0.first << ",second=" << p0.second << endl;
+
+	//pair<int, string> p1(1, "西施1");    // 两个参数的构造函数。
+	//cout << "p1 first=" << p1.first << ",second=" << p1.second << endl;
+
+	//pair<int, string> p2 = p1;             // 拷贝构造。
+	//cout << "p2 first=" << p2.first << ",second=" << p2.second << endl;
+
+	//pair<int, string> p3 = { 3, "西施3" };   // 两个参数的构造函数。
+	//// pair<int, string> p3 { 3, "西施3" };   // 两个参数的构造函数，省略了等于号。
+	//cout << "p3 first=" << p3.first << ",second=" << p3.second << endl;
+
+	auto p4 = Pair<int, string>(4, "西施4");   // 匿名对象（显式调用构造函数）。
+	cout << "p4 first=" << p4.first << ",second=" << p4.second << endl;
+
+	auto p5 = make_Pair<int, string>(5, "西施5");   // make_pair()返回的临时对象。
+	cout << "p5 first=" << p5.first << ",second=" << p5.second << endl;
+
+	//pair<int, string> p6 = make_pair(6, "西施6");  // 慎用，让make_pair()函数自动推导，再调用拷贝构造，再隐式转换。
+	//cout << "p6 first=" << p6.first << ",second=" << p6.second << endl;
+
+	//auto p7 = make_pair(7, "西施7");    // 慎用，让make_pair()函数自动推导，再调用拷贝构造。
+	//cout << "p7 first=" << p7.first << ",second=" << p7.second << endl;
+
+	//p5.swap(p4);   // 交换两个pair。
+
+	//cout << "p4 first=" << p4.first << ",second=" << p4.second << endl;
+	//cout << "p5 first=" << p5.first << ",second=" << p5.second << endl;
+
+	//struct st_girl
+	//{
+	//	string name;
+	//	int   age;
+	//	double height;
+	//};
+	//// 用pair存放结构体数据。
+	//pair<int, st_girl> p = { 3,{"西施",23,48.6} };
+	//cout << "p first=" << p.first << endl;
+	//cout << "p second.name=" << p.second.name << endl;
+	//cout << "p second.age=" << p.second.age << endl;
+	//cout << "p second.height=" << p.second.height << endl;
+}
+```
+
+### map容器 
+
+map 容器封装了红黑树（平衡二叉排序树），用于查找。
+
+包含头文件： #include<map>
+
+map容器的元素是pair键值对。
+
+map类模板的声明：
+
+```
+template <class K, class V, class P = less<K>, class _Alloc = allocator<pair<const K, V >>>
+class map : public _Tree<_Tmap_traits< K, V, P, _Alloc, false>> 
+{
+   	… 
+}
+```
+
+第一个模板参数K：key的数据类型（pair.first）。
+
+第二个模板参数V：value的数据类型（pair.second）。
+
+第三个模板参数P：排序方法，缺省按key升序。
+
+第四个模板参数_Alloc：分配器，缺省用new和delete。
+
+map提供了双向迭代器。
+
+二叉链表： 
+
+```
+struct BTNode                        
+{                                  
+   	pair<K,V> p;       // 键值对。      
+	BTNode *parent;   // 父节点。   
+	BTNode *lchirld;    // 左子树。 
+	BTNode *rchild;    // 右子树。 
+};                   
+```
+
+### 构造函数
+
+```
+1）map();  // 创建一个空的map容器。
+2）map(initializer_list<pair<K,V>> il); // 使用统一初始化列表。
+3）map(const map<K,V>& m);  // 拷贝构造函数。
+4）map(Iterator first, Iterator last);  // 用迭代器创建map容器。
+5）map(map<K,V>&& m);  // 移动构造函数（C++11标准）。
+```
+
+```
+#include <iostream>
+#include <map>
+using  namespace std;
+
+int main()
+{
+	// 1）map();  // 创建一个空的map容器。
+	map<int, string> m1;
+
+	// 2）map(initializer_list<pair<K, V>> il); // 使用统一初始化列表。
+	map<int, string> m2( { { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } } );
+	// map<int, string> m2={ { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } };
+	// map<int, string> m2   { { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } };
+	for (auto& val : m2)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+
+	// 3）map(const map<K, V>&m);  // 拷贝构造函数。
+	map<int, string> m3 = m2;
+	for (auto& val : m3)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+
+	// 4）map(Iterator first, Iterator last);  // 用迭代器创建map容器。
+	auto first = m3.begin();  first++;
+	auto last = m3.end();  last--;
+	map<int, string> m4(first,last);
+	for (auto& val : m4)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+	
+	// 5）map(map<K, V> && m);  // 移动构造函数（C++11标准）。
+}
+```
+
+### 特性操作
+
+```
+size_t size() const;        // 返回容器的实际大小（已使用的空间）。
+bool empty() const;      // 判断容器是否为空。
+void clear();             // 清空容器。
+```
+
+### 元素操作
+
+```
+V &operator[](K key);             // 用给定的key访问元素。
+const V &operator[](K key) const;  // 用给定的key访问元素，只读。
+V &at(K key);                     // 用给定的key访问元素。
+const V &at(K key) const;         // 用给定的key访问元素，只读。
+```
+
+注意：
+
+1）[ ]运算符：如果指定键不存在，会向容器中添加新的键值对；如果指定键不存在，则读取或修改容器中指定键的值。
+
+2）at()成员函数：如果指定键不存在，不会向容器中添加新的键值对，而是直接抛出out_of_range 异常。
+
+示例：
+
+```
+#include <iostream>
+#include <map>
+using  namespace std;
+
+int main()
+{
+	map<string, string> m( { { "08","冰冰" }, { "03","西施" }, { "01","幂幂" }, { "07","金莲" }, { "05","西瓜" } } );
+	
+	cout << "m[08]=" << m["08"] << endl;     // 显示key为08的元素的value。
+	cout << "m[09]=" << m["09"] << endl;    // 显示key为09的元素的value。key为09的元素不存在，将添加新的键值对。
+	m["07"] = "花花";                                          // 把key为07的元素的value修改为花花。
+	m["12"] = "小乔";                                          // 将添加新的键值对。
+
+	for (auto& val : m)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+}
+```
+
+### 赋值操作
+
+给已存在的容器赋值，将覆盖容器中原有的内容。
+
+```
+1）map<K,V> &operator=(const map<K,V>& m);         // 把容器m赋值给当前容器。
+2）map<K,V> &operator=(initializer_list<pair<K,V>> il);  // 用统一初始化列表给当前容器赋值。
+```
+
+### 交换操作
+
+```
+void swap(map<K,V>& m);    // 把当前容器与m交换。
+```
+
+交换的是树的根结点。
+
+### 比较操作
+
+```
+bool operator == (const map<K,V>& m) const;
+bool operator != (const map<K,V>& m) const;
+```
+
+### 查找操作
+
+1）查找键值为key的键值对
+
+在map容器中查找键值为key的键值对，如果成功找到，则返回指向该键值对的迭代器；失败返回end()。
+
+```
+iterator find(const K &key); 
+const_iterator find(const K &key) const;  // 只读。
+```
+
+2）查找键值>=key的键值对
+
+在map容器中查找第一个键值>=key的键值对，成功返回迭代器；失败返回end()。
+
+```
+iterator lower_bound(const K &key); 
+const_iterator lower_bound(const K &key) const;  // 只读。
+```
+
+3）查找键>key的键值对
+
+在map容器中查找第一个键值>key的键值对，成功返回迭代器；失败返回end()。
+
+```
+iterator upper_bound(const K &key); 
+const_iterator upper_bound(const K &key) const;  // 只读。
+```
+
+4）统计键值对的个数
+
+统计map容器中键值为key的键值对的个数。
+
+```
+size_t count(const K &key) const;
+```
+
+```
+#include <iostream>
+#include <map>
+using  namespace std;
+
+int main()
+{
+	map<string, string> m( { { "08","冰冰" }, { "03","西施" }, { "01","幂幂" }, { "07","金莲" }, { "05","西瓜" } } );
+
+	for (auto& val : m)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+	
+	// 在map容器中查找键值为key的键值对，如果成功找到，则返回指向该键值对的迭代器；失败返回end()。
+	auto it1 = m.find("05");
+	if (it1 != m.end())
+		cout << "查找成功：" << it1->first << "," << it1->second << endl;
+	else
+		cout << "查找失败。\n";
+
+	// 在map容器中查找第一个键值 >= key的键值对，成功返回迭代器；失败返回end()。
+	auto it2 = m.lower_bound("05");
+	if (it2 != m.end())
+		cout << "查找成功：" << it2->first << "," << it2->second << endl;
+	else
+		cout << "查找失败。\n";
+
+	//	在map容器中查找第一个键值 > key的键值对，成功返回迭代器；失败返回end()。
+	auto it3 = m.upper_bound("05");
+	if (it3 != m.end())
+		cout << "查找成功：" << it3->first << "," << it3->second << endl;
+	else
+		cout << "查找失败。\n";
+
+	//	统计map容器中键值为key的键值对的个数。
+	cout << "count(05)=" << m.count("05") << endl;   // 返回1。
+	cout << "count(06)=" << m.count("06") << endl;   // 返回0。
+}
+```
+
+### 插入和删除
+
+```
+1）void insert(initializer_list<pair<K,V>> il);  // 用统一初始化列表在容器中插入多个元素。
+2）pair<iterator,bool> insert(const pair<K,V> &value);  // 在容器中插入一个元素，返回值pair：first是已插入元素的迭代器，second是插入结果。
+3）void insert(iterator first,iterator last);  // 用迭代器插入一个区间的元素。
+4）pair<iterator,bool> emplace (...);  // 将创建新键值对所需的数据作为参数直接传入，map容器将直接构造元素。返回值pair：first是已插入元素的迭代器，second是插入结果。
+例：mm.emplace(piecewise_construct, forward_as_tuple(8), forward_as_tuple("冰冰", 18));
+5）iterator emplace_hint (const_iterator pos,...); // 功能与第4）个函数相同，第一个参数提示插入位置，该参数只有参考意义，如果提示的位置是正确的，对性能有提升，如果提示的位置不正确，性能反而略有下降，但是，插入是否成功与该参数元关。该参数常用end()和begin()。成功返回新插入元素的迭代器；如果元素已经存在，则插入失败，返回现有元素的迭代器。
+6）size_t erase(const K & key);  // 从容器中删除指定key的元素，返回已删除元素的个数。
+7）iterator erase(iterator pos);  // 用迭代器删除元素，返回下一个有效的迭代器。
+8）iterator erase(iterator first,iterator last);  // 用迭代器删除一个区间的元素，返回下一个有效的迭代器。
+```
+
+```
+#include <iostream>
+#include <map>
+using  namespace std;
+
+class CGirl        // 超女类。
+{
+public:
+	string m_name;   // 超女姓名。
+	int      m_age;       // 超女年龄。
+
+	/*CGirl() : m_age(0) {
+		cout << "默认构造函数。\n";
+	}*/
+	CGirl(const string name, const int age) : m_name(name), m_age(age) {
+		cout << "两个参数的构造函数。\n";
+	}
+	CGirl(const CGirl & g) : m_name(g.m_name), m_age(g.m_age) {
+		cout << "拷贝构造函数。\n";
+	}
+};
+
+int main()
+{
+	//map<int, CGirl> mm;
+	//mm.insert     (pair<int, CGirl>(8, CGirl("冰冰", 18)));                // 一次构造函数，两次拷贝构造函数。
+	//mm.insert     (make_pair<int, CGirl>(8, CGirl("冰冰", 18)));     // 一次构造函数，两次拷贝构造函数。
+	//mm.emplace(pair<int, CGirl>(8, CGirl("冰冰", 18)));                // 一次构造函数，两次拷贝构造函数。
+	//mm.emplace(make_pair<int, CGirl>(8, CGirl("冰冰", 18)));     // 一次构造函数，两次拷贝构造函数。
+	//mm.emplace(8, CGirl("冰冰", 18));                                             // 一次构造函数，一次拷贝构造函数。
+	//mm.emplace(8, "冰冰", 18);                                                        // 错误。
+	//mm.emplace(piecewise_construct, forward_as_tuple(8), forward_as_tuple("冰冰", 18));  // 一次构造函数。
+
+	//for (const auto& val : mm)
+	//	cout << val.first << "," << val.second.m_name << "," << val.second.m_name << "  ";
+	//cout << endl;
+
+	//return 0;
+
+	map<int, string> m;
+
+	// 1）void insert(initializer_list<pair<K,V>> il);  // 用统一初始化列表在容器中插入多个元素。
+	m.insert({ { 8,"冰冰" }, { 3,"西施" }});
+	m.insert({ pair<int,string>(1,"幂幂"), make_pair<int,string>(7,"金莲"), {5,"西瓜"}});
+	m.insert({ { 18,"冰冰" }, { 3,"西施" } });
+
+	// 2）pair<iterator,bool> insert(const pair<K,V> &value);  
+	// 在容器中插入一个元素，返回值pair：first是已插入元素的迭代器，second是插入结果。
+	auto ret = m.insert(pair<int, string>(18, "花花"));
+	if (ret.second == true) cout << "插入成功：" << ret.first->first << "," << ret.first->second << endl;
+	else cout << "插入失败。\n";
+
+	// 3）void insert(iterator first, iterator last);  // 用迭代器插入一个区间的元素。
+
+	// 4）pair<iterator, bool> emplace(...);  
+	// 将创建新键值对所需的数据作为参数直接传入，map容器将直接构造元素。
+	// 返回值pair：first是已插入元素的迭代器，second是插入结果。
+	auto ret1 = m.emplace(20, "花花");
+	if (ret1.second == true) cout << "插入成功：" << ret1.first->first << "," << ret1.first->second << endl;
+	else cout << "插入失败。\n";
+
+	// 5）iterator emplace_hint(const_iterator pos, ...); 
+	// 功能与第4）个函数相同，第一个参数提示插入位置，该参数只有参考意义，如果提示的位置是正确的，
+	// 对性能有提升，如果提示的位置不正确，性能反而略有下降，但是，插入是否成功与该参数元关。
+	// 该参数常用end()和begin()。成功返回新插入元素的迭代器；如果元素已经存在，则插入失败，返回现
+	// 有元素的迭代器。
+	m.emplace_hint(m.begin(), piecewise_construct, forward_as_tuple(23), forward_as_tuple("冰棒")); 
+
+	for (auto& val : m)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+}
+```
+
+### unordered_map容器
+
+unordered_map容器封装了哈希表，查找、插入和删除元素时，只需要比较几次key的值。
+
+包含头文件： #include<unordered_map>
+
+unordered_map容器的元素是pair键值对。
+
+unordered_map类模板的声明：
+
+```
+template <class K, class V, class _Hasher = hash<K>, class _Keyeq = equal_to<K>,
+    class _Alloc = allocator<pair<const K, V>>>
+class unordered_map : public _Hash<_Umap_traits<K, V, _Uhash_compare<K, _Hasher, _Keyeq>, _Alloc, false>>
+{
+	…
+}
+```
+
+第一个模板参数K：key的数据类型（pair.first）。
+
+第二个模板参数V：value的数据类型（pair.second）。
+
+第三个模板参数_Hasher：哈希函数，默认值为std::hash<K>
+
+第四个模板参数_Keyeq：比较函数，用于判断两个key是否相等，默认值是std::equal_to<K>。
+
+第五个模板参数_Alloc：分配器，缺省用new和delete。
+
+创建std::unordered_map类模板的别名：
+
+```
+template<class K,class V>
+using umap = std::unordered_map<K, V>;
+```
+
+### 构造函数
+
+```
+1）umap();  // 创建一个空的umap容器。
+2）umap(size_t bucket);  // 创建一个空的umap容器，指定了桶的个数，下同。
+3）umap(initializer_list<pair<K,V>> il); // 使用统一初始化列表。
+4）umap(initializer_list<pair<K,V>> il, size_t bucket); // 使用统一初始化列表。
+5）umap(Iterator first, Iterator last);  // 用迭代器创建umap容器。
+6）umap(Iterator first, Iterator last, size_t bucket);  // 用迭代器创建umap容器。
+7）umap(const umap<K,V>& m);  // 拷贝构造函数。
+8）umap(umap<K,V>&& m);  // 移动构造函数（C++11标准）。
+```
+
+```
+#include <iostream>
+#include <unordered_map>
+using  namespace std;
+
+template<class K, class V>
+using umap = std::unordered_map<K, V>;   
+
+int main()
+{
+	// 1）umap();  // 创建一个空的map容器。
+	umap<int, string> m1;
+
+	// 2）umap(initializer_list<pair<K, V>> il); // 使用统一初始化列表。
+	umap<int, string> m2({ { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } });
+	// umap<int, string> m2={ { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } };
+	// umap<int, string> m2   { { 8,"冰冰" }, { 3,"西施" }, { 1,"幂幂" }, { 7,"金莲" }, { 5,"西瓜" } };
+	for (auto& val : m2)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+
+	// 3）umap(const map<K, V>&m);  // 拷贝构造函数。
+	umap<int, string> m3 = m2;
+	for (auto& val : m3)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+
+	// 4）umap(Iterator first, Iterator last);  // 用迭代器创建map容器。
+	auto first = m3.begin();  first++;
+	auto last = m3.end();  last--;
+	umap<int, string> m4(first, last);
+	for (auto& val : m4)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+
+	// 5）umap(map<K, V> && m);  // 移动构造函数（C++11标准）。
+}
+```
+
+### 特性操作
+
+```
+1）size_t size() const;        // 返回容器中元素的个数。
+2）bool empty() const;      // 判断容器是否为空。
+3）void clear();             // 清空容器。
+4）size_t max_bucket_count();     // 返回容器底层最多可以使用多少桶，无意义。
+5）size_t bucket_count();          // 返回容器桶的数量，空容器有8个桶。
+6）float load_factor();   // 返回容器当前的装填因子，load_factor() = size() / bucket_count()。
+7）float max_load_factor();        // 返回容器的最大装填因子，达到该值后，容器将扩充，缺省为1。
+8）void max_load_factor (float z ); // 设置容器的最大装填因子。
+9）iterator begin(size_t n);        // 返回第n个桶中第一个元素的迭代器。
+10）iterator end(size_t n);          // 返回第n个桶中最后一个元素尾后的迭代器。
+11）void reserve(size_t n);          // 将容器设置为至少n个桶。
+12）void rehash(size_t n);           // 将桶的数量调整为>=n。如果n大于当前容器的桶数，该方法会将容器重新哈希；如果n的值小于当前容器的桶数，该方法可能没有任何作用。
+13）size_t bucket_size(size_t n);     // 返回第n个桶中元素的个数，0 <= n < bucket_count()。
+14）size_t bucket(K &key);          // 返回值为key的元素对应的桶的编号。
+```
+
+### 元素操作
+
+```
+V &operator[](K key);             // 用给定的key访问元素。
+const V &operator[](K key) const;  // 用给定的key访问元素，只读。
+V &at(K key);                     // 用给定的key访问元素。
+const V &at(K key) const;         // 用给定的key访问元素，只读。
+```
+
+注意：
+
+1）[ ]运算符：如果指定键不存在，会向容器中添加新的键值对；如果指定键不存在，则读取或修改容器中指定键的值。
+
+2）at()成员函数：如果指定键不存在，不会向容器中添加新的键值对，而是直接抛出out_of_range 异常。
+
+```
+#include <iostream>
+#include <unordered_map>
+using  namespace std;
+
+template<class K, class V>
+using umap = std::unordered_map<K, V>;  
+
+int main()
+{
+	umap<string, string> m( { { "08","冰冰" }, { "03","西施" }, { "01","幂幂" }, { "07","金莲" }, { "05","西瓜" } } );
+	
+	cout << "m[08]=" << m["08"] << endl;     // 显示key为08的元素的value。
+	cout << "m[09]=" << m["09"] << endl;    // 显示key为09的元素的value。key为09的元素不存在，将添加新的键值对。
+	m["07"] = "花花";                                          // 把key为07的元素的value修改为花花。
+	m["12"] = "小乔";                                          // 将添加新的键值对。
+
+	for (auto& val : m)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+}
+```
+
+### 赋值操作
+
+给已存在的容器赋值，将覆盖容器中原有的内容。
+
+```
+1）umap<K,V> &operator=(const umap<K,V>& m);       // 把容器m赋值给当前容器。
+2）umap<K,V> &operator=(initializer_list<pair<K,V>> il);  // 用统一初始化列表给容器赋值。
+```
+
+### 交换操作
+
+```
+void swap(umap<K,V>& m);    // 把当前容器与m交换。
+```
+
+交换的是树的根结点。
+
+### 比较操作
+
+```
+bool operator == (const umap<K,V>& m) const;
+bool operator != (const umap<K,V>& m) const;
+```
+
+### 查找操作
+
+1）查找键值为key的键值对
+
+在umap容器中查找键值为key的键值对，如果成功找到，则返回指向该键值对的迭代器；失败返回end()。
+
+```
+iterator find(const K &key); 
+const_iterator find(const K &key) const;  // 只读。
+```
+
+2）统计键值对的个数
+
+统计umap容器中键值为key的键值对的个数。
+
+```
+size_t count(const K &key) const;
+```
+
+### 插入和删除
+
+```
+1）void insert(initializer_list<pair<K,V>> il);  // 用统一初始化列表在容器中插入多个元素。
+2）pair<iterator,bool> insert(const pair<K,V> &value);  // 在容器中插入一个元素，返回值pair：first是已插入元素的迭代器，second是插入结果。
+3）void insert(iterator first,iterator last);  // 用迭代器插入一个区间的元素。
+4）pair<iterator,bool> emplace (...);  // 将创建新键值对所需的数据作为参数直接传入，map容器将直接构造元素。返回值pair：first是已插入元素的迭代器，second是插入结果。
+例：mm.emplace(piecewise_construct, forward_as_tuple(8), forward_as_tuple("冰冰", 18));
+5）iterator emplace_hint (const_iterator pos,...); // 功能与第4）个函数相同，第一个参数提示插入位置，该参数只有参考意义。对哈希容器来说，此函数意义不大。
+6）size_t erase(const K & key);  // 从容器中删除指定key的元素，返回已删除元素的个数。
+7）iterator erase(iterator pos);  // 用迭代器删除元素，返回下一个有效的迭代器。
+8）iterator erase(iterator first,iterator last);  // 用迭代器删除一个区间的元素，返回下一个有效的迭代器。
+```
+
+```
+#include <iostream>
+#include <unordered_map>
+using  namespace std;
+
+template<class K, class V>
+using umap = std::unordered_map<K, V>;
+
+class CGirl        // 超女类。
+{
+public:
+	string m_name;   // 超女姓名。
+	int      m_age;       // 超女年龄。
+
+	/*CGirl() : m_age(0) {
+		cout << "默认构造函数。\n";
+	}*/
+	CGirl(const string name, const int age) : m_name(name), m_age(age) {
+		cout << "两个参数的构造函数。\n";
+	}
+	CGirl(const CGirl& g) : m_name(g.m_name), m_age(g.m_age) {
+		cout << "拷贝构造函数。\n";
+	}
+};
+
+int main()
+{
+	//umap<int, CGirl> mm;
+	////mm.insert     (pair<int, CGirl>(8, CGirl("冰冰", 18)));                // 一次构造函数，两次拷贝构造函数。
+	////mm.insert     (make_pair<int, CGirl>(8, CGirl("冰冰", 18)));     // 一次构造函数，两次拷贝构造函数。
+	////mm.emplace(pair<int, CGirl>(8, CGirl("冰冰", 18)));                // 一次构造函数，两次拷贝构造函数。
+	////mm.emplace(make_pair<int, CGirl>(8, CGirl("冰冰", 18)));     // 一次构造函数，两次拷贝构造函数。
+	////mm.emplace(8, CGirl("冰冰", 18));                                             // 一次构造函数，一次拷贝构造函数。
+	////// mm.emplace(8, "冰冰", 18);                                                        // 错误。
+	//mm.emplace(piecewise_construct, forward_as_tuple(8), forward_as_tuple("冰冰", 18));  // 一次构造函数。
+
+	//for (const auto& val : mm)
+	//	cout << val.first << "," << val.second.m_name << "," << val.second.m_name << "  ";
+	//cout << endl;
+
+	//return 0;
+
+	umap<int, string> m;
+
+	// 1）void insert(initializer_list<pair<K,V>> il);  // 用统一初始化列表在容器中插入多个元素。
+	m.insert({ { 8,"冰冰" }, { 3,"西施" } });
+	m.insert({ pair<int,string>(1,"幂幂"), make_pair<int,string>(7,"金莲"), {5,"西瓜"} });
+	m.insert({ { 18,"冰冰" }, { 3,"西施" } });
+
+	// 2）pair<iterator,bool> insert(const pair<K,V> &value);  
+	// 在容器中插入一个元素，返回值pair：first是已插入元素的迭代器，second是插入结果。
+	auto ret = m.insert(pair<int, string>(18, "花花"));
+	if (ret.second == true) cout << "插入成功：" << ret.first->first << "," << ret.first->second << endl;
+	else cout << "插入失败。\n";
+
+	// 3）void insert(iterator first, iterator last);  // 用迭代器插入一个区间的元素。
+
+	// 4）pair<iterator, bool> emplace(...);  
+	// 将创建新键值对所需的数据作为参数直接传入，umap容器将直接构造元素。
+	// 返回值pair：first是已插入元素的迭代器，second是插入结果。
+	auto ret1 = m.emplace(20, "花花");
+	if (ret1.second == true) cout << "插入成功：" << ret1.first->first << "," << ret1.first->second << endl;
+	else cout << "插入失败。\n";
+
+	// 5）iterator emplace_hint(const_iterator pos, ...); 
+	m.emplace_hint(m.begin(), piecewise_construct, forward_as_tuple(23), forward_as_tuple("冰棒"));
+
+	for (auto& val : m)
+		cout << val.first << "," << val.second << "  ";
+	cout << endl;
+}
+```
+
+### queue容器
+
+queue容器的逻辑结构是队列，物理结构可以是数组或链表，主要用于多线程之间的数据共享。
+
+包含头文件： #include<queue>
+
+queue类模板的声明：
+
+```
+template <class T, class _Container = deque<T>>
+class queue{
+	……
+}
+```
+
+第一个模板参数T：元素的数据类型。
+
+第二个模板参数_Container：底层容器的类型，缺省是std::deque，可以用std::list，还可以用自定义的类模板。
+
+queue容器不支持迭代器。
+
+### 构造函数
+
+```
+1）queue();  // 创建一个空的队列。
+2）queue(const queue<T>& q);  // 拷贝构造函数。
+3）queue(queue<T>&& q);  // 移动构造函数（C++11标准）。
+```
+
+析构函数~queue()释放内存空间。
+
+### 常用操作
+
+```
+1）void push(const T& value);  // 元素入队。
+2）void emplace(…);           // 元素入队，…用于构造元素。C++11
+3）size_t size() const;          // 返回队列中元素的个数。
+4）bool empty() const;        // 判断队列是否为空。
+5）T &front();                 // 返回队头元素。
+6）const T &front();           // 返回队头元素，只读。
+7）T &back();                 // 返回队尾元素。
+8）const T &back();           // 返回队头元素，只读。
+9）void pop();                // 出队，删除队头的元素。
+```
+
+```
+#include <iostream>
+#include <queue>
+#include <deque>
+#include <list>
+using  namespace std;
+
+class girl       // 超女类。
+{
+public:
+	int m_bh;             // 编号。
+	string m_name;  // 姓名。
+	girl(const int& bh, const string& name) : m_bh(bh), m_name(name) {}
+};
+
+int main()
+{
+	// template <class T, class _Container = deque<T>>
+	// class queue {
+	//	 ……
+	// }
+	// 第一个模板参数T：元素的数据类型。
+	// 第二个模板参数_Container：底层容器的类型，缺省是std::deque，可以用std::list，还可以用自定义的类模板。
+
+	queue<girl, list<girl>> q;          // 物理结构为链表。
+	//queue<girl, deque<girl>> q;    // 物理结构为数组。
+	//queue<girl> q;                           // 物理结构为数组。
+	//queue<girl, vector<girl>> q;    // 物理结构为vector，不可以。	
+
+	q.push(girl(3, "西施"));   // 效率不高。
+	q.emplace(8, "冰冰");     // 效率更高。
+	q.push(girl(5, "幂幂"));
+	q.push(girl(2, "西瓜"));
+
+	while (q.empty() == false)
+	{
+		cout << "编号：" << q.front().m_bh << "，姓名：" << q.front().m_name << endl;
+		q.pop();
+	}
+}
+```
+
+### 其它操作
+
+```
+1）queue &operator=(const queue<T> &q);    // 赋值。
+2）void swap(queue<T> &q);    // 交换。
+3）bool operator == (const queue<T> & q) const; // 重载==操作符。
+4）bool operator != (const queue<T> & q) const; // 重载!=操作符。
+```
+
+## STL其它容器 
+
+### array（静态数组）
+
+**1）物理结构**
+
+在栈上分配内存，创建数组的时候，数组长度必须是常量，创建后的数组大小不可变。
+
+```
+template<class T, size_t size>
+class array{
+private:
+	T elems_[size]; 
+	……
+};
+```
+
+**2）迭代器**
+
+随机访问迭代器。
+
+**3）特点**
+
+部分场景中，比常规数组更方便（能用于模板），可以代替常规数组。
+
+**4）各种操作**
+
+```
+1）void fill(const T & val);   // 给数组填充值（清零）。
+2）size_t size();        // 返回数组的大小。
+3）bool empty() const;    // 无意义。
+4）T &operator[](size_t n); 
+5）const T &operator[](size_t n) const; // 只读。
+6）T &at(size_t n); 
+7）const T &at(size_t n) const;     // 只读。
+8）T *data();      // 返回数组的首地址。
+9）const T *data() const; // 返回数组的首地址。
+10）T &front();     // 第一个元素。
+11）const T &front();  // 第一个元素，只读。
+12）const T &back();  // 最后一个元素，只读。
+13）T &back();    // 最后一个元素。
+```
+
+```
+#include <iostream>
+#include <array>
+using  namespace std;
+
+////void func(int arr[][6],int len)
+//void func(int (* arr)[6], int len)
+//{
+//	for (int ii = 0; ii < len; ii++)
+//	{
+//		for (int jj = 0; jj < 6; jj++)
+//			cout << arr[ii][jj] << " ";
+//		cout << endl;
+//	}
+//}
+
+//void func(const array < array<int, 5>, 10 >& arr)  
+//{
+//	for (int ii = 0; ii < arr.size(); ii++)
+//	{
+//		for (int jj = 0; jj < arr[ii].size(); jj++)
+//			cout << arr[ii][jj] << " ";
+//		cout << endl;
+//	}
+//}
+
+template <typename T>
+void func(const T& arr)
+{
+	for (int ii = 0; ii < arr.size(); ii++)
+	{
+		for (int jj = 0; jj < arr[ii].size(); jj++)
+			cout << arr[ii][jj] << " ";
+		cout << endl;
+	}
+}
+
+int main()
+{
+	//int aa[11] = {1,2,3,4,5,6,7,8,9,10,11};         // 一维数组。
+	//array<int, 10> aa = { 1,2,3,4,5,6,7,8,9,10 };         // 一维数组。
+	//for (int ii = 0; ii < 10; ii++)            // 传统的方法。
+	//	cout << aa[ii] << " ";
+	//cout << endl;
+	//
+	//for (int ii = 0; ii < aa.size(); ii++)  // 利用array的size()方法。
+	//	cout << aa[ii] << " ";
+	//cout << endl;
+	//
+	//for (auto it= aa.begin(); it < aa.end(); it++)      // 使用迭代器。
+	//	cout << *it << " ";
+	//cout << endl;
+
+	//for (auto val : aa)                           // 基于范围的for循环。
+	//	cout << val << " ";
+	//cout << endl;
+
+	//int bb[10][6];
+	//for (int ii = 0; ii < 10; ii++)  // 对二维数组赋值。
+	//{
+	//	for (int jj = 0; jj < 6; jj++)
+	//		bb[ii][jj] = jj * 10 + ii;
+	//}
+
+	//func(bb,10);  // 把二维数组传给函数。
+
+	array< array<int, 5>, 10 > bb;  // 二维数组，相当于int bb[10][5]。
+	 
+	for (int ii = 0; ii < bb.size(); ii++)  // 对二维数组赋值。
+	{
+		for (int jj = 0; jj < bb[ii].size(); jj++)
+			bb[ii][jj] = jj * 10 + ii;
+	}
+
+	func(bb);  // 把二维数组传给函数。
+}
+```
+
+### deque（双端队列）
+
+![image-20231016164950249](./photo/image-20231016164950249.png)
+
+**1）物理结构**
+
+deque容器存储数据的空间是多段等长的连续空间构成，各段空间之间并不一定是连续的。
+
+为了管理这些连续空间的分段，deque容器用一个数组存放着各分段的首地址。
+
+![image-20231016165013802](./photo/image-20231016165013802.png)
+
+通过建立数组，deque容器的分段的连续空间能实现整体连续的效果。
+
+当deque容器在头部或尾部增加元素时，会申请一段新的连续空间，同时在数组中添加指向该空间的指针。
+
+**2）迭代器**
+
+随机访问迭代器。
+
+**3）特点**
+
+- 提高了在**两端**插入和删除元素的效率，扩展空间的时候，不需要拷贝以前的元素。
+
+- 在中间插入和删除元素的效率比vector更糟糕。
+
+- 随机访问的效率比vector容器略低。
+
+**4) 各种操作**
+
+与vector容器相同。
+
+### forward_list（单链表）
+
+**1）物理结构**
+
+单链表。
+
+**2）迭代器**
+
+正向迭代器。
+
+**3）特点**
+
+比双链表少了一个指针，可节省一丢丢内存，减少了两次对指针的赋值操作。
+
+如果单链表能满足业务需求，建议使用单链表而不是双链表。
+
+**4）各种操作**
+
+与list容器相同。
+
+### multimap
+
+- 底层是红黑树。
+
+- multimap和map的区别在：multimap允许关键字重复，而map不允许重复。
+
+- 各种操作与map容器相同。
+
+### set&multiset
+
+- 底层是红黑树。
+
+- set和map的区别在：map中存储的是键值对，而set只保存关键字。
+
+- multiset和set的区别在：multiset允许关键字重复，而set不允许重复。
+
+- 各种操作与map容器相同。
+
+### unordered_multimap
+
+- 底层是哈希表。
+
+- unordered_multimap和unordered_map的区别在：unordered_multimap允许关键字重复，而unordered_map不允许重复。
+
+- 各种操作与unordered_map容器相同。
+
+### unordered_set&unordered_multiset
+
+- 底层是哈希表。
+
+- unordered_set和unordered_map的区别在：unordered_map中存储的是键值对，而unordered_set只保存关键字。
+
+- unordered_multiset和unordered_set的区别在：unordered_multiset允许关键字重复，而unordered_set不允许重复。
+
+- 各种操作与unordered_map容器相同。
+
+### priority_queue（优先队列）
+
+- 优先级队列相当于一个有权值的单向队列queue，在这个队列中，所有元素是按照优先级排列的。
+
+- 底层容器可以用deque和list。
+
+- 各种操作与queue容器相同。
+
+### stack（栈）
+
+- 底层容器可以用deque和list。
+
+## STL算法
+
+STL提供了很多处理容器的函数模板，它们的设计是相同的，有以下特点：
+
+1）用迭代器表示需要处理数据的区间。
+
+2）返回迭代器放置处理数据的结果（如果有结果）。
+
+3）接受一个函数对象参数（结构体模板），用于处理数据（如果需要）。
+
+### 函数对象
+
+很多STL算法都使用函数对象，也叫函数符（functor），包括函数名、函数指针和仿函数。
+
+函数符的概念：
+
+1）生成器（generator）：不用参数就可以调用的函数符。
+
+2）一元函数（unary function）：用一个参数可以调用的函数符。
+
+3）二元函数（binary function）：用两个参数可以调用的函数符。
+
+改进的概念：
+
+1）一元谓词（predicate）：返回bool值的一元函数。
+
+2）二元谓词（binary predicate）：返回bool值的二元函数。
+
+### 预定义的函数对象
+
+STL定义了多个基本的函数符，用于支持STL的算法函数。
+
+包含头文件：#include <functional>
+
+![image-20231016165748448](./photo/image-20231016165748448.png)
+
+### 算法函数
+
+STL将算法函数分成四组：
+
+1）非修改式序列操作：对区间中的每个元素进行操作，这些操作不修改容器的内容。
+
+2）修改式序列操作：对区间中的每个元素进行操作，这些操作可以容器的内容（可以修改值，也可以修改排列顺序）。
+
+3）排序和相关操作：包括多个排序函数和其它各种函数，如集合操作。
+
+4）通用数字运算：包括将区间的内容累积、计算两个容器的内部乘积、计算小计、计算相邻对象差的函数。通常，这些都是数组的操作特性，因此vector是最有可能使用这些操作的容器。
+
+前三组在头文件#include <algorithm>中，第四组专用于数值数据，在#include <numeric>中。
+
+详见《C++ Primer plus》，第六版，从886页开始。
+
+![image-20231016165839102](./photo/image-20231016165839102.png)
+
+![image-20231016165849450](./photo/image-20231016165849450.png)
+
+![image-20231016165855201](./photo/image-20231016165855201.png)
+
+![image-20231016165900549](./photo/image-20231016165900549.png)
+
+![image-20231016165905325](./photo/image-20231016165905325.png)
+
+### 学习要领
+
+**1）如果容器有成员函数，则使用成员函数，如果没有才考虑用STL的算法函数。**
+
+2）把全部的STL算法函数过一遍，知道大概有些什么东西。
+
+**3）如果打算采用某算法函数，一定要搞清楚它的原理，关注它的效率。**
+
+4）不要太看重这些算法函数，自己写一个也就那么回事。
+
+5）不是因为简单，而是因为不常用。
+
+### 常用函数
+
+**1）for_each()遍历**
+
+![image-20231016170024032](./photo/image-20231016170024032.png)
+
+**2）find()遍历**
+
+![image-20231016170037937](./photo/image-20231016170037937.png)
+
+**3）find_if()遍历**
+
+![image-20231016170050322](./photo/image-20231016170050322.png)
+
+**4）find_not_if()遍历**
+
+![image-20231016170101306](./photo/image-20231016170101306.png)
+
+**5）sort()排序**
+
+![image-20231016170115178](./photo/image-20231016170115178.png)
+
+STL的sort算法，数据量大时采用QuickSort(快速排序)，分段归并排序。一旦分段后的数据量小于某个门槛（16），为避免QuickSort的递归调用带来过大的额外负荷，就改用InsertSort（插入排序）。如果递归层次过深，还会改用HeapSort（堆排序）。
+
+适用于数组容器vector、string、deque（list容器有sort成员函数，红黑树和哈希表没有排序的说法）。
+
+**6）二分查找**
+
+![image-20231016170150775](./photo/image-20231016170150775.png)
+
+![image-20231016170201410](./photo/image-20231016170201410.png)
+
+![image-20231016170209917](./photo/image-20231016170209917.png)
+
+![image-20231016170217107](./photo/image-20231016170217107.png)
+
+![image-20231016170221905](./photo/image-20231016170221905.png)
+
+```
+示例（foreach）：
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>
+using  namespace std;
+
+template<typename T>
+void zsshow(const T& no)    // 张三的个性化表白函数。
+{
+	cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+}
+
+template<typename T>
+class czs   // 张三的个性化表白仿函数。
+{
+public:
+	void operator()(const T& no) {  
+		cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+	}
+};
+
+template<typename T1, typename T2>
+void foreach(const T1 first, const T1 last, T2 pfun)
+{
+	for (auto it = first; it != last; it++)
+		pfun(*it);        // 以超女编号为实参调用类的operator()函数。
+}
+
+int main()
+{
+	vector<int> bh = { 5,8,2,6,9,3,1,7 };   // 存放超女编号的容器。
+	//list<string> bh = { "05","08","02","06","09","03","01","07" };   // 存放超女编号的容器。
+
+	// 写一个函数，在函数中遍历容器，向超女表白，表白的方法可自定义。
+	foreach(bh.begin(), bh.end(), zsshow<int>);  // 第三个参数是模板函数。
+	
+	foreach(bh.begin(), bh.end(), czs<int>());       // 第三个参数是仿函数。
+}
+```
+
+```
+示例（findif）：
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>
+using  namespace std;
+
+template<typename T>
+bool zsshow(const T& no,const T & in_no)    // 张三的个性化表白函数。
+{
+	if (no != in_no) return false;
+	cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+	return true;
+}
+
+template<typename T>
+class czs   // 张三的个性化表白仿函数。
+{
+public:
+	bool operator()(const T& no, const T& in_no) {
+		if (no != in_no) return false;
+		cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+		return true;
+	}
+};
+
+template<typename T1, typename T2, typename T3>
+T1 findif(const T1 first, const T1 last, T2 pfun,T3 in_no)
+{
+	for (auto it = first; it != last; it++)
+		if (pfun(*it, in_no) ==true)  return it;        // 用迭代器调用函数对象。
+
+	return last;
+}
+
+int main()
+{
+	vector<int> bh = { 5,8,2,6,9,33,1,7 };   // 存放超女编号的容器。
+	//list<string> bh = { "05","08","02","06","09","03","01","07" };   // 存放超女编号的容器。
+
+	auto it1=findif(bh.begin(), bh.end(), zsshow<int>,2);  // 第三个参数是模板函数。
+	if (it1 == bh.end()) cout << "查找失败。\n";
+	else cout << "查找成功：" << *it1 << endl;
+
+	auto it2=findif(bh.begin(), bh.end(), czs<int>(),33);       // 第三个参数是仿函数。
+	if (it2 == bh.end()) cout << "查找失败。\n";
+	else cout << "查找成功：" << *it2 << endl;
+}
+```
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>  // STL算法函数头文件。
+using  namespace std;
+
+template<typename T>
+bool zsshow(const T& no)    // 张三的个性化表白函数。
+{
+	if (no != 3) return false;
+	cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+	return true;
+}
+
+template<typename T>
+class czs   // 张三的个性化表白仿函数。
+{
+public:
+	T m_no;     // 存放张三喜欢的超女编号。
+	czs(const T& no) : m_no(no) {}  // 构造函数的参数是张三喜欢的超女编号。
+	bool operator()(const T& no) {
+		if (no != m_no) return false;
+		cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+		return true;
+	}
+};
+
+template<typename T1, typename T2>
+T1 findif(const T1 first, const T1 last, T2 pfun)
+{
+	for (auto it = first; it != last; it++)
+		if (pfun(*it) ==true)  return it;        // 用迭代器调用函数对象。
+
+	return last;
+}
+
+int main()
+{
+	vector<int> bh = { 5,8,2,6,9,33,1,7 };   // 存放超女编号的容器。
+	//list<string> bh = { "05","08","02","06","09","03","01","07" };   // 存放超女编号的容器。
+
+	auto it1=find_if(bh.begin(), bh.end(), zsshow<int>);  // 第三个参数是模板函数。
+	if (it1 == bh.end()) cout << "查找失败。\n";
+	else cout << "查找成功：" << *it1 << endl;
+
+	auto it2=find_if(bh.begin(), bh.end(), czs<int>(8));       // 第三个参数是仿函数。
+	if (it2 == bh.end()) cout << "查找失败。\n";
+	else cout << "查找成功：" << *it2 << endl;
+}
+```
+
+
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>   // STL算法函数。
+#include <functional>   // STL仿函数。
+using  namespace std;
+
+template<typename T>
+bool compasc(const T& left, const T& right)   {     // 普通函数，用于升序。
+	return left < right;
+}
+
+template<typename T>
+struct _less
+{
+	bool operator()(const T& left, const T& right) { // 仿函数，用于升序。
+		return left < right;
+	}
+};
+
+template<typename T>
+bool compdesc(const T& left, const T& right) {     // 普通函数，用于降序。
+	return left > right;
+}
+
+template<typename T>
+class _greater
+{
+public:
+	bool operator()(const T& left, const T& right) { // 仿函数，用于降序。
+		return left > right;
+	}
+};
+
+template<typename T, typename compare>
+void bsort(const T first, const T last, compare comp)  // 冒泡排序。
+{
+	while(true)
+	{
+		bool bswap = false;        // 本轮遍历已交换过元素的标识，true-交换过，false-未交换过。
+		for (auto it = first; ; )
+		{
+			auto left = it;                  // 左边的元素。
+			it++;
+			auto right = it;               // 右边的元素。
+			if (right == last) break;  // 表示it1已经是最后一个元素了。
+
+			//if (*left > *right)             // 如果左边的元素比右边大，交换它们的值。
+			//if (*left < *right)             // 如果左边的元素比右边小，交换它们的值。
+			// 排序规则：如果comp()返回true，left排在前面（升序），否则right排在前面（降序）。
+			if (comp(*left, *right) == true)  continue;
+
+			// 交换两个元素的值。
+			auto tmp = *right;
+			*right = *left;
+			*left = tmp;
+			bswap = true;        // 一轮遍历已交换过元素的标识。
+		}
+
+		if (bswap == false) break;  // 如果在for循环中不曾交换过元素，说明全部的元素已有序。
+	}
+}
+
+int main()
+{
+	vector<int> bh = { 5,8,2,6,9,33,1,7 };   // 存放超女编号的容器。
+	//list<string> bh = { "05","08","02","06","09","03","01","07" };   // 存放超女编号的容器。
+
+	//bsort(bh.begin(), bh.end(),compasc<int>);        // 普通函数（升序）。
+	//bsort(bh.begin(), bh.end(), compdesc<int>);     // 普通函数（降序）。
+
+	//bsort(bh.begin(), bh.end(),_less<int>());             // 仿函数（升序）。
+	//bsort(bh.begin(), bh.end(), _greater<int>());      // 仿函数（降序）。
+
+	//bsort(bh.begin(), bh.end(), less<int>());             // STL提供的仿函数（升序）。
+	//bsort(bh.begin(), bh.end(), greater<int>());       // STL提供的仿函数（降序）。
+
+	//sort(bh.begin(), bh.end(),_less<int>());             // 仿函数（升序）。
+	sort(bh.begin(), bh.end(), _greater<int>());      // 仿函数（降序）。
+
+	for (auto val : bh)
+		cout << val << " ";
+	cout << endl;
+}
+```
+
+
+
+```
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>
+using  namespace std;
+
+template<typename T>
+struct girl   {
+	T   m_yz;         // 统计的颜值。
+	int m_count;   // 符合条件的元素个数。
+
+	girl(const T yz) : m_yz(yz), m_count(0) {}
+
+	void operator()(const T& yz) {
+		if (yz==m_yz) 	m_count++;
+	}
+};
+
+int main()
+{
+	vector<int> vv = { 1,3,2,4,1,2,3,1,4,3 };   // 1-极漂亮；2-漂亮；3-普通；4-歪瓜裂枣
+
+	girl<int> g=for_each(vv.begin(), vv.end(), girl<int>(1));       // 按颜值统计超女人数。
+
+	cout << "g.m_count=" << g.m_count << endl;
+}
+```
+
+## 智能指针unique_ptr
+
+unique_ptr独享它指向的对象，也就是说，同时只有一个unique_ptr指向同一个对象，当这个unique_ptr被销毁时，指向的对象也随即被销毁。
+
+包含头文件：#include <memory>
+
+```
+template <typename T, typename D = default_delete<T>>
+class unique_ptr
+{
+public:
+	explicit unique_ptr(pointer p) noexcept;	// 不可用于转换函数。
+	~unique_ptr() noexcept;    
+	T& operator*() const;            // 重载*操作符。
+	T* operator->() const noexcept;  // 重载->操作符。
+	unique_ptr(const unique_ptr &) = delete;   // 禁用拷贝构造函数。
+	unique_ptr& operator=(const unique_ptr &) = delete;  // 禁用赋值函数。
+	unique_ptr(unique_ptr &&) noexcept;	  // 右值引用。
+	unique_ptr& operator=(unique_ptr &&) noexcept;  // 右值引用。
+	// ...
+private:
+	pointer ptr;  // 内置的指针。
+};
+
+```
+
+第一个模板参数T：指针指向的数据类型。
+
+第二个模板参数D：指定删除器，缺省用delete释放资源。
+
+```
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << m_name << "调用了析构函数~AA(" << m_name << ")。\n"; }
+};
+```
+
+### 基本用法
+
+**1）初始化**
+
+**方法一：**
+
+```
+unique_ptr<AA> p0(new AA("西施"));   // 分配内存并初始化。
+```
+
+**方法二：**
+
+```
+unique_ptr<AA> p0 = make_unique<AA>("西施");  // C++14标准。
+unique_ptr<int> pp1=make_unique<int>();     // 数据类型为int。
+unique_ptr<AA> pp2 = make_unique<AA>();    // 数据类型为AA，默认构造函数。
+unique_ptr<AA> pp3 = make_unique<AA>("西施"); // 数据类型为AA，一个参数的构造函数。
+unique_ptr<AA> pp4 = make_unique<AA>("西施",8); // 数据类型为AA，两个参数的构造函数。
+```
+
+方法三（不推荐）：
+
+```
+AA* p = new AA("西施");
+unique_ptr<AA> p0(p);         // 用已存在的地址初始化。
+```
+
+**2）使用方法**
+
+- 智能指针重载了*和->操作符，可以像使用指针一样使用unique_ptr。
+
+- 不支持普通的拷贝和赋值。
+
+ ```
+ 	AA* p = new AA("西施");
+ 	unique_ptr<AA> pu2 = p;              // 错误，不能把普通指针直接赋给智能指针。
+ 	unique_ptr<AA> pu3 = new AA("西施"); // 错误，不能把普通指针直接赋给智能指针。
+ 	unique_ptr<AA> pu2 = pu1;           // 错误，不能用其它unique_ptr拷贝构造。
+ 	unique_ptr<AA> pu3;
+ 	pu3 = pu1;                            // 错误，不能用=对unique_ptr进行赋值。
+ ```
+
+- 不要用同一个裸指针初始化多个unique_ptr对象。
+
+- get()方法返回裸指针。
+
+- 不要用unique_ptr管理不是new分配的内存。
+
+**3）用于函数的参数**
+
+- 传引用（不能传值，因为unique_ptr没有拷贝构造函数）。
+
+- 裸指针。
+
+**4）不支持指针的运算（+、-、++、--）**
+
+### 更多技巧
+
+1）将一个unique_ptr赋给另一个时，如果源unique_ptr是一个临时右值，编译器允许这样做；如果源unique_ptr将存在一段时间，编译器禁止这样做。一般用于函数的返回值。
+
+```
+unique_ptr<AA> p0;
+p0 = unique_ptr<AA>(new AA ("西瓜"));
+```
+
+2）用nullptr给unique_ptr赋值将释放对象，空的unique_ptr==nullptr。
+
+3）release()释放对原始指针的控制权，将unique_ptr置为空，返回裸指针。（可用于把unique_ptr传递给子函数，子函数将负责释放对象）
+
+4）std::move()可以转移对原始指针的控制权。（可用于把unique_ptr传递给子函数，子函数形参也是unique_ptr）
+
+5）reset()释放对象。
+
+```
+void reset(T * _ptr= (T *) nullptr);
+pp.reset();        // 释放pp对象指向的资源对象。
+pp.reset(nullptr);  // 释放pp对象指向的资源对象
+pp.reset(new AA("bbb"));  // 释放pp指向的资源对象，同时指向新的对象。
+```
+
+6）swap()交换两个unique_ptr的控制权。
+
+```
+void swap(unique_ptr<T> &_Right);
+```
+
+7）unique_ptr也可象普通指针那样，当指向一个类继承体系的基类对象时，也具有多态性质，如同使用裸指针管理基类对象和派生类对象那样。
+
+8）unique_ptr不是绝对安全，如果程序中调用exit()退出，全局的unique_ptr可以自动释放，但局部的unique_ptr无法释放。
+
+9）unique_ptr提供了支持数组的具体化版本。
+
+数组版本的unique_ptr，重载了操作符[]，操作符[]返回的是引用，可以作为左值使用。
+
+```
+// unique_ptr<int[]> parr1(new int[3]);          // 不指定初始值。
+unique_ptr<int[]> parr1(new int[3]{ 33,22,11 });  // 指定初始值。
+cout << "parr1[0]=" << parr1[0] << endl;
+cout << "parr1[1]=" << parr1[1] << endl;
+cout << "parr1[2]=" << parr1[2] << endl;
+
+unique_ptr<AA[]> parr2(new AA[3]{string("西施"), string("冰冰"), string("幂幂")});
+cout << "parr2[0].m_name=" << parr2[0].m_name << endl;
+cout << "parr2[1].m_name=" << parr2[1].m_name << endl;
+cout << "parr2[2].m_name=" << parr2[2].m_name << endl;
+```
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+};
+
+// 函数func1()需要一个指针，但不对这个指针负责。
+void func1(const AA* a) {
+	cout << a->m_name << endl;
+}
+
+// 函数func2()需要一个指针，并且会对这个指针负责。
+void func2(AA* a) {
+	cout << a->m_name << endl;
+	delete a;
+}
+
+// 函数func3()需要一个unique_ptr，不会对这个unique_ptr负责。
+void func3(const unique_ptr<AA> &a) {
+	cout << a->m_name << endl;
+}
+
+// 函数func4()需要一个unique_ptr，并且会对这个unique_ptr负责。
+void func4(unique_ptr<AA> a) {
+	cout << a->m_name << endl;
+}
+
+int main()
+{
+	unique_ptr<AA> pu(new AA("西施"));
+
+	cout << "开始调用函数。\n";
+	//func1(pu.get());        // 函数func1()需要一个指针，但不对这个指针负责。
+	//func2(pu.release());  // 函数func2()需要一个指针，并且会对这个指针负责。
+	//func3(pu);                // 函数func3()需要一个unique_ptr，不会对这个unique_ptr负责。
+	func4(move(pu));     // 函数func4()需要一个unique_ptr，并且会对这个unique_ptr负责。
+	cout << "调用函数完成。\n";
+
+	if (pu == nullptr) cout << "pu是空指针。\n";
+}
+```
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+};
+
+int main()
+{
+	//AA* parr1 = new AA[2];   // 普通指针数组。
+	////AA* parr1 = new AA[2]{ string("西施"), string("冰冰") };
+	//parr1[0].m_name = "西施1";
+	//cout << "parr1[0].m_name=" << parr1[0].m_name << endl;
+	//parr1[1].m_name = "西施2";
+	//cout << "parr1[1].m_name=" << parr1[1].m_name << endl;
+	//delete [] parr1;
+	
+	unique_ptr<AA[]> parr2(new AA[2]);   // unique_ptr数组。
+	//unique_ptr<AA[]> parr2(new AA[2]{ string("西施"), string("冰冰") });
+	parr2[0].m_name = "西施1";
+	cout << "parr2[0].m_name=" << parr2[0].m_name << endl;
+	parr2[1].m_name = "西施2";
+	cout << "parr2[1].m_name=" << parr2[1].m_name << endl;
+}
+```
+
+## 智能指针shared_ptr
+
+shared_ptr共享它指向的对象，多个shared_ptr可以指向（关联）相同的对象，在内部采用计数机制来实现。
+
+当新的shared_ptr与对象关联时，引用计数增加1。
+
+当shared_ptr超出作用域时，引用计数减1。当引用计数变为0时，则表示没有任何shared_ptr与对象关联，则释放该对象。
+
+### 基本用法
+
+shared_ptr的构造函数也是explicit，但是，没有删除拷贝构造函数和赋值函数。
+
+**1）初始化**
+
+**方法一：**
+
+```
+shared_ptr<AA> p0(new AA("西施"));   // 分配内存并初始化。
+```
+
+**方法二：**
+
+```
+shared_ptr<AA> p0 = make_shared<AA>("西施");  // C++11标准，效率更高。
+shared_ptr<int> pp1=make_shared<int>();         // 数据类型为int。
+shared_ptr<AA> pp2 = make_shared<AA>();       // 数据类型为AA，默认构造函数。
+shared_ptr<AA> pp3 = make_shared<AA>("西施");  // 数据类型为AA，一个参数的构造函数。
+shared_ptr<AA> pp4 = make_shared<AA>("西施",8); // 数据类型为AA，两个参数的构造函数。
+```
+
+方法三：
+
+```
+AA* p = new AA("西施");
+shared_ptr<AA> p0(p);                  // 用已存在的地址初始化。
+```
+
+**方法四：**
+
+```
+shared_ptr<AA> p0(new AA("西施")); 
+shared_ptr<AA> p1(p0);                 // 用已存在的shared_ptr初始化，计数加1。
+shared_ptr<AA> p1=p0;                 // 用已存在的shared_ptr初始化，计数加1。
+```
+
+**2）使用方法**
+
+- 智能指针重载了*和->操作符，可以像使用指针一样使用shared_ptr。
+
+- use_count()方法返回引用计数器的值。
+-  unique()方法，如果use_count()为1，返回true，否则返回false。
+
+- shared_ptr支持赋值，左值的shared_ptr的计数器将减1，右值shared_ptr的计算器将加1。
+
+- get()方法返回裸指针。
+
+- 不要用同一个裸指针初始化多个shared_ptr。
+
+- 不要用shared_ptr管理不是new分配的内存。
+
+**3) 用于函数的参数**
+
+与unique_ptr的原理相同。
+
+**4）不支持指针的运算（+、-、++、--）**
+
+### 更多细节
+
+1）用nullptr给shared_ptr赋值将把计数减1，如果计数为0，将释放对象，空的shared_ptr==nullptr
+
+2）std::move()可以转移对原始指针的控制权。还可以将unique_ptr转移成shared_ptr。
+
+3）reset()改变与资源的关联关系。
+
+```
+pp.reset();        // 解除与资源的关系，资源的引用计数减1。
+pp. reset(new AA("bbb"));  // 解除与资源的关系，资源的引用计数减1。关联新资源。
+```
+
+4）swap()交换两个shared_ptr的控制权。
+
+```
+void swap(shared_ptr<T> &_Right);
+```
+
+5）shared_ptr也可象普通指针那样，当指向一个类继承体系的基类对象时，也具有多态性质，如同使用裸指针管理基类对象和派生类对象那样。
+
+6）shared_ptr不是绝对安全，如果程序中调用exit()退出，全局的shared_ptr可以自动释放，但局部的shared_ptr无法释放。
+
+7）shared_ptr提供了支持数组的具体化版本。
+
+数组版本的shared_ptr，重载了操作符[]，操作符[]返回的是引用，可以作为左值使用。
+
+8）shared_ptr的线程安全性：
+
+- shared_ptr的引用计数本身是线程安全（引用计数是原子操作）。
+
+- 多个线程同时读同一个shared_ptr对象是线程安全的。
+
+- 如果是多个线程对同一个shared_ptr对象进行读和写，则需要加锁。
+
+- 多线程读写shared_ptr所指向的同一个对象，不管是相同的shared_ptr对象，还是不同的shared_ptr对象，也需要加锁保护。
+
+9）如果unique_ptr能解决问题，就不要用shared_ptr。unique_ptr的效率更高，占用的资源更少。
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+};
+
+int main()
+{
+	shared_ptr<AA> pa0(new AA("西施a"));     // 初始化资源西施a。
+	shared_ptr<AA> pa1 = pa0;                       // 用已存在的shared_ptr拷贝构造，计数加1。
+	shared_ptr<AA> pa2 = pa0;                       // 用已存在的shared_ptr拷贝构造，计数加1。
+	cout << "pa0.use_count()=" << pa0.use_count() << endl;   // 值为3。
+
+	shared_ptr<AA> pb0(new AA("西施b"));    // 初始化资源西施b。
+	shared_ptr<AA> pb1 = pb0;                      // 用已存在的shared_ptr拷贝构造，计数加1。
+	cout << "pb0.use_count()=" << pb0.use_count() << endl;   // 值为2。
+
+	pb1 = pa1;      // 资源西施a的引用加1，资源西施b的引用减1。
+	pb0 = pa1;      // 资源西施a的引用加1，资源西施b的引用成了0，将被释放。
+
+	cout << "pa0.use_count()=" << pa0.use_count() << endl;   // 值为5。
+	cout << "pb0.use_count()=" << pb0.use_count() << endl;   // 值为5。
+}
+```
+
+## 智能指针的删除器
+
+在默认情况下，[智能指针](https://so.csdn.net/so/search?q=智能指针&spm=1001.2101.3001.7020)过期的时候，用delete原始指针; 释放它管理的资源。
+
+程序员可以自定义删除器，改变智能指针释放资源的行为。
+
+删除器可以是全局函数、仿函数和Lambda表达式，形参为原始指针。
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+};
+
+void deletefunc(AA* a) {    // 删除器，普通函数。
+	cout << "自定义删除器（全局函数）。\n";
+	delete a;
+}
+
+struct deleteclass               // 删除器，仿函数。
+{
+	void operator()(AA* a) {
+		cout << "自定义删除器（仿函数）。\n";
+		delete a;
+	}
+};
+
+auto deleterlamb = [](AA* a) {   // 删除器，Lambda表达式。
+	cout << "自定义删除器（Lambda）。\n";
+	delete a;
+};
+
+int main()
+{
+	shared_ptr<AA> pa1(new AA("西施a"), deletefunc);
+	//shared_ptr<AA> pa2(new AA("西施b"), deleteclass());
+	//shared_ptr<AA> pa3(new AA("西施c"), deleterlamb);
+	
+	//unique_ptr<AA,decltype(deletefunc)*> pu1(new AA("西施1"), deletefunc);
+    // unique_ptr<AA, void (*)(AA*)> pu0(new AA("西施1"), deletefunc);
+	//unique_ptr<AA, deleteclass> pu2(new AA("西施2"), deleteclass());
+	//unique_ptr<AA, decltype(deleterlamb)> pu3(new AA("西施3"), deleterlamb);
+}
+```
+
+## 智能指针weak_ptr
+
+shared_ptr内部维护了一个共享的引用计数器，多个shared_ptr可以指向同一个资源。
+
+如果出现了循环引用的情况，引用计数永远无法归0，资源不会被释放。
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class BB;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+	shared_ptr<BB> m_p;
+};
+
+class BB
+{
+public:
+	string m_name;
+	BB() { cout << m_name << "调用构造函数BB()。\n"; }
+	BB(const string& name) : m_name(name) { cout << "调用构造函数BB(" << m_name << ")。\n"; }
+	~BB() { cout << "调用了析构函数~BB(" << m_name << ")。\n"; }
+	shared_ptr<AA> m_p;
+};
+
+int main()
+{
+	shared_ptr<AA> pa = make_shared<AA>("西施a");
+	shared_ptr<BB> pb = make_shared<BB>("西施b");
+	
+	pa-> m_p = pb;
+	pb->m_p = pa;
+}
+```
+
+### weak_ptr是什么
+
+weak_ptr 是为了配合shared_ptr而引入的，它指向一个由shared_ptr管理的资源但不影响资源的生命周期。也就是说，将一个weak_ptr绑定到一个shared_ptr不会改变shared_ptr的引用计数。
+
+不论是否有weak_ptr指向，如果最后一个指向资源的shared_ptr被销毁，资源就会被释放。
+
+weak_ptr更像是shared_ptr的助手而不是智能指针。
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class BB;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string & name) : m_name(name) { cout << "调用构造函数AA("<< m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+	weak_ptr<BB> m_p;
+};
+
+class BB
+{
+public:
+	string m_name;
+	BB() { cout << m_name << "调用构造函数BB()。\n"; }
+	BB(const string& name) : m_name(name) { cout << "调用构造函数BB(" << m_name << ")。\n"; }
+	~BB() { cout << "调用了析构函数~BB(" << m_name << ")。\n"; }
+	weak_ptr<AA> m_p;
+};
+
+int main()
+{
+	shared_ptr<AA> pa = make_shared<AA>("西施a");
+	shared_ptr<BB> pb = make_shared<BB>("西施b");
+	
+	cout << "pa.use_count()=" << pa.use_count() << endl;
+	cout << "pb.use_count()=" << pb.use_count() << endl;
+
+	pa->m_p = pb;
+	pb->m_p = pa;
+
+	cout << "pa.use_count()=" << pa.use_count() << endl;
+	cout << "pb.use_count()=" << pb.use_count() << endl;
+}
+```
+
+weak_ptr没有重载 ->和 *操作符，不能直接访问资源。
+
+有以下成员函数：
+
+```
+1）operator=();  // 把shared_ptr或weak_ptr赋值给weak_ptr。
+2）expired();     // 判断它指资源是否已过期（已经被销毁）。
+3）lock();        // 返回shared_ptr，如果资源已过期，返回空的shared_ptr。
+4）reset();       // 将当前weak_ptr指针置为空。
+5）swap();       // 交换。
+```
+
+**weak_ptr****不控制对象的生命周期，但是，它知道对象是否还活着。**
+
+**用lock()函数把它可以提升为shared_ptr，如果对象还活着，返回有效的shared_ptr，如果对象已经死了，提升会失败，返回一个空的shared_ptr。**
+
+**提升的行为（lock()）是线程安全的。**
+
+```
+#include <iostream>
+#include <memory>
+using  namespace std;
+
+class BB;
+
+class AA
+{
+public:
+	string m_name;
+	AA() { cout << m_name << "调用构造函数AA()。\n"; }
+	AA(const string& name) : m_name(name) { cout << "调用构造函数AA(" << m_name << ")。\n"; }
+	~AA() { cout << "调用了析构函数~AA(" << m_name << ")。\n"; }
+	weak_ptr<BB> m_p;
+};
+
+class BB
+{
+public:
+	string m_name;
+	BB() { cout << m_name << "调用构造函数BB()。\n"; }
+	BB(const string& name) : m_name(name) { cout << "调用构造函数BB(" << m_name << ")。\n"; }
+	~BB() { cout << "调用了析构函数~BB(" << m_name << ")。\n"; }
+	weak_ptr<AA> m_p;
+};
+
+int main()
+{
+	shared_ptr<AA> pa = make_shared<AA>("西施a");
+
+	{
+		shared_ptr<BB> pb = make_shared<BB>("西施b");
+
+		pa->m_p = pb;
+		pb->m_p = pa;
+
+		shared_ptr<BB> pp = pa->m_p.lock();            // 把weak_ptr提升为shared_ptr。
+		if (pp == nullptr)
+			cout << "语句块内部：pa->m_p已过期。\n";
+		else
+			cout << "语句块内部：pp->m_name=" << pp->m_name << endl;
+	}
+
+	shared_ptr<BB> pp = pa->m_p.lock();            // 把weak_ptr提升为shared_ptr。
+	if (pp == nullptr)
+		cout << "语句块外部：pa->m_p已过期。\n";
+	else
+		cout << "语句块外部：pp->m_name=" << pp->m_name << endl;
+}
+```
+
+## 文件操作
+
+### 写入文本文件
+
+文本文件一般以行的形式组织数据。
+
+**包含头文件：**#include <fstream>
+
+**类：**ofstream（output file stream）
+
+**ofstream**打开文件的模式（方式）：
+
+对于ofstream，不管用哪种模式打开文件，如果文件不存在，都会创建文件。
+
+```
+ios::out     		缺省值：会截断文件内容。
+ios::trunc  		截断文件内容。（truncate）
+ios::app   		不截断文件内容，只在文件未尾追加文件。（append）
+```
+
+```
+#include <iostream>
+#include <fstream>  // ofstream类需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	// 文件名一般用全路径，书写的方法如下：
+	//  1）"D:\data\txt\test.txt"       // 错误。
+	//  2）R"(D:\data\txt\test.txt)"   // 原始字面量，C++11标准。
+	//  3）"D:\\data\\txt\\test.txt"   // 转义字符。
+	//  4）"D:/tata/txt/test.txt"        // 把斜线反着写。
+	//  5）"/data/txt/test.txt"          //  Linux系统采用的方法。
+	string filename = R"(D:\data\txt\test.txt)";
+	//char    filename[] = R"(D:\data\txt\test.txt)";
+
+	// 创建文件输出流对象，打开文件，如果文件不存在，则创建它。
+	// ios::out     		缺省值：会截断文件内容。
+	// ios::trunc  		截断文件内容。（truncate）
+	// ios::app   			不截断文件内容，只在文件未尾追加文件。（append）
+	//ofstream fout(filename);
+	//ofstream fout(filename, ios::out);
+	//ofstream fout(filename, ios::trunc);
+	//ofstream fout(filename, ios::app);
+	
+	ofstream fout;
+	fout.open(filename,ios::app);
+
+	// 判断打开文件是否成功。
+	// 失败的原因主要有：1）目录不存在；2）磁盘空间已满；3）没有权限，Linux平台下很常见。
+	if (fout.is_open() == false)
+	{
+		cout << "打开文件" << filename << "失败。\n";  return 0;
+	}
+
+	// 向文件中写入数据。
+	fout << "西施|19|极漂亮\n";
+	fout << "冰冰|22|漂亮\n";
+	fout << "幂幂|25|一般\n";
+
+	fout.close();	   // 关闭文件，fout对象失效前会自动调用close()。
+
+	cout << "操作文件完成。\n";
+}
+```
+
+### 读取文本文件
+
+包含头文件：#include <fstream>
+
+类：ifstream
+
+**ifstream**打开文件的模式（方式）：
+
+对于ifstream，如果文件不存在，则打开文件失败。
+
+```
+ios::in     		缺省值。
+```
+
+```
+#include <iostream>
+#include <fstream>  // ifstream类需要包含的头文件。
+#include <string>     // getline()函数需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	// 文件名一般用全路径，书写的方法如下：
+	//  1）"D:\data\txt\test.txt"       // 错误。
+	//  2）R"(D:\data\txt\test.txt)"   // 原始字面量，C++11标准。
+	//  3）"D:\\data\\txt\\test.txt"   // 转义字符。
+	//  4）"D:/tata/txt/test.txt"        // 把斜线反着写。
+	//  5）"/data/txt/test.txt"          //  Linux系统采用的方法。
+	string filename = R"(D:\data\txt\test.txt)";
+	//char    filename[] = R"(D:\data\txt\test.txt)";
+
+	// 创建文件输入流对象，打开文件，如果文件不存在，则打开文件失败。。
+	// ios::in     			缺省值。
+	//ifstream fin(filename);
+	//ifstream fin(filename, ios::in);
+	
+	ifstream fin;
+	fin.open(filename,ios::in);
+
+	// 判断打开文件是否成功。
+	// 失败的原因主要有：1）目录不存在；2）文件不存在；3）没有权限，Linux平台下很常见。
+	if (fin.is_open() == false)
+	{
+		cout << "打开文件" << filename << "失败。\n";  return 0;
+	}
+
+	//// 第一种方法。
+	//string buffer;  // 用于存放从文件中读取的内容。
+	//// 文本文件一般以行的方式组织数据。
+	//while (getline(fin, buffer))
+	//{
+	//	cout << buffer << endl;
+	//}
+
+	//// 第二种方法。
+	//char buffer[16];   // 存放从文件中读取的内容。
+	//// 注意：如果采用ifstream.getline()，一定要保证缓冲区足够大。
+	//while (fin.getline(buffer, 15))
+	//{
+	//	cout << buffer << endl;
+	//}
+
+	// 第三种方法。
+	string buffer;
+	while (fin >> buffer)
+	{
+		cout << buffer << endl;
+	}
+
+	fin.close();	   // 关闭文件，fin对象失效前会自动调用close()。
+
+	cout << "操作文件完成。\n";
+}
+```
+
+### 写入二进制文件
+
+二进制文件以数据块的形式组织数据，把内存中的数据直接写入文件。
+
+**包含头文件：**#include <fstream>
+
+**类：**ofstream（output file stream）
+
+**ofstream**打开文件的模式（方式）：
+
+对于ofstream，不管用哪种模式打开文件，如果文件不存在，都会创建文件。
+
+```
+ios::out     		缺省值：会截断文件内容。
+ios::trunc  		截断文件内容。（truncate）
+ios::app   		不截断文件内容，只在文件未尾追加文件。（append）
+ios::binary   	以二进制方式打开文件。
+```
+
+**操作文本文件和二进制文件的一些细节：**
+
+1）在windows平台下，文本文件的换行标志是"\r\n"。
+
+2）在linux平台下，文本文件的换行标志是"\n"。
+
+3）在windows平台下，如果以文本方式打开文件，写入数据的时候，系统会将"\n"转换成"\r\n"；读取数据的时候，系统会将"\r\n"转换成"\n"。 如果以二进制方式打开文件，写和读都不会进行转换。
+
+4）在Linux平台下，以文本或二进制方式打开文件，系统不会做任何转换。
+
+5）以文本方式读取文件的时候，遇到换行符停止，读入的内容中没有换行符；以二制方式读取文件的时候，遇到换行符不会停止，读入的内容中会包含换行符（换行符被视为数据）。
+
+6）在实际开发中，从兼容和语义考虑，一般：**a）以文本模式打开文本文件，用行的方法操作它；b）以二进制模式打开二进制文件，用数据块的方法操作它；c）以二进制模式打开文本文件和二进制文件，用数据块的方法操作它，这种情况表示不关心数据的内容。（例如复制文件和传输文件）**d）不要以文本模式打开二进制文件，也不要用行的方法操作二进制文件，可能会破坏二进制数据文件的格式，也没有必要。（因为二进制文件中的某字节的取值可能是换行符，但它的意义并不是换行，可能是整数n个字节中的某个字节）
+
+```
+#include <iostream>
+#include <fstream>  // ofstream类需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	// 文件名一般用全路径，书写的方法如下：
+	//  1）"D:\data\bin\test.dat"       // 错误。
+	//  2）R"(D:\data\bin\test.dat)"   // 原始字面量，C++11标准。
+	//  3）"D:\\data\\bin\\test.dat"   // 转义字符。
+	//  4）"D:/tata/bin/test.dat"        // 把斜线反着写。
+	//  5）"/data/bin/test.dat"          //  Linux系统采用的方法。
+	string filename = R"(D:\data\bin\test.dat)";
+	//char    filename[] = R"(D:\data\bin\test.dat)";
+
+	// 创建文件输出流对象，打开文件，如果文件不存在，则创建它。
+	// ios::out     		缺省值：会截断文件内容。
+	// ios::trunc  		截断文件内容。（truncate）
+	// ios::app   			不截断文件内容，只在文件未尾追加文件。（append）
+	// ios::binary   		以二进制方式打开文件。
+	//ofstream fout(filename, ios::binary);
+	//ofstream fout(filename, ios::out | ios::binary);
+	//ofstream fout(filename, ios::trunc | ios::binary);
+	//ofstream fout(filename, ios::app | ios::binary);
+
+	ofstream fout;
+	fout.open(filename, ios::app | ios::binary);
+
+	// 判断打开文件是否成功。
+	// 失败的原因主要有：1）目录不存在；2）磁盘空间已满；3）没有权限，Linux平台下很常见。
+	if (fout.is_open() == false)
+	{
+		cout << "打开文件" << filename << "失败。\n";  return 0;
+	}
+
+	// 向文件中写入数据。
+	struct st_girl {               // 超女结构体。
+		char name[31];         // 姓名。
+		int    no;                    // 编号。   
+		char memo[301];      // 备注。
+		double weight;         // 体重。
+	}girl;
+	girl = { "西施",3,"中国历史第一美女。" ,45.8 };
+	fout.write((const char *)& girl, sizeof(st_girl));   // 写入第一块数据。
+	girl = { "冰冰",8,"也是个大美女哦。",55.2};
+	fout.write((const char*)&girl, sizeof(st_girl));     // 写入第二块数据。
+
+	fout.close();	   // 关闭文件，fout对象失效前会自动调用close()。
+
+	cout << "操作文件完成。\n";
+}
+```
+
+### 读取二进制文件
+
+包含头文件：#include <fstream>
+
+类：ifstream
+
+**ifstream**打开文件的模式（方式）：
+
+对于ifstream，如果文件不存在，则打开文件失败。
+
+```
+ios::in     		缺省值。
+ios::binary   	以二进制方式打开文件。
+```
+
+```
+#include <iostream>
+#include <fstream>  // ifstream类需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	// 文件名一般用全路径，书写的方法如下：
+	//  1）"D:\data\bin\test.dat"       // 错误。
+	//  2）R"(D:\data\bin\test.dat)"   // 原始字面量，C++11标准。
+	//  3）"D:\\data\\bin\\test.dat"   // 转义字符。
+	//  4）"D:/tata/bin/test.dat"        // 把斜线反着写。
+	//  5）"/data/bin/test.dat"          //  Linux系统采用的方法。
+	string filename = R"(D:\data\bin\test.dat)";
+	//char    filename[] = R"(D:\data\bin\test.dat)";
+
+	// 创建文件输入流对象，打开文件，如果文件不存在，则打开文件失败。。
+	// ios::in     			缺省值。
+	// ios::binary   		以二进制方式打开文件。
+	//ifstream fin(filename , ios::binary);
+	//ifstream fin(filename , ios::in | ios::binary);
+
+	ifstream fin;
+	fin.open(filename, ios::in | ios::binary);
+
+	// 判断打开文件是否成功。
+	// 失败的原因主要有：1）目录不存在；2）文件不存在；3）没有权限，Linux平台下很常见。
+	if (fin.is_open() == false)
+	{
+		cout << "打开文件" << filename << "失败。\n";  return 0;
+	}
+
+	// 二进制文件以数据块（数据类型）的形式组织数据。
+	struct st_girl {               // 超女结构体。
+		char name[31];         // 姓名。
+		int    no;                    // 编号。   
+		char memo[301];      // 备注。
+		double weight;         // 体重。
+	}girl;
+	while (fin.read((char*)&girl, sizeof(girl)))
+	{
+		cout << "name=" << girl.name << "，no=" << girl.no << 
+			"，memo=" << girl.memo << "，weight=" << girl.weight << endl;
+	}
+
+	fin.close();	   // 关闭文件，fin对象失效前会自动调用close()。
+
+	cout << "操作文件完成。\n";
+}
+```
+
+### 随机存取
+
+#### fstream类
+
+fstream类既可以读文本/二进制文件，也可以写文本/二进制文件。
+
+fstream类的缺省模式是ios::in | ios::out，如果文件不存在，则创建文件；**但是，不会清空文件原有的内容。**
+
+普遍的做法是：
+
+1）如果只想写入数据，用ofstream；如果只想读取数据，用ifstream；如果想写和读数据，用fstream，这种情况不多见。不同的类体现不同的语义。
+
+2）在Linux平台下，文件的写和读有严格的权限控制。（需要的权限越少越好）
+
+#### 文件的位置指针 
+
+对文件进行读/写操作时，文件的位置指针指向当前文件读/写的位置。
+
+很多资料用“文件读指针的位置”和“文件写指针的位置”，容易误导人。不管用哪个类操作文件，文件的位置指针只有一个。
+
+**1）获取文件位置指针**
+
+ofstream类的成员函数是tellp()；ifstream类的成员函数是tellg()；fstream类两个都有，效果相同。
+
+```
+std::streampos tellp();
+std::streampos tellg();
+```
+
+**2）移动文件位置指针**
+
+ofstream类的函数是seekp()；ifstream类的函数是seekg()；fstream类两个都有，效果相同。
+
+方法一：
+
+```
+std::istream & seekg(std::streampos _Pos);  
+fin.seekg(128);   // 把文件指针移到第128字节。
+fin.seekp(128);   // 把文件指针移到第128字节。
+fin.seekg(ios::beg) // 把文件指针移动文件的开始。
+fin.seekp(ios::end) // 把文件指针移动文件的结尾。
+```
+
+方法二：
+
+```
+std::istream & seekg(std::streamoff _Off,std::ios::seekdir _Way);
+在ios中定义的枚举类型：
+enum seek_dir {beg, cur, end};  // beg-文件的起始位置；cur-文件的当前位置；end-文件的结尾位置。
+fin.seekg(30, ios::beg);    // 从文件开始的位置往后移30字节。
+fin.seekg(-5, ios::cur);     // 从当前位置往前移5字节。
+fin.seekg( 8, ios::cur);     // 从当前位置往后移8字节。
+fin.seekg(-10, ios::end);   // 从文件结尾的位置往前移10字节。
+```
+
+**3）随机存取**
+
+随机存取是指直接移动文件的位置指针，在指定位置读取/写入数据。
+
+```
+#include <iostream>
+#include <fstream>  // fstream类需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	string filename = R"(D:\data\txt\test.txt)";
+	
+	fstream fs;
+	fs.open(filename, ios::in | ios::out);
+
+	if (fs.is_open() == false)
+	{
+		cout << "打开文件" << filename << "失败。\n";  return 0;
+	}
+	
+	fs.seekg(26);    // 把文件位置指针移动到第26字节处。
+
+	fs << "我是一只傻傻的小菜鸟。\n"; 
+
+	/*string buffer; 
+	while (fs >> buffer)
+	{
+		cout << buffer << endl;
+	}*/
+
+	fs.close();	   // 关闭文件，fs对象失效前会自动调用close()。
+
+	cout << "操作文件完成。\n";
+}
+```
+
+### 打开文件的模式（方式）
+
+写文件如果文件不存在，各种模式都会创建文件。
+
+```
+ios::out     		1）会截断文件；2）可以用seekp()移动文件指针。
+ios:trunc  		1）会截断文件；2）可以用seekp()移动文件指针。
+ios::app   		1）不会截断文件；2）文件指针始终在文件未尾，不能用seekp()移动文件指针。
+ios::ate    		打开文件时文件指针指向文件末尾，但是，可以在文件中的任何地方写数据。
+ios::in        		打开文件进行读操作，即读取文件中的数据。
+ios::binary       	打开文件为二进制文件，否则为文本文件。
+```
+
+注：ate是at end的缩写，trunc是truncate（截断）的缩写，app是append（追加）的缩写。
+
+### 缓冲区及流状态
+
+#### 文件缓冲区
+
+ 文件缓冲区（缓存）是系统预留的内存空间，用于存放输入或输出的数据。
+
+根据输出和输入流，分为输出缓冲区和输入缓冲区。
+
+注意，在C++中，每打开一个文件，系统就会为它分配缓冲区。**不同的流，缓冲区是独立的**。
+
+程序员不用关心输入缓冲区，只关心**输出缓冲区**就行了。
+
+在缺省模式下，输出缓冲区中的数据满了才把数据写入磁盘，但是，这种模式不一定能满足业务的需求。
+
+**输出缓冲区的操作：**
+
+1）flush()成员函数
+
+刷新缓冲区，把缓冲区中的内容写入磁盘文件。
+
+2）endl
+
+换行，然后刷新缓冲区。
+
+3）unitbuf
+
+```
+fout << unitbuf;
+```
+
+设置fout输出流，在每次操作之后自动刷新缓冲区。
+
+4）nounitbuf
+
+```
+fout << nounitbuf;
+```
+
+设置fout输出流，让fout回到缺省的缓冲方式。
+
+#### 流状态
+
+**流状态有三个：eofbit、badbit和failbit，取值：1-设置；或0-清除。**
+
+**当三个流状成都为0时，表示一切顺利，good()成员函数返回true。**
+
+1）eofbit
+
+当输入流操作到达文件未尾时，将设置eofbit。
+
+eof()成员函数检查流是否设置了eofbit。
+
+2）badbit
+
+无法诊断的失败破坏流时，将设置badbit。（例如：对输入流进行写入；磁盘没有剩余空间）。
+
+bad()成员函数检查流是否设置了badbit。
+
+3）failbit
+
+当输入流操作未能读取预期的字符时，将设置failbit（非致命错误，可挽回，一般是软件错误，例如：想读取一个整数，但内容是一个字符串；文件到了未尾）I/O失败也可能设置failbit。
+
+fail()成员函数检查流是否设置了failbit。
+
+4）clear()成员函数清理流状态。
+
+5）setstate()成员函数重置流状态。
+
+```
+#include <iostream>
+#include <fstream>          // ofstream类需要包含的头文件。
+#include <unistd.h>
+using  namespace std;
+
+int main()
+{
+  ofstream fout("/oracle/tmp/bbb.txt");   // 打开文件。
+  fout << unitbuf;
+
+  for (int ii = 0; ii < 1000; ii++)  // 循环1000次。
+  {
+    fout << "ii=" << ii << "，我是一只傻傻傻傻傻傻傻傻傻傻傻傻傻傻的鸟。\n";
+    //fout.flush();      // 刷新缓冲区。
+    usleep(100000);    // 睡眠十分之一秒。
+  }
+
+  fout.close();  // 关闭文件。
+}
+```
+
+```
+#include <iostream>
+#include <fstream>  // ifstream类需要包含的头文件。
+#include <string>     // getline()函数需要包含的头文件。
+using  namespace std;
+
+int main()
+{
+	ifstream fin(R"(D:\data\txt\test.txt)", ios::in);
+
+	if (fin.is_open() == false) {
+		cout << "打开文件" << R"(D:\data\txt\test.txt)" << "失败。\n";  return 0;
+	}
+
+	string buffer;
+	/*while (fin >> buffer) {
+		cout << buffer << endl;
+	}*/
+	while (true) {
+		fin >> buffer;
+		cout << "eof()=" << fin.eof() << ",good() = " << fin.good() << ", bad() = " << fin.bad() << ", fail() = " << fin.fail() << endl;
+		if (fin.eof() == true) break;
+		
+		cout << buffer << endl;
+	}
+
+	fin.close();	   // 关闭文件，fin对象失效前会自动调用close()。
+}
+```
+
+## C++异常
+
+### 异常的语法
+
+**1）捕获全部的异常**
+
+```
+ try
+    {
+        // 可能抛出异常的代码。
+        // throw 异常对象;
+    }
+    catch (...)
+    {
+        // 不管什么异常，都在这里统一处理。
+    }
+```
+
+**2）捕获指定的异常**
+
+```
+    try
+    {
+        // 可能抛出异常的代码。
+        // throw 异常对象;
+    }
+    catch (exception1 e)
+    {
+        // 发生exception1异常时的处理代码。
+    }
+    catch (exception2 e)
+    {
+       // 发生exception2异常时的处理代码。
+    }
+```
+
+在try语句块中，如果没有发生异常，执行完try语句块中的代码后，将继续执行try语句块之后的代码；如果发生了异常，用throw抛出异常对象，异常对象的类型决定了应该匹配到哪个catch语句块，如果没有匹配到catch语句块，程序将调用abort()函数中止。
+
+如果try语句块中用throw抛出异常对象，并且匹配到了catch语句块，执行完catch语句块中的代码后，将继续执行catch语句块之后的代码，不会回到try语句块中。
+
+**如果程序中的异常没有被捕获，程序将异常中止。**
+
+```
+#include <iostream>
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+    try
+    {
+        // 可能抛出异常的代码。
+        int ii = 0;
+        cout << "你是一只什么鸟？（1-傻傻鸟；2-小小鸟）";
+        cin >> ii;
+
+        if (ii==1)  throw "不好，有人说我是一只傻傻鸟。";            // throw抛出const char *类型的异常。
+        if (ii==2)  throw ii;                                                             // throw抛出int类型的异常。
+        if (ii==3)  throw string("不好，有人说我是一只傻傻鸟。"); // throw抛出string类型的异常。
+
+        cout << "我不是一只傻傻鸟，哦耶。\n";
+    }
+    catch (int ii)
+    {
+        cout << "异常的类型是int=" << ii << endl;
+    }
+    catch (const char* ss)
+    {
+        cout << "异常的类型是const char *=" << ss << endl;
+    }
+    catch (string str)
+    {
+        cout << "异常的类型是string=" << str << endl;
+    }
+    //catch (...)  // 不管什么异常，都在这里处理。
+    //{
+    //    cout << "捕获到异常，具体没管是什么异常。\n";
+    //}
+
+    cout << "程序继续运行......\n";   // 执行完try ... catch ...后，将继续执行程序中其它的代码。
+}
+```
+
+### 栈解旋
+
+异常被抛出后，从进入try语句块开始，到异常被抛出之前，这期间在**栈**上构造的所有对象，都会被自动析构。析构的顺序与构造的顺序相反。这一过程称为栈的解旋。也就是在执行throw前，在try执行期间构造的所有对象被自动析构后，才会进入catch匹配。
+
+在**堆**上构造的对象怎么办？
+
+### 异常规范
+
+C++98标准提出了异常规范，目的是为了让使用者知道函数可能会引发哪些异常。
+
+```
+void func1() throw(A, B, C);     // 表示该函数可能会抛出A、B、C类型的异常。
+void func2() throw();           // 表示该函数不会抛出异常。
+void func3();                  // 该函数不符合C++98的异常规范。
+```
+
+C++11标准弃用了异常规范，使用新增的关键字noexcept指出函数不会引发异常。
+
+```
+void func4() noexcept;         // 该函数不会抛出异常。
+```
+
+在实际开发中，大部分程序员懒得在函数后面加noexcept，弃用异常已是共识，没必要多此一举。
+
+关键字noexcept也可以用作运算符，判断表达试（操作数）是否可能引发异常；如果表达式**可能引发异常，则返回false**，否则返回true。
+
+### C++标准库异常
+
+![image-20231016191744200](./photo/image-20231016191744200.png)
+
+### 重点关注的异常
+
+**1）std::bad_alloc**
+
+如果内存不足，调用new会产生异常，导致程序中止；如果在new关键字后面加(std::nothrow)选项，则返回nullptr，不会产生异常。
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	try {
+		// 如果分配内存失败，会抛出异常。
+		//double* ptr = new double[100000000000];  
+		// 如果分配内存失败，将返回nullptr，会抛出异常。
+		double* ptr = new (std::nothrow) double[100000000000];  
+
+		if (ptr == nullptr) cout << "ptr is null.\n";
+	}
+	catch (bad_alloc& e)
+	{
+		cout << "catch bad_alloc.\n";
+	}
+}
+```
+
+**2）std::bad_cast**
+
+dynamic_cast可以用于引用，但是，C++没有与空指针对应的引用值，如果转换请求不正确，会出现std::bad_cast异常。
+
+**3）std::bad_typeid**
+
+假设有表达式typeid(*ptr)，当ptr是空指针时，如果ptr是多态的类型，将引发std::bad_typeid异常。
+
+### 逻辑错误异常
+
+程序的逻辑错误产生的异常std::logic_error，通过合理的编程可以避免。
+
+**1）std::out_of_range**
+
+```
+Defines a type of object to be thrown as exception. It reports errors that are consequence of attempt to access elements out of defined range.
+It may be thrown by the member functions of std::bitset and std::basic_string, by std::stoi and std::stod families of functions, and by the bounds-checked member access functions (e.g. std::vector::at and std::map::at).
+```
+
+**2）std::length_error**
+
+```
+Defines a type of object to be thrown as exception. It reports errors that result from attempts to exceed implementation defined length limits for some object.
+This exception is thrown by member functions of std::basic_string and std::vector::reserve.
+```
+
+**3）std::domain_error**
+
+```
+Defines a type of object to be thrown as exception. It may be used by the implementation to report domain errors, that is, situations where the inputs are outside of the domain on which an operation is defined.
+The standard library components do not throw this exception (mathematical functions report domain errors as specified in math_errhandling). Third-party libraries, however, use this. For example, boost.math throws std::domain_error if boost::math::policies::throw_on_error is enabled (the default setting).
+```
+
+**4）std::invalid_argument** 
+
+```
+Defines a type of object to be thrown as exception. It reports errors that arise because an argument value has not been accepted.
+This exception is thrown by std::bitset::bitset, and the std::stoi and std::stof families of functions.
+```
+
+
+
+```
+#include <iostream>
+#include <vector>  
+using namespace std; 
+
+int main()
+{
+	try{
+		vector<int> vv = { 1,2,3 };  // 容器vv中只有三个元素。
+		vv.at(3) = 5;                        // 将引发out_of_range异常。
+	}
+	catch (out_of_range) {
+		cout << "出现了out_of_range异常。\n";
+	}
+}
+```
+
+```
+#include <stdexcept>
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+	string str = "123";  // 不会抛出异常。   
+	//string str = "";     // 将抛出Invalid_argument异常。
+	//string str = "253647586946334221002101";  // 将抛出out_of_range异常。
+
+	try {
+		int x = stoi(str);        // 把string字符串转换为整数。
+		cout << "x=" << x << endl;
+	}
+	catch (invalid_argument&) {
+		cout << " invalid_argument. \n";
+	}
+	catch (out_of_range&) {
+		cout << " out of range. \n";
+	}
+	catch (...) {
+		cout << " something else…" << endl;
+	}
+}
+```
+
+### 其它异常
+
+**1）std::range_error**
+
+```
+Defines a type of object to be thrown as exception. It can be used to report range errors (that is, situations where a result of a computation cannot be represented by the destination type).
+The only standard library components that throw this exception are std::wstring_convert::from_bytes and std::wstring_convert::to_bytes.
+The mathematical functions in the standard library components do not throw this exception (mathematical functions report range errors as specified in math_errhandling).
+```
+
+**2）std::overflow_error**
+
+```
+Defines a type of object to be thrown as exception. It can be used to report arithmetic overflow errors (that is, situations where a result of a computation is too large for the destination type)
+The only standard library components that throw this exception are std::bitset::to_ulong and std::bitset::to_ullong.
+The mathematical functions of the standard library components do not throw this exception (mathematical functions report overflow errors as specified in math_errhandling). Third-party libraries, however, use this. For example, boost.math throws std::overflow_error if boost::math::policies::throw_on_error is enabled (the default setting).
+```
+
+**3）std::underflow_error**
+
+```
+Defines a type of object to be thrown as exception. It may be used to report arithmetic underflow errors (that is, situations where the result of a computation is a subnormal floating-point value)
+The standard library components do not throw this exception (mathematical functions report underflow errors as specified in math_errhandling). Third-party libraries, however, use this. For example, boost.math throws std::underflow_error if boost::math::policies::throw_on_error is enabled (the default setting
+```
+
+**4）ios_base::failure**
+
+这个异常，程序员不主动找它就没事。
+
+```
+#include <iostream>
+#include <fstream>
+
+int main()
+{
+    using namespace std;
+    fstream file;
+    file.exceptions(ios::failbit);    // 设置如果出现ios::failbit，就引发异常。
+    try
+    {
+        file.open("rm.txt", ios_base::in);  // 如果打开的文件不存在，就会引发异常。
+    }
+    catch (ios_base::failure f)
+    {
+        cout << caught an exception: " << f.what() << endl;
+    }
+}
+```
+
+**5）std::bad_exception**
+
+```
+This is a special type of exception specifically designed to be listed in the dynamic-exception-specifier of a function (i.e., in its throw specifier).
+If a function with bad_exception listed in its dynamic-exception-specifier throws an exception not listed in it and unexpected rethrows it (or throws any other exception also not in the dynamic-exception-specifier), a bad_exception is automatically thrown.
+```
+
+## C++断言
+
+### 断言
+
+断言（assertion）是一种常用的编程手段，用于排除程序中不应该出现的逻辑错误。
+
+使用断言需要包含头文件<cassert>或<assert.h>，头文件中提供了带参数的宏assert，用于程序在运行时进行断言。
+
+语法：assert(表达式);
+
+断言就是判断(表达式)的值，如果为0（false），程序将调用abort()函数中止，如果为非0（true），程序继续执行。
+
+断言可以提高程序的可读性，帮助程序员定位违反了某些前提条件的错误。
+
+注意：
+
+- 断言用于处理程序中不应该发生的错误，而非逻辑上可能会发生的错误。
+
+- 不要把需要执行的代码放到断言的表达式中。
+
+- 断言的代码一般放在函数/成员函数的第一行，表达式多为函数的形参。
+
+```
+#include <iostream>
+#include <cassert>              // 断言assert宏需要包含的头文件。
+using  namespace std;
+
+void  copydata(void *ptr1,void *ptr2)   // 把ptr2中的数据复制到ptr1中。
+{
+    assert(ptr1&&ptr2);  // 断言ptr1和ptr2都不会为空。
+
+    cout << "继续执行复制数据的代码......\n";
+}
+
+int main()
+{
+    int ii=0,jj=0;
+    
+    copydata(&ii, &jj);  // 把ptr2中的数据复制到ptr1中。
+}
+```
+
+### C++11静态断言
+
+assert宏是运行时断言，在程序运行的时候才能起作用。
+
+C++11新增了静态断言static_assert，用于在编译时检查源代码。
+
+使用静态断言不需要包含头文件。
+
+语法：static_assert(常量表达式,提示信息);
+
+注意：static_assert的第一个参数是**常量表达式**。而assert的表达式既可以是常量，也可以是变量。
+
+## C++11新标准
+
+### long long类型
+
+新增了类型long long和unsigned long long，以支持64位（或更宽）的整型。
+
+在VS中，int和long都是4字节，long long是8字节。
+
+在Linux中，int是4字节，long和long long是8字节。
+
+### char16_t和char32_t类型
+
+新增了类型char16_t和char32_t，以支持16位和32位的字符。
+
+意义不大，好像没什么人用，连demo程序都找不到。
+
+### 统一的初始化（列表）
+
+C++11丰富了大括号的使用范围，用大括号括起来的列表（统一的初始化列表）可以用于所有内置类型和用户自定义类型。使用统一的初始化列表时，可以添加等号（=），也可以不添加：
+
+```
+int x={5};
+double y{2.75};
+short quar[5]{4,5,2,76,1};
+```
+
+统一的初始化列表也可以用于new表达式中：
+
+```
+int *ar=new int[4]{2,4,6,7};
+```
+
+创建对象时，也可以使用大括号（而不是圆括号）来调用构造函数：
+
+```
+class Girl
+{
+private:
+    int m_bh;
+    string m_name;
+public:
+    Girl(int bh,string name) : m_bh(bh),m_name(name) {}
+};
+
+Girl g1(3, "西施");    // C++98的风格。
+Girl g2={5, "冰冰"};  // C++11的风格。
+Girl g3{8, "幂幂"};    // C++11的风格。
+```
+
+**STL**容器提供了将initializer_list模板类作为参数的构造函数：
+
+```
+vector<int> v1(10);   // 把v1初始化为10个元素。
+vector<int> v2{10};   // 把v2初始化为1个元素，这个元素的值是10。
+vector<int> v2{3,5,8};   // 把v3初始化为3个元素，值分别是3、5、8。
+```
+
+**头文件<initializer_list>提供了对模板类initializer_list的支持，这个类包含成员函数begin()和end()。除了用于构造函数外，还可以将initializer_list用于常规函数的参数：**
+
+```
+#include <iostream>
+#include <initializer_list>
+
+double sum(std::initializer_list<double> il)
+{
+    double total = 0;
+    for (auto it = il.begin(); it != il.end(); it++)
+        total = total + *it;
+    return total;
+}
+
+int main()
+{
+    // double total = sum(  3.14, 5.20, 8  );    // 错误，如果没有大括号，这是三个参数。
+    double total = sum({ 3.14, 5.20, 8 });        // 正确，有大括号，这是一个参数。
+    std::cout << "total=" << total << std::endl;
+}
+```
+
+### 原始字面量
+
+### 自动推导类型auto
+
+### decltype关键字
+
+### 函数后置返回类型
+
+### 智能指针
+
+### 异常规范方面的修改
+
+### 模板的别名
+
+![image-20231016200850356](./photo/image-20231016200850356.png)
+
+### 空指针nullptr
+
+空指针是不会指向有效数据的指针。以前，C/C++用0表示空指针，这带来了一些问题，这样的话0既可以表示指针常量，又可以表示整型常量。
+
+C++11新增了关键字nullptr，用于表示空指针；它是指针类型，不是整型类型。
+
+为了向后兼容，C++11仍允许用0来表示空指针，因此表达式nullptr==0为true。
+
+使用nullptr提供了更高的类型安全。例如，可以将0传递给形参为int的函数，但是，如果将nullptr传递给这样的函数，编译器将视为错误。
+
+因此，出于清晰和安全考虑，请使用nullptr。
+
+### 强类型枚举（枚举类）
+
+传统的C++枚举提供了一种创建常量的方式，但类型检查比较低级。还有，如果在同一作用域内定义的两个枚举，它们的成员不能同名。
+
+针对枚举的缺陷，C++11 标准引入了枚举类，又称强类型枚举。
+
+声明强类型枚举非常简单，只需要在enum后加上关键字 class。
+
+```
+enum e1{ red, green };
+enum class e2 { red, green, blue };
+enum class e3 { red, green, blue, yellow };
+```
+
+使用强类型枚举时，要在枚举成员名前面加枚举名和::，以免发生名称冲突，如：e2::red，e3::blue
+
+强类型枚举默认的类型为int，也可以显式地指定类型，具体做法是在枚举名后面加上:type，type可以是除wchar_t以外的任何整型。
+
+```
+enum class e2:char { red, green, blue };
+```
+
+### explicit关键字
+
+C++支持对象自动转换，但是，自动类型转换可能导致意外。为了解决这种问题，C++11引入了explicit关键字，用于关闭自动转换的特性。
+
+### 类内成员初始化
+
+在类的定义中初始化成员变量。
+
+```
+class Girl
+{
+private:
+    int m_bh=20;                 // 年龄。
+    string m_name="美女";        // 姓名。
+    char m_xb = 'X';              // 性别。
+public:
+    Girl(int bh, string name) : m_bh(bh), m_name(name) {}
+};
+```
+
+### 基于范围的for循环
+
+### 新的STL容器
+
+1）array（静态数组）
+
+array的大小是固定的，不像其它的模板类，但array有begin()和end()成员函数，程序员可以array对象使用STL算法。
+
+2）forward_list（单向链表）
+
+3）unordered_map、unordered_multimap、unordered_set、unordered_multiset（哈希表）
+
+### 新的STL方法（成员函数）
+
+1）C++11新增了的方法cbegin()、cend()、crbegin()、crend()，这些方法将元素视为const。
+
+2）iterator emplace (iterator pos, …); // 在指定位置插入一个元素，…用于构造元素，返回指向插入元素的迭代器。
+
+3）更重要的是，除了传统的拷贝构造函数和赋值函数，C++11新增了移动构造函数和移动赋值函数。
+
+### 摒弃export
+
+C++98新增了export关键字，C++11不再使用，但仍保留它作为关键字，供以后使用。
+
+### 嵌套模板的尖括号
+
+为了避免与运算符>>混淆，C++要求在声明嵌套模板时使用空格将尖括号分开：
+
+```
+vector<list<int> > v1;   // 两个>之间必须加空格。
+```
+
+C++11不再这样要求：
+
+```
+vector<list<int>> v2;    // 两个>之间不必加空格。
+```
+
+### final关键字
+
+final关键字用于限制某个类不能被继承，或者某个虚函数不能被重写。
+
+final关键字放在类名或虚函数名的后面。
+
+```
+class AA
+{
+public:
+    virtual void test()
+    {
+        cout << "AA class...";
+    }
+};
+
+class BB : public AA
+{
+public:
+    void test() final    // 如果有其它类继承BB，test()方法将不允许重写。
+    {
+        cout << "BB class...";
+    }
+};
+
+class CC : public BB
+{
+public:
+    void test()  // 错误，BB类中的test()后面有final，不允许重写。
+    {
+        cout << "CC class...";
+    }
+};
+```
+
+### override关键字
+
+在派生类中，把override放在成员函数的后面，表示重写基类的虚函数，**提高代码的可读性。**
+
+在派生类中，如果某成员函数不是重写基类的虚函数，随意的加上override关键字，编译器会报错。
+
+```
+class AA 
+{
+public:
+    virtual void test()
+    {
+        cout << "AA class...";
+    }
+};
+
+class BB : public AA
+{
+public:
+    void test() override
+    {
+        cout << "BB class...";
+    }
+};
+```
+
+### 数值类型和字符串之间的转换
+
+传统方法用sprintf()和snprintf()函数把数值转换为char*字符串；用atoi()、atol()、atof()把char*字符串转换为数值。
+
+C++11提供了新的方法，在数值类型和string字符串之间转换。
+
+**1、数值转换为字符串**
+
+使用to_string()函数可以将各种数值类型转换为string字符串类型，这是一个重载函数，在头文件 <string>中声明，函数原型如下：
+
+```
+string to_string (int val);
+string to_string (long val);
+string to_string (long long val);
+string to_string (unsigned val);
+string to_string (unsigned long val);
+string to_string (unsigned long long val);
+string to_string (float val);
+string to_string (double val);
+string to_string (long double val);
+```
+
+**2、字符转换为串数值**
+
+在C++中，数值类型包括整型和浮点型，针对于不同的数值类型提供了不同的函数在头文件 <string>中声明，函数原型如下：
+
+```
+int                 stoi( const string& str, size_t* pos = nullptr, int base = 10 );
+long               stol( const string& str, size_t* pos = nullptr, int base = 10 );
+long long          stoll( const string& str, size_t* pos = nullptr, int base = 10 );
+unsigned long      stoul( const string& str, size_t* pos = nullptr, int base = 10 );
+unsigned long long stoull( const string& str, size_t* pos = nullptr, int base = 10 );
+float               stof( const string& str, size_t* pos = nullptr );
+double             stod( const string& str, size_t* pos = nullptr );
+long double        stold( const string& str, size_t* pos = nullptr );
+```
+
+形参说明：
+
+str：需要要转换的string字符串。
+
+pos：传出参数，存放从哪个字符开始无法继续解析的位置，例如：123a45, 传出的位置将为3。
+
+base：若base为0，则自动检测数值进制：若前缀为0，则为八进制，若前缀为0x或0X，则为十六进制，否则为十进制。
+
+**注意：string字符串转换为数值的函数可能会抛出异常**
+
+```
+string str="123a45";
+size_t pos;
+int val = stoi(str, &pos, 10);
+cout << "val=" << val << endl;          // 输出123
+cout << "pos=" << pos << endl;       // 输出3
+```
+
+### 静态断言static_assert
+
+### 常量表达式constexpr关键字
+
+const关键字从功能上来说有双重语义：只读变量和修饰常量。
+
+```
+void func(const int len1)
+{
+    // len1是只读变量，不是常量。
+    int array1[len1]={0};        // VS会报错，Linux平台的数组长度支持变量，不会报错。
+
+    const int len2 = 8;
+    int array2[len2]={0};      // 正确，len2是常量。
+}
+```
+
+C++11标准为了解决const关键字的双重语义问题，保留了const表示“只读”的语义，而将“常量”的语义划分给了新添加的constexpr关键字。
+
+所以，C++11 标准中，建议将const和constexpr的功能区分开，表达“只读”语义的场景用const，表达“常量”语义的场景用constexpr。
+
+### 默认函数控制=default与=delete
+
+在C++中自定义的类，编译器会默认生成一些成员函数：
+
+- 无参构造函数
+
+- 拷贝构造函数
+
+- 拷贝赋值函数
+
+- 移动构造函数
+
+- 移动赋值函数
+
+- 析构函数
+
+=default表示启用默认函数。
+
+=delete表示禁用默认函数。
+
+```
+#include <iostream>
+using namespace std;
+
+class Girl
+{
+private:
+    int m_bh = 20;                  // 年龄。
+    string m_name = "美女";  // 姓名。
+    char m_xb = 'X';               // 性别。
+public:
+    Girl() = default;                          // 启用默认构造函数。
+    Girl(int bh, string name) : m_bh(bh), m_name(name) {}
+    Girl(const Girl& g) = delete;      // 删除拷贝构造函数。
+    void show() { cout << "bh=" << m_bh << ",m_name=" << m_name << endl; }
+};
+
+int main()
+{
+    Girl g1;
+    g1.show();
+    // Girl g2 = g1;            // 错误，拷贝构造函数已删除。
+}
+```
+
+## 委托构造和继承构造
+
+C++11标准新增了委托构造和继承构造两种方法，用于简化代码。
+
+### 委托构造
+
+在实际的开发中，为了满足不同的需求，一个类可能会重载多个构造函数。多个构造函数之间可能会有重复的代码。例如变量初始化，如果在每个构造函数中都写一遍，这样代码会显得臃肿。
+
+委托构造就是在一个构造函数的初始化列表中调用另一个构造函数。
+
+注意：
+
+- 不要生成环状的构造过程。
+
+- 一旦使用委托构造，就不能在初始化列表中初始化其它的成员变量。
+
+```
+#include <iostream>
+using namespace std;
+
+class AA
+{
+private:
+    int      m_a;
+    int      m_b;
+    double   m_c;
+public:
+    // 有一个参数的构造函数，初始化m_c
+    AA(double c) {
+        m_c = c + 3;     // 初始化m_c
+        cout << " AA(double c)" << endl;
+    }
+    // 有两个参数的构造函数，初始化m_a和m_b
+    AA(int a, int b) {
+        m_a = a + 1;     // 初始化m_a
+        m_b = b + 2;    // 初始化m_b
+        cout << " AA(int a, int b)" << endl;
+    }
+    // 构造函数委托AA(int a, int b)初始化m_a和m_b
+    AA(int a, int b, const string& str) : AA(a, b) {
+        cout << "m_a=" << m_a << ",m_b=" << m_b << ",str=" << str << endl;
+    }
+    // 构造函数委托AA(double c)初始化m_c
+    AA(double c, const string& str) : AA(c) {
+        cout << "m_c=" << m_c << ",str=" << str << endl;
+    }
+};
+
+int main()
+{
+    AA a1(10, 20, "我是一只傻傻鸟。");
+
+    AA a2(3.8, "我有一只小小鸟。");
+}
+```
+
+### 继承构造
+
+在C++11之前，派生类如果要使用基类的构造函数，可以在派生类构造函数的初始化列表中指定。在《126、如何构造基类》中有详细介绍。
+
+C++11推出了继承构造（Inheriting Constructor），在派生类中使用using来声明继承基类的构造函数。
+
+```
+#include <iostream>
+using namespace std;
+
+class AA       // 基类。
+{
+public:
+    int      m_a;
+    int      m_b;
+    // 有一个参数的构造函数，初始化m_a
+    AA(int a) : m_a(a) { cout << " AA(int a)" << endl; }
+    // 有两个参数的构造函数，初始化m_a和m_b
+    AA(int a, int b) : m_a(a), m_b(b) { cout << " AA(int a, int b)" << endl; }
+};
+
+class BB :public AA       // 派生类。
+{
+public:
+    double   m_c;
+    using AA::AA;     // 使用基类的构造函数。
+    // 有三个参数的构造函数，调用A(a,b)初始化m_a和m_b，同时初始化m_c
+    BB(int a, int b, double c) : AA(a, b), m_c(c) {
+        cout << " BB(int a, int b, double c)" << endl;
+    }
+    void show() { cout << "m_a=" << m_a << ",m_b=" << m_b << ",m_c=" << m_c << endl; }
+};
+
+int main()
+{
+    // 将使用基类有一个参数的构造函数，初始化m_a
+    BB b1(10);       
+    b1.show();
+
+    // 将使用基类有两个参数的构造函数，初始化m_a和m_b
+    BB b2(10,20);  
+    b2.show();
+
+    // 将使用派生类自己有三个参数的构造函数，调用A(a,b)初始化m_a和m_b，同时初始化m_c
+    BB b3(10,20,10.58);  
+    b3.show();
+}
+```
+
+## lambda函数
+
+lambda函数是C++11标准新增的语法糖，也称为lambda[表达式](https://so.csdn.net/so/search?q=表达式&spm=1001.2101.3001.7020)或匿名函数。
+
+lambda函数的特点是：距离近、简洁、高效和功能强大。
+
+示例：[](const int& no) -> void { cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n"; };
+
+语法：
+
+![image-20231016202250587](./photo/image-20231016202250587.png)
+
+```
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using  namespace std;
+
+// 表白函数。
+void zsshow(const int & no)  {  
+	cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+}
+
+// 表白仿函数。
+class czs   
+{
+public:
+	void operator()(const int & no) {
+		cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+	}
+};
+
+int main()
+{
+	vector<int> vv = { 5,8,3 };   // 存放超女编号的容器。
+	
+	// 第三个参数是普通函数。
+	for_each(vv.begin(), vv.end(), zsshow);  
+
+	// 第三个参数是仿函数。
+	for_each(vv.begin(), vv.end(), czs());       
+
+	// 第三个参数是lambda表达式。
+	for_each(vv.begin(), vv.end(), 
+		[](const int& no) {
+			cout << "亲爱的" << no << "号：我是一只傻傻鸟。\n";
+		}
+	); 
+}
+```
+
+### 参数列表
+
+参数列表是可选的，类似普通函数的参数列表，如果没有参数列表，()可以省略不写。
+
+与普通函数的不同：
+
+- lambda函数不能有默认参数。
+
+- 所有参数必须有参数名。
+
+- 不支持可变参数。
+
+### 返回类型
+
+用后置的方法书写返回类型，类似于普通函数的返回类型，如果不写返回类型，编译器会根据函数体中的代码推断出来。
+
+如果有返回类型，建议显式的指定，自动推断可能与预期不一致。
+
+### 函数体
+
+类似于普通函数的函数体。
+
+### 捕获列表
+
+通过捕获列表，lambda函数可以访问父作用域中的非静态局部变量（静态局部变量可以直接访问，不能访问全局变量）。
+
+捕获列表书写在[]中，与函数参数的传递类似，捕获方式可以是值和引用。
+
+以下列出了不同的捕获列表的方式。
+
+![image-20231016202525747](./photo/image-20231016202525747.png)
+
+**1）值捕获**
+
+与传递参数类似，采用值捕获的前提是变量可以拷贝。
+
+与传递参数不同，变量的值是在lambda函数创建时拷贝，而不是调用时拷贝。
+
+```
+size_t v1 = 42;
+auto f = [ v1 ]  { return v1; };	// 使用了值捕获，将v1拷贝到名为f的可调用对象。
+v1 = 0;
+auto j = f();    // j为42，f保存了我们创建它是v1的拷贝。
+```
+
+由于被捕获的值是在lambda函数创建时拷贝，因此在随后对其修改不会影响到lambda内部的值。
+
+默认情况下，如果以传值方式捕获变量，则在lambda函数中不能修改变量的值。
+
+**2）引用捕获**
+
+和函数引用参数一样，引用变量的值在lambda函数体中改变时，将影响被引用的对象。
+
+```
+size_t v1 = 42;
+auto f = [ &v1 ]  { return v1; };	 // 引用捕获，将v1拷贝到名为f的可调用对象。
+v1 = 0;
+auto j = f();	   // j为0。
+```
+
+如果采用引用方式捕获变量，就必须保证被引用的对象在lambda执行的时候是存在的。
+
+**3）隐式捕获**
+
+除了显式列出我们希望使用的父作域的变量之外，还可以让编译器根据函数体中的代码来推断需要捕获哪些变量，这种方式称之为隐式捕获。
+
+隐式捕获有两种方式，分别是[=]和[&]。[=]表示以值捕获的方式捕获外部变量，[&]表示以引用捕获的方式捕获外部变量。
+
+```
+int a = 123;
+auto f = [ = ]  { cout << a << endl; };		//值捕获
+f(); 	// 输出：123
+auto f1 = [ & ] { cout << a++ << endl; }; 		//引用捕获
+f1();	//输出：123（采用了后++）
+cout << a << endl; 		//输出 124
+```
+
+**4）混合方式捕获**
+
+lambda函数还支持混合方式捕获，即同时使用显式捕获和隐式捕获。
+
+混合捕获时，捕获列表中的第一个元素必须是 = 或 &，此符号指定了默认捕获的方式是值捕获或引用捕获。
+
+需要注意的是：显式捕获的变量必须使用和默认捕获不同的方式捕获。例如：
+
+```
+int i = 10;
+int  j = 20;
+auto f1 = [ =, &i] () { return j + i; };		// 正确，默认值捕获，显式是引用捕获
+auto f2 = [ =, i] () { return i + j; };		// 编译出错，默认值捕获，显式值捕获，冲突了
+auto f3 = [ &, &i] () { return i +j; };		// 编译出错，默认引用捕获，显式引用捕获，冲突了
+```
+
+**5）修改值捕获变量的值**
+
+在lambda函数中，如果以传值方式捕获变量，则函数体中不能修改该变量，否则会引发编译错误。
+
+在lambda函数中，如果希望修改值捕获变量的值，可以加mutable选项，但是，在lambda函数的外部，变量的值不会被修改。
+
+```
+int a = 123;
+auto f = [a]()mutable { cout << ++a << endl; }; // 不会报错
+cout << a << endl; 	// 输出：123
+f(); 					// 输出：124
+cout << a << endl; 	// 输出：123
+```
+
+**6）异常说明**
+
+lambda可以抛出异常，用throw(…)指示异常的类型，用noexcept指示不抛出任何异常。
+
+### lambda函数的本质
+
+当我们编写了一个lambda函数之后，编译器将它翻译成一个类，该类中有一个重载了()的函数。
+
+**1）采用值捕获**
+
+采用值捕获时，lambda函数生成的类用捕获变量的值初始化自己的成员变量。
+
+```
+int a =10;
+int b = 20;
+auto addfun = [=] (const int c ) -> int { return a+c; };
+int c = addfun(b);    
+cout << c << endl;
+```
+
+等同于：
+
+```
+class Myclass
+{
+	int m_a;		// 该成员变量对应通过值捕获的变量。
+public:
+	Myclass( int a ) : m_a(a){};	// 该形参对应捕获的变量。
+	// 重载了()运算符的函数，返回类型、形参和函数体都与lambda函数一致。
+	int operator()(const int c) const
+	{
+		return a + c;
+	}
+};
+```
+
+默认情况下，由lambda函数生成的类是const成员函数，所以变量的值不能修改。如果加上mutable，相当于去掉const。这样上面的限制就能讲通了。
+
+**2）采用引用捕获**
+
+如果lambda函数采用引用捕获的方式，编译器直接引用就行了。
+
+唯一需要注意的是，lambda函数执行时，程序必须保证引用的对象有效。
+
+## 右值引用
+
+### 左值、右值
+
+在C++中，所有的值不是左值，就是右值。左值是指表达式结束后依然存在的持久化对象，右值是指表达式结束后就不再存在的临时对象。有名字的对象都是左值，右值没有名字。
+
+还有一个可以区分左值和右值的便捷方法：**看能不能对表达式取地址，如果能，则为左值，否则为右值**。
+
+C++11扩展了右值的概念，将右值分为了纯右值和将亡值。
+
+- 纯右值：a）非引用返回的临时变量；b）运算表达式产生的结果；c）字面常量（C风格字符串除外，它是地址）。
+
+- 将亡值：与右值引用相关的表达式，例如：将要被移动的对象、T&&函数返回的值、std::move()的返回值、转换成T&&的类型的转换函数的返回值。
+
+不懂纯右值和将亡值的区别其实没关系，统一看作右值即可，不影响使用。
+
+```
+class AA {
+    int m_a;
+};
+
+AA getTemp()
+{
+    return AA();
+}
+
+int ii = 3;       // ii是左值，3是右值。
+int jj = ii+8;    // jj是左值，ii+8是右值。
+AA aa = getTemp();   // aa是左值 ，getTemp()的返回值是右值（临时变量）。
+```
+
+### 左值引用、右值引用
+
+C++98中的引用很常见，就是给变量取个别名，在C++11中，因为增加了右值引用(rvalue reference)的概念，所以C++98中的引用都称为了左值引用(lvalue reference)。
+
+右值引用就是给右值取个名字。
+
+语法：数据类型&& 变量名=右值;
+
+```
+#include <iostream>
+using  namespace std;
+
+class AA {
+public:
+    int m_a=9;
+};
+
+AA getTemp()
+{
+    return AA();
+}
+
+int main()
+{
+    int&& a = 3;         // 3是右值。
+
+    int b = 8;               // b是左值。
+    int&& c = b + 5;   //  b+5是右值。
+
+    AA&& aa = getTemp();   // getTemp()的返回值是右值（临时变量）。
+
+    cout << "a=" << a << endl;
+    cout << "c=" << c << endl;
+    cout << "aa.m_a=" << aa.m_a << endl;
+}
+```
+
+getTemp()的返回值本来在表达式语句结束后其生命也就该终结了（因为是临时变量），而通过右值引用重获了新生，其生命周期将与右值引用类型变量aa的生命周期一样，只要aa还活着，该右值临时变量将会一直存活下去。
+
+**引入右值引用的主要目的是实现移动语义。**
+
+左值引用只能绑定（关联、指向）左值，右值引用只能绑定右值，如果绑定的不对，编译就会失败。
+
+但是，常量左值引用却是个奇葩，它可以算是一个万能的引用类型，它可以绑定非常量左值、常量左值、右值，而且在绑定右值的时候，常量左值引用还可以像右值引用一样将右值的生命期延长，缺点是，只能读不能改。
+
+```
+int a = 1;        
+const int& ra = a;   // a是非常量左值。
+
+const int b = 1;  
+const int& rb = b;  // b是常量左值。
+
+const int& rc = 1;   // 1是右值。
+```
+
+总结一下，其中T是一个具体类型：
+
+1）左值引用， 使用 T&, 只能绑定左值。
+
+2）右值引用， 使用 T&&， 只能绑定右值。
+
+3）已命名的右值引用是左值。
+
+4）常量左值，使用 const T&, 既可以绑定左值又可以绑定右值。
+
+## 移动语义
+
+如果一个对象中有堆区资源，需要编写拷贝构造函数和赋值函数，实现深拷贝。
+
+深拷贝把对象中的堆区资源复制了一份，如果源对象（被拷贝的对象）是临时对象，拷贝完就没什么用了，这样会造成没有意义的资源申请和释放操作。如果能够直接使用源对象拥有的资源，可以节省资源申请和释放的时间。C++11新增加的移动语义就能够做到这一点。
+
+实现移动语义要增加两个函数：移动构造函数和移动赋值函数。
+
+移动构造函数的语法：
+
+```
+类名(类名&& 源对象){......}
+```
+
+移动赋值函数的语法：
+
+```
+类名& operator=(类名&& 源对象){……}
+```
+
+注意：
+
+1）对于一个左值，会调用拷贝构造函数，但是有些左值是局部变量，生命周期也很短，能不能也移动而不是拷贝呢？C++11为了解决这个问题，提供了std::move()方法来将左值转义为右值，从而方便使用移动语义。它其实就是告诉编译器，虽然我是一个左值，但不要对我用拷贝构造函数，用移动构造函数吧。左值对象被转移资源后，不会立刻析构，只有在离开自己的作用域的时候才会析构，如果继续使用左值中的资源，可能会发生意想不到的错误。
+
+2）如果没有提供移动构造/赋值函数，只提供了拷贝构造/赋值函数，编译器找不到移动构造/赋值函数就去寻找拷贝构造/赋值函数。
+
+3）C++11中的所有容器都实现了移动语义，避免对含有资源的对象发生无谓的拷贝。
+
+4）移动语义对于拥有资源（如内存、文件句柄）的对象有效，如果是基本类型，使用移动语义没有意义。
+
+```
+#include <iostream>
+using namespace std;
+
+class AA
+{
+public:
+    int* m_data = nullptr;  // 数据成员，指向堆区资源的指针。
+
+    AA() = default;             // 启用默认构造函数。
+
+    void alloc() {                // 给数据成员m_data分配内存。
+        m_data = new int;                       // 分配内存。
+        memset(m_data, 0, sizeof(int));   // 初始化已分配的内存。
+    }
+
+    AA(const AA& a) {     // 拷贝构造函数。
+        cout << "调用了拷贝构造函数。\n";            // 显示自己被调用的日志。
+        if (m_data == nullptr) alloc();                     // 如果没有分配内存，就分配。
+        memcpy(m_data, a.m_data, sizeof(int));     // 把数据从源对象中拷贝过来。
+    }
+
+    AA(AA&& a) {     // 移动构造函数。
+        cout << "调用了移动构造函数。\n";            // 显示自己被调用的日志。
+        if (m_data != nullptr) delete m_data;         // 如果已分配内存，先释放掉。
+        m_data = a.m_data;                                   // 把资源从源对象中转移过来。
+        a.m_data = nullptr;                                    // 把源对象中的指针置空。
+    }
+
+    AA& operator=(const AA& a) { // 赋值函数。
+        cout << "调用了赋值函数。\n";                   // 显示自己被调用的日志。
+        if (this == &a)   return *this;                      // 避免自我赋值。
+        if (m_data == nullptr) alloc();                     // 如果没有分配内存，就分配。
+        memcpy(m_data, a.m_data, sizeof(int));    // 把数据从源对象中拷贝过来。
+        return *this;
+    }
+
+    AA& operator=(AA&& a) { // 移动赋值函数。
+        cout << "调用了移动赋值函数。\n";            // 显示自己被调用的日志。
+        if (this == &a)   return *this;                      // 避免自我赋值。
+        if (m_data != nullptr) delete m_data;         // 如果已分配内存，先释放掉。
+        m_data = a.m_data;                                   // 把资源从源对象中转移过来。
+        a.m_data = nullptr;                                    // 把源对象中的指针置空。
+        return *this;
+    }
+
+     ~AA() {                 // 析构函数。
+         if (m_data != nullptr) {
+             delete m_data; m_data = nullptr;
+         }
+    }
+};
+
+int main()
+{
+    AA a1;                  // 创建对象a1。
+    a1.alloc();             // 分配堆区资源。
+    *a1.m_data = 3;   // 给堆区内存赋值。
+    cout << "a1.m_data=" << *a1.m_data << endl;
+
+    AA a2 = a1;         // 将调用拷贝构造函数。
+    cout << "a2.m_data=" << *a2.m_data << endl;
+
+    AA a3;
+    a3 = a1;              // 将调用赋值函数。
+    cout << "a3.m_data=" << *a3.m_data << endl;
+
+    auto f = [] { AA aa; aa.alloc(); *aa.m_data = 8; return aa; };   // 返回AA类对象的lambda函数。
+    AA a4 = f();                // lambda函数返回临时对象，是右值，将调用移动构造函数。
+    cout << "a4.m_data=" << *a4.m_data << endl;
+
+    AA a6;
+    a6 = f();              // lambda函数返回临时对象，是右值，将调用移动赋值函数。
+    cout << "a6.m_data=" << *a6.m_data << endl;
+}
+```
+
+## 完美转发
+
+在函数模板中，可以将参数“完美”的转发给其它函数。所谓完美，即不仅能准确的转发参数的值，还能保证被转发参数的左、右值属性不变。
+
+C++11标准引入了右值引用和移动语义，所以，能否实现完美转发，决定了该参数在传递过程使用的是拷贝语义还是移动语义。
+
+为了支持完美转发，C++11提供了以下方案：
+
+1）如果模板中（包括类模板和函数模板）函数的参数书写成为T&& 参数名，那么，函数既可以接受左值引用，又可以接受右值引用。
+
+2）提供了模板函数std::forward<T>(参数) ，用于转发参数，如果 参数是一个右值，转发之后仍是右值引用；如果参数是一个左值，转发之后仍是左值引用。
+
+```
+#include <iostream>
+using namespace std;
+
+void func1(int& ii) {        // 如果参数是左值，调用此函数。
+    cout << "参数是左值=" << ii << endl;
+}
+
+void func1(int&& ii) {     // 如果参数是右值，调用此函数。
+    cout << "参数是右值=" << ii << endl;
+}
+
+// 1）如果模板中（包括类模板和函数模板）函数的参数书写成为T&& 参数名，
+// 那么，函数既可以接受左值引用，又可以接受右值引用。
+// 2）提供了模板函数std::forward<T>(参数) ，用于转发参数，
+// 如果参数是一个右值，转发之后仍是右值引用；如果 参数是一个左值，转发之后仍是左值引用。
+template<typename TT>
+void func(TT&& ii)
+{
+    func1(forward<TT>(ii));
+}
+
+int main()
+{
+    int ii = 3;
+    func(ii);       // 实参是左值。
+    func(8);       // 实参是右值。
+}
+```
+
+## 可变参数模板
+
+可变参数模版是C++11新增的最强大的特性之一，它对参数进行了泛化，能支持任意个数、任意数据类型的参数。
+
+```
+#include <iostream>
+#include <thread>
+using namespace std;
+
+template <typename T>
+void show(T girl)      // 向超女表白的函数，参数可能是超女编号，也可能是姓名，所以用T。
+{
+	cout << "亲爱的" << girl << "，我是一只傻傻鸟。\n";
+}
+
+// 递归终止时调用的非模板函数，函数名要与展开参数包的递归函数模板相同。
+void print()
+{
+	cout << "递归终止。\n";
+}
+
+// 展开参数包的递归函数模板。
+template <typename T, typename ...Args>
+void print(T arg, Args... args)
+{
+	//cout << "参数： " << arg << endl;         // 显示本次展开的参数。
+
+	show(arg);        // 把参数用于表白。
+
+	//cout << "还有" << sizeof...(args) << "个参数未展开。" << endl;  // 显示未展开变参的个数。
+
+	print(args...);     // 继续展开参数。
+}
+
+template <typename...Args>
+void func(const string& str, Args...args)   // 除了可变参数，还可以有其它常规参数。
+{
+	cout << str << endl;    // 表白之前，喊句口号。
+
+	print(args...);    // 展开可变参数包。
+
+	cout << "表白完成。\n";
+}
+
+int main(void)
+{
+	//print("金莲", 4, "西施");   
+	//print("冰冰", 8, "西施", 3);
+	func("我是绝世帅歌。", "冰冰", 8, "西施", 3);  // "我是绝世帅歌。"不是可变参数，其它的都是。
+}
+```
+
+## 时间操作chrono库
+
+C++11提供了chrono模版库，实现了一系列时间相关的操作（时间长度、系统时间和计时器）。
+
+头文件：#include <chrono>
+
+命名空间：std::chrono
+
+### 时间长度
+
+duration模板类用于表示一段时间（时间长度、时钟周期），如：1小时、8分钟、5秒。
+
+duration的定义如下:
+
+```
+template<class Rep, class Period = std::ratio<1, 1>>
+class duration
+{
+   ……
+};
+```
+
+为了方便使用，定义了一些常用的时间长度，比如：时、分、秒、毫秒、微秒、纳秒，它们都位于std::chrono命名空间下，定义如下：
+
+```
+using hours			= duration<Rep, std::ratio<3600>>	// 小时
+using minutes			= duration<Rep, std::ratio<60>>		// 分钟
+using seconds			= duration<Rep>						// 秒
+using milliseconds		= duration<Rep, std::milli>			// 毫秒
+using microseconds  	= duration<Rep, std::micro>  		// 微秒
+using nanoseconds 	= duration<Rep, std::nano>  			// 纳秒
+```
+
+注意：
+
+- duration模板类重载了各种算术运算符，用于操作duration对象。
+
+- duration模板类提供了count()方法，获取duration对象的值。
+
+```
+#include <iostream>
+#include <chrono>      // chrono库的头文件。
+using namespace std;
+
+int main()
+{
+    chrono::hours  t1(1);                                  // 1小时
+    chrono::minutes  t2(60);                            //  60分钟
+    chrono::seconds  t3(60 * 60);                    //  60*60秒
+    chrono::milliseconds  t4(60 * 60 * 1000);  // 60*60*1000毫秒
+    chrono::microseconds t5(60 * 60 * 1000 * 1000);          // 警告：整数溢出。
+    chrono::nanoseconds t6(60 * 60 * 1000 * 1000*1000);  // 警告：整数溢出。
+
+    if (t1 == t2)    cout << "t1==t2\n";
+    if (t1 == t3)    cout << "t1==t3\n";
+    if (t1 == t4)    cout << "t1==t4\n";
+
+    // 获取时钟周期的值，返回的是int整数。
+    cout << "t1=" << t1.count() << endl;
+    cout << "t2=" << t2.count() << endl;
+    cout << "t3=" << t3.count() << endl;
+    cout << "t4=" << t4.count() << endl;
+
+    chrono::seconds t7(1);                                         // 1秒
+    chrono::milliseconds  t8(1000);                           // 1000毫秒
+    chrono::microseconds t9(1000 * 1000);              // 1000*1000微秒
+    chrono::nanoseconds t10(1000 * 1000 * 1000);  //  1000*1000*1000纳秒
+
+    if (t7 == t8)    cout << "t7==t8\n";
+    if (t7 == t9)    cout << "t7==t9\n";
+    if (t7 == t10)  cout << "t7==t10\n";
+
+    // 获取时钟周期的值。
+    cout << "t7=" << t7.count() << endl;
+    cout << "t8=" << t8.count() << endl;
+    cout << "t9=" << t9.count() << endl;
+    cout << "t10=" << t10.count() << endl;
+}
+```
+
+### 系统时间
+
+system_clock类支持了对系统时钟的访问，提供了三个静态成员函数：
+
+```
+// 返回当前时间的时间点。
+static std::chrono::time_point<std::chrono::system_clock> now() noexcept;
+
+// 将时间点time_point类型转换为std::time_t 类型。
+static std::time_t to_time_t( const time_point& t ) noexcept;
+
+// 将std::time_t类型转换为时间点time_point类型。
+static std::chrono::system_clock::time_point from_time_t( std::time_t t ) noexcept;
+```
+
+```
+#define _CRT_SECURE_NO_WARNINGS  // localtime()需要这个宏。
+#include <iostream>
+#include <chrono>
+#include <iomanip>   // put_time()函数需要包含的头文件。
+#include <sstream>
+using namespace std;
+
+int main()
+{
+    // 1）静态成员函数chrono::system_clock::now()用于获取系统时间。（C++时间）
+   auto now = chrono::system_clock::now();
+
+    // 2）静态成员函数chrono::system_clock::to_time_t()把系统时间转换为time_t。（UTC时间）
+    auto t_now = chrono::system_clock::to_time_t(now);
+
+    // t_now = t_now + 24*60*60;   // 把当前时间加1天。
+    // t_now = t_now + -1*60*60;   // 把当前时间减1小时。
+    // t_now = t_now + 120;           // 把当前时间加120秒。
+
+    // 3）std::localtime()函数把time_t转换成本地时间。（北京时）
+    // localtime()不是线程安全的，VS用localtime_s()代替，Linux用localtime_r()代替。
+    auto tm_now = std::localtime(&t_now);
+
+    // 4）格式化输出tm结构体中的成员。
+    std::cout << std::put_time(tm_now, "%Y-%m-%d %H:%M:%S") << std::endl;
+    std::cout << std::put_time(tm_now, "%Y-%m-%d") << std::endl;
+    std::cout << std::put_time(tm_now, "%H:%M:%S") << std::endl;
+    std::cout << std::put_time(tm_now, "%Y%m%d%H%M%S") << std::endl;
+
+    stringstream ss;   // 创建stringstream对象ss，需要包含<sstream>头文件。
+    ss << std::put_time(tm_now, "%Y-%m-%d %H:%M:%S");    // 把时间输出到对象ss中。
+    string timestr = ss.str();     // 把ss转换成string的对象。
+    cout << timestr << endl;
+}
+```
+
+### 计时器
+
+steady_clock类相当于秒表，操作系统只要启动就会进行时间的累加，常用于耗时的统计（精确到纳秒）。
+
+```
+#include <iostream>
+#include <chrono>
+using namespace std;
+
+int main()
+{
+    // 静态成员函数chrono::steady_clock::now()获取开始的时间点。
+    auto start = chrono::steady_clock::now();
+
+    // 执行一些代码，让它消耗一些时间。
+    cout << "计时开始 ...... \n";
+    for (int ii = 0; ii < 1000000; ii++) {
+        // cout << "我是一只傻傻鸟。\n";
+    }
+    cout << "计时完成 ...... \n";
+
+    // 静态成员函数chrono::steady_clock::now()获取结束的时间点。
+    auto end = chrono::steady_clock::now();
+
+    // 计算消耗的时间，单位是纳秒。
+    auto dt = end - start;
+    cout << "耗时: " << dt.count() << "纳秒（"<<(double)dt.count()/(1000*1000*1000)<<"秒）";
+}
+```
+
+## C++11线程
+
+在C++11之前，C++没有对线程提供语言级别的支持，各种操作系统和编译器实现线程的方法不一样。
+
+C++11增加了线程以及线程相关的类，统一编程风格、简单易用、跨平台。
+
+### 创建线程
+
+头文件：#include <thread>
+
+线程类：std::thread
+
+**构造函数：**
+
+1）thread() noexcept;
+
+默认构造函，构造一个线程对象，不执行任何任务（不会创建/启动子线程）。
+
+2）template< class Function, class... Args >
+
+```
+explicit thread(Function&& fx, Args&&... args );
+```
+
+创建线程对象，在线程中执行任务函数fx中的代码，args是要传递给任务函数fx的参数。
+
+任务函数fx可以是**普通函数、类的非静态成员函数**、类的静态成员函数、lambda函数、仿函数。
+
+3）thread(const thread& ) = delete;
+
+删除拷贝构造函数，不允许线程对象之间的拷贝。
+
+4）thread(thread&& other ) noexcept;
+
+移动构造函数，将线程other的资源所有权转移给新创建的线程对象。
+
+**赋值函数：**
+
+```
+thread& operator= (thread&& other) noexcept;
+thread& operator= (const other&) = delete;
+```
+
+线程中的资源不能被复制，如果other是右值，会进行资源所有权的转移，如果other是左值，禁止拷贝。
+
+注意：
+
+- 先创建的子线程不一定跑得最快（程序运行的速度有很大的偶然性）。
+
+- 线程的任务函数返回后，子线程将终止。
+
+- 如果主程序（主线程）退出（不论是正常退出还是意外终止），全部的子线程将强行被终止。
+
+```
+#include <iostream>
+#include <thread>                // 线程类头文件。
+#include <windows.h>         // Sleep()函数需要这个头文件。
+using namespace std;
+
+// 普通函数。
+void func(int bh, const string& str) {
+	for (int ii = 1; ii <= 10; ii++)
+	{
+		cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+		Sleep(1000);   // 休眠1秒。
+	}
+}
+
+// 仿函数。
+class mythread1
+{
+public:
+	void operator()(int bh, const string& str) {
+		for (int ii = 1; ii <= 10; ii++)
+		{
+			cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+			Sleep(1000);   // 休眠1秒。
+		}
+	}
+};
+
+// 类中有静态成员函数。
+class mythread2
+{
+public:
+	static void func(int bh, const string& str) {
+		for (int ii = 1; ii <= 10; ii++)
+		{
+			cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+			Sleep(1000);   // 休眠1秒。
+		}
+	}
+};
+
+// 类中有普通成员函数。
+class mythread3
+{
+public:
+	void func(int bh, const string& str) {
+		for (int ii = 1; ii <= 10; ii++)
+		{
+			cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+			Sleep(1000);   // 休眠1秒。
+		}
+	}
+};
+
+int main()
+{
+	// 用普通函数创建线程。
+	//thread t1(func, 3, "我是一只傻傻鸟。");
+	//thread t2(func, 8, "我有一只小小鸟。");
+
+	// 用lambda函数创建线程。
+	auto f = [](int bh, const string& str) {
+		for (int ii = 1; ii <= 10; ii++)
+		{
+			cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+			Sleep(1000);   // 休眠1秒。
+		}
+	};
+	//thread t3(f, 3, "我是一只傻傻鸟。");
+
+	// 用仿函数创建线程。
+	//thread t4(mythread1(), 3, "我是一只傻傻鸟。");
+
+	// 用类的静态成员函数创建线程。
+	//thread t5(mythread2::func, 3, "我是一只傻傻鸟。");
+
+	// 用类的普通成员函数创建线程。
+	mythread3 myth;   // 必须先创建类的对象，必须保证对象的生命周期比子线程要长。
+	thread t6(&mythread3::func, &myth, 3, "我是一只傻傻鸟。");  // 第二个参数必须填对象的this指针，否则会拷贝对象。
+
+	cout << "任务开始。\n";
+	for (int ii = 0; ii < 10; ii++) {
+		cout << "执行任务中......\n";
+		Sleep(1000);   // 假设执行任务需要时间。
+	}
+	cout << "任务完成。\n";
+
+	//t1.join();         // 回收线程t1的资源。
+	//t2.join();         // 回收线程t2的资源。
+	//t3.join();         // 回收线程t3的资源。
+	//t4.join();         // 回收线程t4的资源。
+	//t5.join();         // 回收线程t5的资源。
+	t6.join();         // 回收线程t6的资源。
+}
+```
+
+### 线程资源的回收
+
+虽然同一个进程的多个线程共享进程的栈空间，但是，每个子线程在这个栈中拥有自己私有的栈空间。所以，线程结束时需要回收资源。
+
+回收子线程的资源有两种方法：
+
+1）在主程序中，调用join()成员函数等待子线程退出，回收它的资源。如果子线程已退出，join()函数立即返回，否则会阻塞等待，直到子线程退出。
+
+2）在主程序中，调用detach()成员函数分离子线程，子线程退出时，系统将自动回收资源。分离后的子线程不可join()。
+
+用joinable()成员函数可以判断子线程的分离状态，函数返回布尔类型。
+
+```
+#include <iostream>
+#include <thread>                // 线程类头文件。
+#include <windows.h>         // Sleep()函数需要这个头文件。
+using namespace std;
+
+// 普通函数。
+void func(int bh, const string& str) {
+	for (int ii = 1; ii <= 10; ii++)
+	{
+		cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+		Sleep(1000);   // 休眠1秒。
+	}
+}
+
+int main()
+{
+	// 用普通函数创建线程。
+	thread t1(func, 3, "我是一只傻傻鸟。");
+	thread t2(func, 8, "我有一只小小鸟。");
+	
+	t1.detach(); t2.detach();  // 分离子线程。
+
+	//cout << "任务开始。\n";
+	//for (int ii = 0; ii < 12; ii++) {
+	//	cout << "执行任务中......\n";
+	//	Sleep(1000);   // 假设执行任务需要时间。
+	//}
+	//cout << "任务完成。\n";
+	
+	//t1.join();         // 回收线程t1的资源。
+	//t2.join();         // 回收线程t2的资源。
+	Sleep(12000);
+}
+```
+
+### this_thread的全局函数
+
+C++11提供了[命名空间](https://so.csdn.net/so/search?q=命名空间&spm=1001.2101.3001.7020)this_thread来表示当前线程，该命名空间中有四个函数：get_id()、sleep_for()、sleep_until()、yield()。
+
+**1）get_id()**
+
+```
+thread::id get_id() noexcept;
+```
+
+该函数用于获取线程ID，thread类也有同名的成员函数。
+
+**2）sleep_for() VS Sleep(1000)  Linux sleep(1)**
+
+```
+template <class Rep, class Period>
+void sleep_for (const chrono::duration<Rep,Period>& rel_time);
+```
+
+该函数让线程休眠一段时间。
+
+**3）sleep_until()     2022-01-01 12:30:35**
+
+```
+template <class Clock, class Duration>
+void sleep_until (const chrono::time_point<Clock,Duration>& abs_time);
+```
+
+该函数让线程休眠至指定时间点。（可实现定时任务）
+
+**4）yield()**
+
+```
+void yield() noexcept;
+```
+
+该函数让线程主动让出自己已经抢到的CPU时间片。
+
+**5）thread类其它的成员函数**
+
+```
+void swap(std::thread& other);    // 交换两个线程对象。
+static unsigned hardware_concurrency() noexcept;   // 返回硬件线程上下文的数量。
+```
+
+The interpretation of this value is system- andimplementation- specific, and may not be exact, but just an approximation.
+
+Note that this does not need to match the actualnumber of processors or cores available in the system: A system can supportmultiple threads per processing unit, or restrict the access to its resourcesto the program.
+
+If this value is not computable or well defined,the function returns 0. 
+
+```
+#include <iostream>
+#include <thread>                // 线程类头文件。
+using namespace std;
+
+// 普通函数。
+void func(int bh, const string& str) {
+	cout << "子线程：" << this_thread::get_id() << endl;
+
+	for (int ii = 1; ii <= 3; ii++)
+	{
+		cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+		this_thread::sleep_for(chrono::seconds(1));    // 休眠1秒。
+	}
+}
+
+int main()
+{
+	// 用普通函数创建线程。
+	thread t1(func, 3, "我是一只傻傻鸟。");
+	thread t2(func, 8, "我有一只小小鸟。");
+
+	cout << "主线程：" << this_thread::get_id() << endl;
+	cout << "线程t1：" << t1.get_id() << endl;
+	cout << "线程t2：" << t2.get_id() << endl;
+
+	t1.join();         // 回收线程t1的资源。
+	t2.join();         // 回收线程t2的资源。
+}
+```
+
+### call_once函数
+
+在多线程环境中，某些函数只能被调用一次，例如：初始化某个对象，而这个对象只能被初始化一次。
+
+在线程的任务函数中，可以用std::call_once()来保证某个函数只被调用一次。
+
+头文件：#include <mutex>
+
+```
+template< class callable, class... Args >
+  void call_once( std::once_flag& flag, Function&& fx, Args&&... args );
+```
+
+第一个参数是std::once_flag，用于标记函数fx是否已经被执行过。
+
+第二个参数是需要执行的函数fx。
+
+后面的可变参数是传递给函数fx的参数。
+
+```
+#include <iostream>
+#include <thread>        // 线程类头文件。
+#include <mutex>        // std::once_flag和std::call_once()函数需要包含这个头文件。
+using namespace std;
+
+once_flag onceflag;       // once_flag全局变量。本质是取值为0和1的锁。
+// 在线程中，打算只调用一次的函数。
+void once_func(const int bh, const string& str)  { 
+	cout << "once_func() bh= " << bh << ", str=" << str << endl;
+}
+
+// 普通函数。
+void func(int bh, const string& str) {
+	call_once(onceflag,once_func,0, "各位观众，我要开始表白了。");
+
+	for (int ii = 1; ii <= 3; ii++)
+	{
+		cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+		this_thread::sleep_for(chrono::seconds(1));    // 休眠1秒。
+	}
+}
+
+int main()
+{
+	// 用普通函数创建线程。
+	thread t1(func, 3, "我是一只傻傻鸟。");
+	thread t2(func, 8, "我有一只小小鸟。");
+
+	t1.join();         // 回收线程t1的资源。
+	t2.join();         // 回收线程t2的资源。
+}
+```
+
+### native_handle函数
+
+C++11定义了线程标准，不同的平台和编译器在实现的时候，本质上都是对操作系统的线程库进行封装，会损失一部分功能。
+
+为了弥补C++11线程库的不足，thread类提供了native_handle()成员函数，用于获得与操作系统相关的原生线程句柄，操作系统原生的线程库就可以用原生线程句柄操作线程。
+
+```
+#include <iostream>
+#include <thread>
+#include <pthread.h>        // Linux的pthread线程库头文件。
+using namespace std;
+
+void func()    // 线程任务函数。
+{
+  for (int ii=1;ii<=10;ii++)
+  {
+    cout << "ii=" << ii << endl;
+    this_thread::sleep_for(chrono::seconds(1));    // 休眠1秒。
+  }
+}
+
+int main()
+{
+  thread tt(func);          // 创建线程。
+
+  this_thread::sleep_for(chrono::seconds(5));    // 休眠5秒。
+
+  pthread_t thid= tt.native_handle();  // 获取Linux操作系统原生的线程句柄。
+
+  pthread_cancel(thid);  // 取消线程。
+
+  tt.join();   // 等待线程退出。
+}
+```
+
+### 线程安全
+
+```
+#include <iostream>
+#include <thread>        // 线程类头文件。
+using namespace std;
+
+int aa = 0;     // 定义全局变量。
+
+// 普通函数，把全局变量aa加1000000次。
+void func() {
+	for (int ii = 1; ii <= 1000000; ii++)
+		aa++;
+}
+
+int main()
+{
+	// 用普通函数创建线程。
+	thread t1(func);     // 创建线程t1，把全局变量aa加1000000次。
+	thread t2(func);     // 创建线程t2，把全局变量aa加1000000次。
+
+	t1.join();         // 回收线程t1的资源。
+	t2.join();         // 回收线程t2的资源。
+
+	cout << "aa=" << aa << endl;   // 显示全局变量aa的值。
+}
+```
+
+## 互斥锁
+
+C++11提供了四种互斥锁：
+
+- mutex：互斥锁。
+
+- timed_mutex：带超时机制的互斥锁。
+
+- recursive_mutex：递归互斥锁。
+
+- recursive_timed_mutex：带超时机制的递归互斥锁。
+
+包含头文件：#include <mutex>
+
+### mutex类
+
+**1）加锁****lock()**
+
+互斥锁有锁定和未锁定两种状态。
+
+如果互斥锁是未锁定状态，调用lock()成员函数的线程会得到互斥锁的所有权，并将其上锁。
+
+如果互斥锁是锁定状态，调用lock()成员函数的线程就会阻塞等待，直到互斥锁变成未锁定状态。
+
+**2）解锁****unlock()**
+
+只有持有锁的线程才能解锁。
+
+**3）尝试加锁****try_lock()**
+
+如果互斥锁是未锁定状态，则加锁成功，函数返回true。
+
+如果互斥锁是锁定状态，则加锁失败，函数立即返回false。（线程不会阻塞等待）
+
+```
+#include <iostream>
+#include <thread>                // 线程类头文件。
+#include <mutex>                // 互斥锁类的头文件。
+using namespace std;
+
+mutex mtx;        // 创建互斥锁，保护共享资源cout对象。
+
+// 普通函数。
+void func(int bh, const string& str) {
+	for (int ii = 1; ii <= 10; ii++)
+	{
+		mtx.lock();      // 申请加锁。
+		cout << "第" << ii << "次表白：亲爱的" << bh << "号，" << str << endl;
+		mtx.unlock();  // 解锁。
+		this_thread::sleep_for(chrono::seconds(1));     // 休眠1秒。
+	}
+}
+
+int main()
+{
+	// 用普通函数创建线程。
+	thread t1(func, 1, "我是一只傻傻鸟。");
+	thread t2(func, 2, "我是一只傻傻鸟。");
+	thread t3(func, 3, "我是一只傻傻鸟。");
+	thread t4(func, 4, "我是一只傻傻鸟。");
+	thread t5(func, 5, "我是一只傻傻鸟。");
+
+	t1.join();         // 回收线程t1的资源。
+	t2.join();         // 回收线程t2的资源。
+	t3.join();         // 回收线程t3的资源。
+	t4.join();         // 回收线程t4的资源。
+	t5.join();         // 回收线程t5的资源。
+}
+```
+
+### timed_mutex类
+
+增加了两个成员函数：
+
+```
+bool try_lock_for(时间长度);
+bool try_lock_until(时间点);
+```
+
+### recursive_mutex类
+
+递归互斥锁允许同一线程多次获得互斥锁，可以解决同一线程多次加锁造成的死锁问题。
+
+```
+#include <iostream>
+#include <mutex>        // 互斥锁类的头文件。
+using namespace std;
+
+class AA
+{
+	recursive_mutex m_mutex;
+public:
+	void func1() {
+		m_mutex.lock();
+		cout << "调用了func1()\n";
+		m_mutex.unlock();
+	}
+
+	void func2() {
+		m_mutex.lock();
+		cout << "调用了func2()\n";
+		func1();
+		m_mutex.unlock();
+	}
+};
+
+int main()
+{
+	AA aa;
+	//aa.func1();
+	aa.func2();
+}
+```
+
+### lock_guard类
+
+lock_guard是模板类，可以简化互斥锁的使用，也更安全。
+
+lock_guard的定义如下：
+
+```
+template<class Mutex>
+class lock_guard
+{
+    explicit lock_guard(Mutex& mtx);
+}
+```
+
+lock_guard在构造函数中加锁，在析构函数中解锁。
+
+lock_guard采用了**RAII**思想（在类构造函数中分配资源，在析构函数中释放资源，保证资源在离开作用域时自动释放）。
+
+## 条件变量-生产消费者模型
+
+条件变量是一种线程同步机制。当条件不满足时，相关线程被一直阻塞，直到某种条件出现，这些线程才会被唤醒。
+
+C++11的条件变量提供了两个类：
+
+condition_variable：只支持与普通mutex搭配，效率更高。
+
+condition_variable_any：是一种通用的条件变量，可以与任意mutex搭配（包括用户自定义的锁类型）。
+
+包含头文件：<condition_variable>
+
+### condition_variable类
+
+主要成员函数：
+
+1）condition_variable() 默认构造函数。
+
+2）condition_variable(const condition_variable &)=delete 禁止拷贝。
+
+3）condition_variable& condition_variable::operator=(const condition_variable &)=delete 禁止赋值。
+
+4）notify_one() 通知一个等待的线程。
+
+5）notify_all() 通知全部等待的线程。
+
+6）wait(unique_lock<mutex> lock) 阻塞当前线程，直到通知到达。
+
+7）wait(unique_lock<mutex> lock,Pred pred) 循环的阻塞当前线程，直到通知到达且谓词满足。
+
+8）wait_for(unique_lock<mutex> lock,时间长度)
+
+9）wait_for(unique_lock<mutex> lock,时间长度,Pred pred)
+
+10）wait_until(unique_lock<mutex> lock,时间点)
+
+11）wait_until(unique_lock<mutex> lock,时间点,Pred pred)
+
+### unique_lock类
+
+template <class Mutex> class unique_lock是模板类，模板参数为互斥锁类型。
+
+unique_lock和lock_guard都是管理锁的辅助类，都是RAII风格（在构造时获得锁，在析构时释放锁）。它们的区别在于：为了配合condition_variable，unique_lock还有lock()和unlock()成员函数。
+
+```
+#include <iostream>
+#include <string>
+#include <thread>                      // 线程类头文件。
+#include <mutex>                      // 互斥锁类的头文件。
+#include <deque>                      // deque容器的头文件。
+#include <queue>                      // queue容器的头文件。
+#include <condition_variable>  // 条件变量的头文件。
+using namespace std;
+class AA
+{
+    mutex m_mutex;                                    // 互斥锁。
+    condition_variable m_cond;                  // 条件变量。
+    queue<string, deque<string>> m_q;   // 缓存队列，底层容器用deque。
+public:
+    void incache(int num)     // 生产数据，num指定数据的个数。
+    {
+        lock_guard<mutex> lock(m_mutex);   // 申请加锁。
+        for (int ii=0 ; ii<num ; ii++)
+        {
+            static int bh = 1;           // 超女编号。
+            string message = to_string(bh++) + "号超女";    // 拼接出一个数据。
+            m_q.push(message);     // 把生产出来的数据入队。
+        }
+        m_cond.notify_one();     // 唤醒一个被当前条件变量阻塞的线程。
+    }
+    
+    void outcache()       // 消费者线程任务函数。
+    {
+        while (true)
+        {
+            string message;
+            {
+                // 把互斥锁转换成unique_lock<mutex>，并申请加锁。
+                unique_lock<mutex> lock(m_mutex);
+
+                while (m_q.empty())    // 如果队列空，进入循环，否则直接处理数据。必须用循环，不能用if
+                    m_cond.wait(lock);  // 等待生产者的唤醒信号。
+
+                // 数据元素出队。
+                message = m_q.front();  m_q.pop();
+            }
+            // 处理出队的数据（把数据消费掉）。
+            this_thread::sleep_for(chrono::milliseconds(1));   // 假设处理数据需要1毫秒。
+            cout << "线程：" << this_thread::get_id() << "，" << message << endl;
+        }
+    }
+};
+
+int main()
+{
+    AA aa;
+  
+    thread t1(&AA::outcache, &aa);     // 创建消费者线程t1。
+    thread t2(&AA::outcache, &aa);     // 创建消费者线程t2。
+    thread t3(&AA::outcache, &aa);     // 创建消费者线程t3。
+
+    this_thread::sleep_for(chrono::seconds(2));    // 休眠2秒。
+    aa.incache(3);      // 生产3个数据。
+
+    this_thread::sleep_for(chrono::seconds(3));    // 休眠3秒。
+    aa.incache(5);      // 生产5个数据。
+
+    t1.join();   // 回收子线程的资源。
+    t2.join();
+    t3.join(); 
+}
+```
+
+```
+#include <iostream>
+#include <string>
+#include <thread>                      // 线程类头文件。
+#include <mutex>                      // 互斥锁类的头文件。
+#include <deque>                      // deque容器的头文件。
+#include <queue>                      // queue容器的头文件。
+#include <condition_variable>  // 条件变量的头文件。
+using namespace std;
+class AA
+{
+    mutex m_mutex;                                    // 互斥锁。
+    condition_variable m_cond;                  // 条件变量。
+    queue<string, deque<string>> m_q;   // 缓存队列，底层容器用deque。
+public:
+    void incache(int num)     // 生产数据，num指定数据的个数。
+    {
+        lock_guard<mutex> lock(m_mutex);   // 申请加锁。
+        for (int ii=0 ; ii<num ; ii++)
+        {
+            static int bh = 1;           // 超女编号。
+            string message = to_string(bh++) + "号超女";    // 拼接出一个数据。
+            m_q.push(message);     // 把生产出来的数据入队。
+        }
+        //m_cond.notify_one();     // 唤醒一个被当前条件变量阻塞的线程。
+        m_cond.notify_all();          // 唤醒全部被当前条件变量阻塞的线程。
+    }
+    
+    void outcache()   {    // 消费者线程任务函数。
+        while (true)   {
+            // 把互斥锁转换成unique_lock<mutex>，并申请加锁。
+            unique_lock<mutex> lock(m_mutex);
+
+            // 条件变量虚假唤醒：消费者线程被唤醒后，缓存队列中没有数据。
+            //while (m_q.empty())    // 如果队列空，进入循环，否则直接处理数据。必须用循环，不能用if
+            //    m_cond.wait(lock);  // 1）把互斥锁解开；2）阻塞，等待被唤醒；3）给互斥锁加锁。
+            m_cond.wait(lock, [this] { return !m_q.empty(); });
+
+            // 数据元素出队。
+            string message = m_q.front();  m_q.pop();
+            cout << "线程：" << this_thread::get_id() << "，" << message << endl;
+            lock.unlock();      // 手工解锁。
+
+            // 处理出队的数据（把数据消费掉）。
+            this_thread::sleep_for(chrono::milliseconds(1));   // 假设处理数据需要1毫秒。
+        }
+    }
+};
+
+int main()
+{
+    AA aa;
+  
+    thread t1(&AA::outcache, &aa);     // 创建消费者线程t1。
+    thread t2(&AA::outcache, &aa);     // 创建消费者线程t2。
+    thread t3(&AA::outcache, &aa);     // 创建消费者线程t3。
+
+    this_thread::sleep_for(chrono::seconds(2));    // 休眠2秒。
+    aa.incache(2);      // 生产2个数据。
+
+    this_thread::sleep_for(chrono::seconds(3));    // 休眠3秒。
+    aa.incache(5);      // 生产5个数据。
+
+    t1.join();   // 回收子线程的资源。
+    t2.join();
+    t3.join(); 
+}
+```
+
+## 原子类型atomic
+
+C++11提供了atomic<T>模板类（结构体），用于支持原子类型，模板参数可以是bool、char、int、long、long long、指针类型（不支持浮点类型和自定义数据类型）。
+
+原子操作由CPU指令提供支持，它的性能比锁和消息传递更高，并且，不需要程序员处理加锁和释放锁的问题，支持修改、读取、交换、比较并交换等操作。
+
+头文件：#include <atomic>
+
+构造函数：
+
+```
+atomic() noexcept = default;  // 默认构造函数。
+atomic(T val) noexcept;  // 转换函数。
+atomic(const atomic&) = delete;  // 禁用拷贝构造函数。
+```
+
+赋值函数：
+
+```
+atomic& operator=(const atomic&) = delete;   // 禁用赋值函数。
+```
+
+常用函数：
+
+```
+void store(const T val) noexcept;   // 把val的值存入原子变量。
+T load() noexcept;  // 读取原子变量的值。
+T fetch_add(const T val) noexcept; // 把原子变量的值与val相加，返回原值。
+T fetch_sub(const T val) noexcept; // 把原子变量的值减val，返回原值。
+T exchange(const T val) noexcept; // 把val的值存入原子变量，返回原值。
+T compare_exchange_strong(T &expect,const T val) noexcept; // 比较原子变量的值和预期值expect，如果当两个值相等，把val存储到原子变量中，函数返回true；如果当两个值不相等，用原子变量的值更新预期值，函数返回false。CAS指令。
+bool is_lock_free();  // 查询某原子类型的操作是直接用CPU指令（返回true），还是编译器内部的锁（返回false）。
+```
+
+![image-20231016205346099](./photo/image-20231016205346099.png)
+
+注意：
+
+- atomic<T>模板类重载了整数操作的各种运算符。
+
+- atomic<T>模板类的模板参数支持指针，但不表示它所指向的对象是原子类型。
+
+- 原子整型可以用作计数器，布尔型可以用作开关。
+
+- CAS指令是实现无锁队列基础。
+
+```
+#include <iostream>
+#include <atomic>     // 原子类型的头文件。
+using namespace std;
+
+int main()
+{
+	atomic<int> a = 3;       // atomic(T val) noexcept;  // 转换函数。
+	cout << "a=" << a.load() << endl;   // 读取原子变量a的值。输出：a=3
+	a.store(8);      // 把8存储到原子变量中。
+	cout << "a=" << a.load() << endl;   // 读取原子变量a的值。 输出：a=8
+	
+	int old;        // 用于存放原值。
+	old = a.fetch_add(5);         // 把原子变量a的值与5相加，返回原值。
+	cout << "old = " << old <<"，a = " << a.load() << endl;   // 输出：old=8，a=13
+	old = a.fetch_sub(2);         // 把原子变量a的值减2，返回原值。
+	cout << "old = " << old << "，a = " << a.load() << endl;   // 输出：old=13，a=11
+	
+	atomic<int> ii = 3;  // 原子变量
+	int expect = 4;         // 期待值
+	int val = 5;               // 打算存入原子变量的值
+	// 比较原子变量的值和预期值expect，
+	// 如果当两个值相等，把val存储到原子变量中；
+	// 如果当两个值不相等，用原子变量的值更新预期值。
+	// 执行存储操作时返回true，否则返回false。
+	bool bret = ii.compare_exchange_strong(expect, val);
+	cout << "bret=" << bret << endl;
+	cout << "ii=" << ii << endl;
+	cout << "expect=" << expect << endl;
+}
+```
+
+## 可调用对象
+
+在C++中，可以像函数一样调用的有：普通函数、类的静态成员函数、仿函数、lambda函数、类的非静态成员函数、可被转换为函数的类的对象，统称可调用对象或函数对象。
+
+可调用对象有类型，可以用指针存储它们的地址，可以被引用（类的成员函数除外）
+
+### 普通函数
+
+普通函数类型可以声明函数、定义函数指针和函数引用，但是，不能定义函数的实体。
+
+```
+#include <iostream>
+using namespace std;
+
+using Fun = void (int, const string&);  // 普通函数类型的别名。
+Fun show;        // 声明普通函数。
+
+
+int main()
+{
+	show(1, "我是一只傻傻鸟。");					// 直接调用普通函数。
+
+	void(*fp1)(int, const string&) = show;	// 声明函数指针，指向普通函数。
+	void(&fr1)(int, const string&) = show;	// 声明函数引用，引用普通函数。
+	fp1(2, "我是一只傻傻鸟。");						// 用函数指针调用普通函数。
+	fr1(3, "我是一只傻傻鸟。");						// 用函数引用调用普通函数。
+
+	Fun* fp2 = show;										// 声明函数指针，指向普通函数。
+	Fun& fr2 = show;									// 声明函数引用，引用普通函数。
+	fp2(4, "我是一只傻傻鸟。");						// 用函数指针调用普通函数。
+	fr2(5, "我是一只傻傻鸟。");						// 用函数引用调用普通函数。
+}
+
+// 定义普通函数
+void show(int bh, const string& message) {  
+	cout << "亲爱的" << bh << "，" << message << endl;
+}
+
+// 以下代码是错误的，不能用函数类型定义函数的实体。
+//Func show1 {
+//	cout << "亲爱的" << bh << "，" << message << endl;
+//}
+```
+
+### 类的静态成员函数
+
+类的静态成员函数和普通函数本质上是一样的，把普通函数放在类中而已。
+
+```
+#include <iostream>
+using namespace std;
+
+using Fun = void (int, const string&);  // 普通函数类型的别名。
+
+struct AA	// 类中有静态成员函数。
+{
+	static void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+int main()
+{
+	AA::show(1, "我是一只傻傻鸟。");					// 直接调用静态成员函数。
+
+	void(*fp1)(int, const string&) = AA::show;	// 用函数指针指向静态成员函数。
+	void(&fr1)(int, const string&) = AA::show;	// 引用静态成员函数。
+	fp1(2, "我是一只傻傻鸟。");						// 用函数指针调用静态成员函数。
+	fr1(3, "我是一只傻傻鸟。");						// 用函数引用调用静态成员函数。
+
+	Fun* fp2 = AA::show;										// 用函数指针指向静态成员函数。
+	Fun& fr2 = AA::show;									// 引用静态成员函数。
+	fp2(4, "我是一只傻傻鸟。");						// 用函数指针调用静态成员函数。
+	fr2(5, "我是一只傻傻鸟。");						// 用函数引用调用静态成员函数。
+}
+```
+
+### 仿函数
+
+仿函数的本质是类，调用的代码像函数。
+
+仿函数的类型就是类的类型。
+
+```
+#include <iostream>
+using namespace std;
+
+struct BB	// 仿函数。
+{
+	void operator()(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+int main()
+{
+	BB bb;
+	bb(11, "我是一只傻傻鸟。");		// 用对象调用仿函数。
+	BB()(12, "我是一只傻傻鸟。");		// 用匿名对象调用仿函数。
+
+	BB& br = bb;           		// 引用函数
+	br(13, "我是一只傻傻鸟。");		// 用对象的引用调用仿函数。
+}
+```
+
+### lambda函数
+
+lambda函数的本质是仿函数，仿函数的本质是类。
+
+```
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	// 创建lambda对象。
+	auto lb = [](int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	};
+
+	auto& lr = lb;  // 引用lambda对象。
+
+	lb(1, "我是一只傻傻鸟。");		// 用lambda对象调用仿函数。
+	lr(2, "我是一只傻傻鸟。");		// 用lambda对象的引用调用仿函数。
+}
+```
+
+### 类的非静态成员函数
+
+类的非静态成员函数有地址，但是，只能通过类的对象才能调用它，所以，C++对它做了特别处理。
+
+类的非静态成员函数只有指针类型，没有引用类型，不能引用。
+
+```
+#include <iostream>
+using namespace std;
+
+struct CC	// 类中有普通成员函数。
+{
+	void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+int main()
+{
+	CC cc;
+	cc.show(14, "我是一只傻傻鸟。");
+
+	void (CC::* fp11)(int, const string&) = &CC::show;		// 定义类的成员函数的指针。
+	(cc.*fp11)(15, "我是一只傻傻鸟。");									// 用类的成员函数的指针调用成员函数。
+
+	using pFun = void (CC::*)(int, const string&);		// 类成员函数的指针类型。
+	pFun fp12 = &CC::show;										// 让类成员函数的指针指向类的成员函数的地址。
+	(cc.*fp12)(16, "我是一只傻傻鸟。");							// 用类成员函数的指针调用类的成员函数。
+}
+```
+
+## 包装器function
+
+std::function模板类是一个通用的可调用对象的包装器，用简单的、统一的方式处理可调用对象。
+
+template<class _Fty>
+
+class function……
+
+_Fty是可调用对象的类型，格式：返回类型(参数列表)。
+
+包含头文件：#include <functional>
+
+注意：
+
+- 重载了bool运算符，用于判断是否包装了可调用对象。
+
+- 如果std::function对象未包装可调用对象，使用std::function对象将抛出std::bad_function_call异常。
+
+```
+#include <iostream>
+#include <functional>
+using namespace std;
+
+// 普通函数
+void show(int bh, const string& message) {
+	cout << "亲爱的" << bh << "，" << message << endl;
+}
+
+struct AA	// 类中有静态成员函数。
+{
+	static void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct BB	// 仿函数。
+{
+	void operator()(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct CC	// 类中有普通成员函数。
+{
+	void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct DD		// 可以被转换为普通函数指针的类。
+{
+	using Fun = void (*)(int, const string&);    // 函数指针的别名。
+	operator Fun() {
+		return show;	// 返回普通函数show的地址。
+	}
+};
+
+int main()
+{
+	using Fun = void(int, const string&);  // 函数类型的别名。
+
+	// 普通函数。
+	void(*fp1)(int, const string&) = show;	// 声明函数指针，指向函数对象。
+	fp1(1, "我是一只傻傻鸟。");						// 用函数指针调用普通函数。
+	function<void(int, const string&)> fn1 = show;    // 包装普通全局函数show。
+	fn1(1, "我是一只傻傻鸟。");										// 用function对象调用普通全局函数show。
+
+	// 类的静态成员函数。
+	void(*fp3)(int, const string&) = AA::show;	// 用函数指针指向类的静态成员函数。
+	fp3(2, "我是一只傻傻鸟。");							// 用函数指针调用类的静态成员函数。
+	function<void(int, const string&)> fn3 = AA::show;		// 包装类的静态成员函数。
+	fn3(2, "我是一只傻傻鸟。");												// 用function对象调用类的静态成员函数。
+
+	// 仿函数。
+	BB bb;
+	bb(3, "我是一只傻傻鸟。");		// 用仿函数对象调用仿函数。
+	function<void(int, const string&)> fn4 = BB();		// 包装仿函数。
+	fn4(3, "我是一只傻傻鸟。");										// 用function对象调用仿函数。
+
+	// 创建lambda对象。
+	auto lb = [](int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	};
+	lb(4, "我是一只傻傻鸟。");          // 调用lambda函数。
+	function<void(int, const string&)> fn5 = lb;			// 包装lamba函数。
+	fn5(4, "我是一只傻傻鸟。");										// 用function对象调用lamba函数。
+
+	// 类的非静态成员函数。
+	CC cc;
+	void (CC:: * fp11)(int, const string&) = &CC::show;		// 定义类成员函数的指针。
+	(cc.*fp11)(5, "我是一只傻傻鸟。");									// 用类成员函数的指针调用类的成员函数。
+	function<void(CC&,int, const string&)> fn11 = &CC::show;	// 包装成员函数。
+	fn11(cc,5, "我是一只傻傻鸟。");											// 用function对象调用成员函数。
+
+	// 可以被转换为函数指针的类对象。
+	DD dd;
+	dd(6, "我是一只傻傻鸟。");						// 用可以被转换为函数指针的类对象调用普通函数。
+	function<void(int, const string&)> fn12 = dd;			// 包装可以被转换为函数指针的类。
+	fn12(6, "我是一只傻傻鸟。");										// 用function对象调用它。
+
+	function<void(int, const string&)> fx=dd;
+	try {
+		if (fx) fx(6, "我是一只傻傻鸟。");
+	}
+	catch (std::bad_function_call e) {
+		cout << "抛出了std::bad_function_call异常。";
+	}
+}
+```
+
+### 适配器bind
+
+std::bind()模板函数是一个通用的函数适配器（绑定器），它用一个可调用对象及其参数，生成一个新的可调用对象，以适应模板。
+
+包含头文件：#include <functional>
+
+函数原型：
+
+```
+template< class Fx, class... Args >
+  	function<> bind (Fx&& fx, Args&...args);
+```
+
+Fx：需要绑定的可调用对象（可以是前两节课介绍的那六种，也可以是function对象）。
+
+args：绑定参数列表，可以是左值、右值和参数占位符std::placeholders::_n，如果参数不是占位符，缺省为值传递，std:: ref(参数)则为引用传递。
+
+std::bind()返回std::function的对象。
+
+std::bind()的本质是仿函数。
+
+示例一（bind的基本用法）：
+
+```
+#include <iostream>
+#include <functional>
+using namespace std;
+
+// 普通函数
+void show(int bh, const string& message) {
+	cout << "亲爱的" << bh << "号，" << message << endl;
+}
+
+int main()
+{
+	function<void(int, const string&)> fn1 = show;
+	function<void(int, const string&)> fn2 = bind(show, placeholders::_1, placeholders::_2);
+	fn1(1, "我是一只傻傻鸟。");
+	fn2(1, "我是一只傻傻鸟。");
+
+	function<void(const string&, int)> fn3 = bind(show, placeholders::_2, placeholders::_1);
+	fn3("我是一只傻傻鸟。", 1);
+	function<void(const string&)> fn4 = bind(show, 3, placeholders::_1);
+	fn4("我是一只傻傻鸟。");
+
+	function<void(int, const string&,int)> fn5 = bind(show, placeholders::_1, placeholders::_2);
+	fn5(1, "我是一只傻傻鸟。", 88);
+}
+```
+
+示例二（绑定六种可调用对象）：
+
+```
+#include <iostream>
+#include <functional>
+using namespace std;
+
+// 普通函数
+void show(int bh, const string& message) {
+	cout << "亲爱的" << bh << "，" << message << endl;
+}
+
+struct AA	// 类中有静态成员函数。
+{
+	static void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct BB	// 仿函数。
+{
+	void operator()(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct CC	// 类中有普通成员函数。
+{
+	void show(int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	}
+};
+
+struct DD		// 可以被转换为普通函数指针的类。
+{
+	using Fun = void (*)(int, const string&);    // 函数指针的别名。
+	operator Fun() {
+		return show;	// 返回普通函数show的地址。
+	}
+};
+
+int main()
+{
+	// 普通函数。
+	function<void(int, const string&)> fn1 = bind(show, placeholders::_1, placeholders::_2);    // 绑定普通全局函数show。
+	fn1(1, "我是一只傻傻鸟。");										// 用function对象调用普通全局函数show。
+
+	// 类的静态成员函数。
+	function<void(int, const string&)> fn3 = bind(AA::show, placeholders::_1, placeholders::_2);		// 绑定类的静态成员函数。
+	fn3(2, "我是一只傻傻鸟。");												// 用function对象调用类的静态成员函数。
+
+	// 仿函数。
+	function<void(int, const string&)> fn4 = bind(BB(), placeholders::_1, placeholders::_2);			// 绑定仿函数。
+	fn4(3, "我是一只傻傻鸟。");										// 用function对象调用仿函数。
+
+	// 创建lambda对象。
+	auto lb = [](int bh, const string& message) {
+		cout << "亲爱的" << bh << "，" << message << endl;
+	};
+	function<void(int, const string&)> fn5 = bind(lb, placeholders::_1, placeholders::_2);			// 绑定lamba函数。
+	fn5(4, "我是一只傻傻鸟。");										// 用function对象调用lamba函数。
+
+	// 类的非静态成员函数。
+	CC cc;
+	//function<void(CC&, int, const string&)> fn11 = bind(&CC::show, placeholders::_1, placeholders::_2, placeholders::_3);		// 绑定成员函数。
+	//fn11(cc, 5, "我是一只傻傻鸟。");											// 用function对象调用成员函数。
+	function<void(int, const string&)> fn11 = bind(&CC::show,&cc,placeholders::_1, placeholders::_2);		// 绑定成员函数。
+	fn11(5, "我是一只傻傻鸟。");											// 用function对象调用成员函数。
+
+	// 可以被转换为函数指针的类对象。
+	DD dd;
+	function<void(int, const string&)> fn12 = bind(dd, placeholders::_1, placeholders::_2);			// 绑定可以被转换为函数指针的类。
+	fn12(6, "我是一只傻傻鸟。");										// 用function对象调用它。
+}
+```
+
+## 可变函数和参数
+
+写一个函数，函数的参数是函数对象及参数，功能和thread类的构造函数相同。
+
+```
+#include <iostream>
+#include <thread>
+#include <functional>        
+using namespace std;
+
+void show0() {  // 普通函数。
+	cout << "亲爱的，我是一只傻傻鸟。\n";
+}
+
+void show1(const string& message) {  // 普通函数。
+	cout << "亲爱的，" << message << endl;
+}
+
+struct CC	// 类中有普通成员函数。
+{
+	void show2(int bh, const string& message) {
+		cout << "亲爱的" << bh << "号，" << message << endl;
+	}
+};
+
+template<typename Fn, typename...Args>
+auto show(Fn&& fn, Args&&...args) -> decltype(bind(forward<Fn>(fn), forward<Args>(args)...))
+{
+	cout << "表白前的准备工作......\n";
+
+	auto f = bind(forward<Fn>(fn), forward<Args>(args)...);
+	f();
+
+	cout << "表白完成。\n";
+	return f;
+}
+
+int main()
+{
+	show(show0);
+	show(show1,"我是一只傻傻鸟。");
+	CC cc;
+	auto f = show(&CC::show2,&cc, 3,"我是一只傻傻鸟。");
+	f();
+	
+	//thread t1(show0);
+	//thread t2(show1,"我是一只傻傻鸟。");
+	//CC cc;
+	//thread t3(&CC::show2,&cc, 3,"我是一只傻傻鸟。");
+	//t1.join();
+	//t2.join();
+	//t3.join();
+}
+```
+
+## 回调函数的实现
+
+在消息队列和网络库的框架中，当接收到消息（报文）时，回调用户自定义的函数对象，把消息（报文）参数传给它，由它决定如何处理。
+
+```
+#include <iostream>
+#include <string>
+#include <thread>                      // 线程类头文件。
+#include <mutex>                      // 互斥锁类的头文件。
+#include <deque>                      // deque容器的头文件。
+#include <queue>                      // queue容器的头文件。
+#include <condition_variable>  // 条件变量的头文件。
+#include <functional>
+using namespace std;
+
+void show(const string& message) {  // 处理业务的普通函数
+    cout << "处理数据：" << message << endl;
+}
+
+struct BB {  // 处理业务的类
+    void show(const string& message) {
+        cout << "处理表白数据：" << message << endl;
+    }
+};
+
+class AA
+{
+    mutex m_mutex;                                    // 互斥锁。
+    condition_variable m_cond;                  // 条件变量。
+    queue<string, deque<string>> m_q;   // 缓存队列，底层容器用deque。
+    function<void(const string&)> m_callback;  // 回调函数对象。
+public:
+    // 注册回调函数，回调函数只有一个参数（消费者接收到的数据）。
+    template<typename Fn, typename ...Args>
+    void callback(Fn && fn, Args&&...args) {
+        m_callback = bind(forward<Fn>(fn), forward<Args>(args)..., std::placeholders::_1);  // 绑定回调函数。
+    }
+
+    void incache(int num)     // 生产数据，num指定数据的个数。
+    {
+        lock_guard<mutex> lock(m_mutex);   // 申请加锁。
+        for (int ii = 0; ii < num; ii++)
+        {
+            static int bh = 1;           // 超女编号。
+            string message = to_string(bh++) + "号超女";    // 拼接出一个数据。
+            m_q.push(message);     // 把生产出来的数据入队。
+        }
+        //m_cond.notify_one();     // 唤醒一个被当前条件变量阻塞的线程。
+        m_cond.notify_all();          // 唤醒全部被当前条件变量阻塞的线程。
+    }
+
+    void outcache() {    // 消费者线程任务函数。
+        while (true) {
+            // 把互斥锁转换成unique_lock<mutex>，并申请加锁。
+            unique_lock<mutex> lock(m_mutex);
+
+            // 1）把互斥锁解开；2）阻塞，等待被唤醒；3）给互斥锁加锁。
+            m_cond.wait(lock, [this] { return !m_q.empty(); });
+
+            // 数据元素出队。
+            string message = m_q.front();  m_q.pop();
+            cout << "线程：" << this_thread::get_id() << "，" << message << endl;
+            lock.unlock();      // 手工解锁。
+
+            // 处理出队的数据（把数据消费掉）。
+            if (m_callback) m_callback(message);  // 回调函数，把收到的数据传给它。
+        }
+    }
+};
+
+int main()
+{
+    AA aa;
+    // aa.callback(show);                   // 把普通函数show()注册为回调函数。
+    BB bb;
+    aa.callback(&BB::show, &bb);    // 把类成员函数BB::show()注册为回调函数。
+
+    thread t1(&AA::outcache, &aa);     // 创建消费者线程t1。
+    thread t2(&AA::outcache, &aa);     // 创建消费者线程t2。
+    thread t3(&AA::outcache, &aa);     // 创建消费者线程t3。
+
+    this_thread::sleep_for(chrono::seconds(2));    // 休眠2秒。
+    aa.incache(2);      // 生产2个数据。
+
+    this_thread::sleep_for(chrono::seconds(3));    // 休眠3秒。
+    aa.incache(5);      // 生产5个数据。
+
+    t1.join();   // 回收子线程的资源。
+    t2.join();
+    t3.join();
+}
+```
+
+## 如何取代虚函数
+
+C++虚函数在执行过程中会跳转两次（先查找对象的函数表，再次通过该函数表中的地址找到真正的执行地址），这样的话，CPU会跳转两次，而普通函数只跳转一次。
+
+CPU每跳转一次，预取指令要作废很多，所以效率会很低。（百度）
+
+为了管理的方便（基类指针可指向派生类对象和自动析构派生类），保留类之间的继承关系。
+
+```
+#include <iostream>         // 包含头文件。
+#include <functional>
+using namespace std;
+
+struct Hero  {							// 英雄基类
+	//virtual void show() { cout << "英雄释放了技能。\n"; }
+	function<void()> m_callback;        // 用于绑定子类的成员函数。
+
+	// 注册子类成员函数，子类成员函数没有参数。
+	template<typename Fn, typename ...Args>
+	void callback(Fn&& fn, Args&&...args) {
+		m_callback = bind(forward<Fn>(fn), forward<Args>(args)...);
+	}
+	void show() { m_callback(); }   // 调用子类的成员函数。
+};
+
+struct XS :public Hero  {			// 西施派生类
+	void show() { cout << "西施释放了技能。\n"; }
+};
+
+struct HX :public Hero  {			// 韩信派生类
+	void show() { cout << "韩信释放了技能。\n"; }
+};
+
+int main()
+{
+	// 根据用户选择的英雄，施展技能。
+	int id = 0;     // 英雄的id。
+	cout << "请输入英雄（1-西施；2-韩信。）：";
+	cin >> id;
+
+	// 创建基类指针，将指向派生类对象，用基类指针调用派生类的成员函数。
+	Hero* ptr = nullptr;
+
+	if (id == 1) {            // 1-西施
+		ptr = new XS;
+		ptr->callback(&XS::show, static_cast<XS*>(ptr));  // 注册子类成员函数。
+	}
+	else if (id == 2) {     // 2-韩信
+		ptr = new HX;
+		ptr->callback(&HX::show, static_cast<HX*>(ptr));  // 注册子类成员函数。
+	}
+
+	if (ptr != nullptr) {
+		ptr->show();		// 调用子类的成员函数。
+		delete ptr;			// 释放派生类对象。
+	}
+}
+```
+
+
+
