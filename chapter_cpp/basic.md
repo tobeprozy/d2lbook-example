@@ -3,7 +3,7 @@
 
 ## 程序结构、编译 & 执行
 ### 程序结构
-```
+```cpp
 #include <iostream>
 using namespace std;
  
@@ -202,7 +202,7 @@ long long distance = 1000000000;
 
 :width:`250px`
 
-```
+```cpp
 double balance[10];//声明
 double balance[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};//初始化
 double balance[] = {1000.0, 2.0, 3.4, 7.0, 50.0};//初始化
@@ -217,7 +217,7 @@ balance[4] = 50.0;//修改
 
 :width:`250px`
 
-```
+```cpp
 int a[3][4] = {  
  {0, 1, 2, 3} ,   /*  初始化索引号为 0 的行 */
  {4, 5, 6, 7} ,   /*  初始化索引号为 1 的行 */
@@ -231,7 +231,7 @@ int val = a[2][3];//第 3 行第 4 个元素
 
 ### 定义
 
-```
+```cpp
 char site[7] = {'R', 'U', 'N', 'O', 'O', 'B', '\0'};
 char site[10]="RUNOOB";
 char site[] = "RUNOOB";////系统计算大小为7
@@ -261,7 +261,7 @@ char site[] = "RUNOOB";////系统计算大小为7
 
 支持上述所有的操作，另外还增加了其他更多的功能。
 
-```
+```cpp
 #include <iostream>
 #include <string>
 using namespace std;
@@ -291,7 +291,7 @@ int main ()
 
 为了访问结构的成员，我们使用**成员访问运算符（.）**。成员访问运算符是结构变量名称和我们要访问的结构成员之间的一个句号。
 
-```
+```cpp
 #include <iostream>
 #include <cstring>
  
@@ -329,7 +329,7 @@ int main( )
 
 为创建的类型取一个"别名"
 
-```
+```cpp
 typedef struct Books
 {
    char  title[50];
@@ -342,13 +342,13 @@ typedef struct Books
 
 现在，可以直接使用 *Books* 来定义 *Books* 类型的变量，而不需要使用 struct 关键字。下面是实例：
 
-```
+```cpp
 Books Book1, Book2;
 ```
 
 可以使用 **typedef** 关键字来定义非结构类型，如下所示：
 
-```
+```cpp
 typedef long int *pint32;
  
 pint32 x, y, z;
@@ -360,7 +360,7 @@ x, y 和 z 都是指向长整型 long int 的指针。
 
 ### 定义
 
-```
+```cpp
 type *var-name;
 int    *ip;    /* 一个整型的指针 */
 double *dp;    /* 一个 double 型的指针 */
@@ -373,7 +373,7 @@ int  *ptr = NULL;//Null 指针,ptr 的值是 0
 
 指针可以用关系运算符进行比较，如 ==、< 和 >。如果 p1 和 p2 指向两个相关的变量，比如同一个数组中的不同元素，则可对 p1 和 p2 进行大小比较。
 
-```
+```cpp
 #include <iostream>
  
 using namespace std;
@@ -442,7 +442,7 @@ int *ptr[MAX];
 
 在这里，把 **ptr** 声明为一个数组，由 MAX 个整数指针组成。因此，ptr 中的每个元素，都是一个指向 int 值的指针。下面的实例用到了三个整数，它们将存储在一个指针数组中。
 
-```
+```cpp
 #include <iostream>
  
 using namespace std;
@@ -468,7 +468,7 @@ int main ()
 
 也可以用一个指向字符的指针数组来存储一个字符串列表。
 
-```
+```cpp
 #include <iostream>
  
 using namespace std;
@@ -494,7 +494,7 @@ int main ()
 
 ### 数组指针
 数组指针是一个指针，它指向一个数组。下面是一个示例代码，演示如何声明和使用数组指针：
-```
+```cpp
 #include <iostream>
 
 using namespace std;
@@ -532,13 +532,13 @@ int main ()
 
    - 示例：
 
-```
+```cpp
 codeint arr[5] = {1, 2, 3, 4, 5};
 int (*ptr)[5]; // 声明一个指向包含5个整数的数组的指针
 ptr = &arr;    // 将指针指向数组arr
 ```
 
-```
+```cpp
 //指向：数组为10个int型的元素,int (*p)[10],相当于 int p[][10]二维数组就是数组指针
 a+i == p+i       
 a[i] == p[i] == *(a+i) == *(p+i)
@@ -555,7 +555,7 @@ a[i][j] == p[i][j] == *(a[i]+j) == *(p[i]+j) == *(*(a+i)+j) == *(*(p+i)+j)
 
    - 示例：
 
-```
+```cpp
 codeint arr1[3] = {1, 2, 3};
 int arr2[4] = {4, 5, 6, 7};
 int arr3[2] = {8, 9};
@@ -585,7 +585,7 @@ cout << p[i] << endl;//输出字符串
 
 ### 指针常量 vs 常量指针
 
-```
+```cpp
 const int *p  ，int const *p2   指向常量的指针  （的值不能变，指向可以变）
 int *const p3    指针常量  （值能变，指向不可以变）（&的本质）
 
@@ -594,8 +594,7 @@ const *  左边  常量指针
 const  右边  指针常量
 ```
 
-```
-
+```cpp
 //const int *p：int const *p2 ：（指向常量的指针）
     int a[10] = { 0 };
 	int b[10] = { 1 * 10 };
@@ -636,7 +635,7 @@ const  右边  指针常量
 
 例如，一个指向数组开头的指针，可以通过使用指针的算术运算或数组索引来访问数组。
 
-```
+```cpp
 #include <iostream>
 using namespace std;
 const int MAX = 3;
@@ -661,7 +660,7 @@ int main ()
 
 然而，指针和数组并不是完全互换的。把指针运算符 * 应用到 var 上是完全可以的，但修改 var 的值是非法的。这是因为 var 是一个指向数组开头的常量，不能作为左值。
 
-```
+```cpp
 #include <iostream> 
 using namespace std;
 const int MAX = 3;
@@ -679,7 +678,7 @@ int main ()
 
 由于一个数组名对应一个指针常量，只要不改变数组的值，仍然可以用指针形式的表达式。只要不更改var这个变量，就是正常的。
 
-```
+```cpp
 *(var + 2) = 500;
 ```
 
@@ -699,7 +698,7 @@ int main ()
 
 2、把引用作为返回值：通过使用引用来替代指针，会使 C++ 程序更容易阅读和维护。C++ 函数可以返回一个引用，方式与返回一个指针类似。当返回一个引用时，要注意被引用的对象不能超出作用域。所以返回一个对局部变量的引用是不合法的，但是，可以返回一个对静态变量的引用。
 
-```
+```cpp
 int& func() {
    int q;
    //! return q; // 在编译时发生错误
@@ -712,7 +711,7 @@ int& func() {
 
 **runoobAarray** 是一个指向 &runoobAarray[0] 的指针，即数组 runoobAarray 的第一个元素的地址，使用数组名作为常量指针是合法的，反之亦然。因此，*(runoobAarray + 4) 是一种访问 runoobAarray[4] 数据的合法方式。
 
-```
+```cpp
 // 带有 5 个元素的双精度浮点型数组
 double runoobAarray[5] = {1000.0, 2.0, 3.4, 17.0, 50.0};
 double *p;
@@ -736,7 +735,7 @@ p = runoobAarray;
 
 定义指向结构的指针，方式与定义指向其他类型变量的指针相似。在上述定义的指针变量中存储结构变量的地址。为了查找结构变量的地址，请把 & 运算符放在结构名称的前面。为了使用指向该结构的指针访问结构的成员，您必须使用 -> 运算符。下面是一个示例：
 
-```
+```cpp
 #include <iostream>
 #include <cstring>
  
@@ -818,7 +817,7 @@ C++ 允许使用速记符号来声明**无符号短整数**或**无符号长整�
 
 **const** 定义常量，表示该变量的值不能被修改。
 
-```
+```cpp
 const int NUM = 10; // 定义常量 NUM，其值不可修改
 const int* ptr = &NUM; // 定义指向常量的指针，指针所指的值不可修改
 int const* ptr2 = &NUM; // 和上面一行等价
@@ -828,7 +827,7 @@ int const* ptr2 = &NUM; // 和上面一行等价
 
 修饰符 **volatile** 告诉该变量的值可能会被程序以外的因素改变，如硬件或其他线程。
 
-```
+```cpp
 volatile int num = 20; // 定义变量 num，其值可能会在未知的时间被改变
 ```
 
@@ -836,7 +835,7 @@ volatile int num = 20; // 定义变量 num，其值可能会在未知的时间�
 
 表示类中的成员变量可以在 const 成员函数中被修改。
 
-```
+```cpp
 class Example {
 public:
     int get_value() const {
@@ -854,7 +853,7 @@ private:
 
  用于定义静态变量，表示该变量的作用域仅限于当前文件或当前函数内，不会被其他文件或函数访问。
 
-```
+```cpp
 void example_function() {
     static int count = 0; // static 关键字使变量 count 存储在程序生命周期内都存在
     count++;
@@ -865,7 +864,7 @@ void example_function() {
 
 ### while，do while
 
-```
+```cpp
 while(condition)
 {
    statement(s);
@@ -878,7 +877,7 @@ do
 
 ### for
 
-```
+```cpp
 for ( init; condition; increment )
 {
    statement(s);
@@ -901,7 +900,7 @@ for ( init; condition; increment )
 
 ### if
 
-```
+```cpp
 if(boolean_expression)
 {
    // 如果布尔表达式为真将执行的语句
@@ -939,7 +938,7 @@ switch(expression){// expression 必须是一个整型或枚举类型，或者�
 
 该方法把参数的引用赋值给形式参数。在函数内，该引用用于访问调用中要用到的实际参数。这意味着，修改形式参数会影响实际参数。
 
-```
+```cpp
 #include <iostream>
 using namespace std;
 // 函数声明
@@ -1005,7 +1004,7 @@ void swap(int &x, int &y)
 
 就函数而言，数组的长度是无关紧要的，因为 C++ 不会对形式参数执行边界检查。
 
-```
+```cpp
 //形式参数是一个指针：
 void myFunction(int *param)
 {
@@ -1020,7 +1019,7 @@ void myFunction(int param[])
 }
 ```
 
-```
+```cpp
 #include <iostream>
 using namespace std;
 // 函数声明
@@ -1063,7 +1062,7 @@ C++ 不支持在函数外返回局部变量的地址，除非定义局部变量�
 
 使用静态数组需要在函数内部创建一个静态数组，并将其地址返回，例如：
 
-```
+```cpp
 int* myFunction()
 {
    static int myArray[3] = {1, 2, 3};
@@ -1075,7 +1074,7 @@ int* myFunction()
 
 在 main 函数中，我们调用了 createArray 函数，并将返回的数组指针存储在 myArray 中。然后我们遍历了数组并打印了每个元素的值。最后，我们使用 delete[] 运算符释放了 myArray 所占用的内存，以避免内存泄漏。
 
-```
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -1108,7 +1107,7 @@ C++ 标准库没有提供所谓的日期类型。C++ 继承了 C 语言用于日
 
 结构类型 **tm** 把日期和时间以 C 结构的形式保存，tm 结构的定义如下：
 
-```
+```cpp
 struct tm {
   int tm_sec;   // 秒，正常范围从 0 到 59，但允许至 61
   int tm_min;   // 分，范围从 0 到 59
@@ -1124,7 +1123,7 @@ struct tm {
 
 ### 获取当前系统的日期和时间
 
-```
+```cpp
 #include <iostream>
 #include <ctime>
  
@@ -1181,7 +1180,7 @@ int main( )
 
 ### 获取程序运行时间
 
-```
+```cpp
 #include <chrono>
  
 // 记录起始时间
@@ -1223,7 +1222,7 @@ std::cout << "程序段运行时间: " << elapsed_ms << " ms" << std::endl;
 C++ 中常见的文件操作包括文件的创建、打开、读取、写入和关闭等。下面是一些常见的文件操作示例：
 
 1、创建文件：使用 ofstream 类的构造函数创建文件，并指定文件名作为参数。例如：
-```
+```cpp
 #include <fstream>
 using namespace std;
 
@@ -1238,7 +1237,7 @@ int main() {
 ```
 
 2、打开文件：使用 ifstream 或 fstream 类的构造函数打开文件，并指定文件名和打开模式作为参数。例如：
-```
+```cpp
 #include <fstream>
 using namespace std;
 
@@ -1253,7 +1252,7 @@ int main() {
 ```
 
 3、读取文件：使用 ifstream 类的成员函数 getline() 或 >> 运算符来读取文件内容。例如：
-```
+```cpp
 #include <fstream>
 #include <iostream>
 using namespace std;
@@ -1272,7 +1271,7 @@ int main() {
 ```
 
 4、写入文件：使用 ofstream 类的成员函数 << 运算符来写入文件内容。例如：
-```
+```cpp
 #include <fstream>
 using namespace std;
 
@@ -1288,7 +1287,7 @@ int main() {
 
 5、关闭文件：使用 close() 成员函数关闭文件。例如：
 
-```
+```cpp
 #include <fstream>
 using namespace std;
 
