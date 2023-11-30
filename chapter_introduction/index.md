@@ -56,11 +56,13 @@
 **电路**：AD、Multisim 
 **信号处理**：matlab、simulink、labview 
 
-**编程**：vscode、vs、pychram、conda、cuda 
+**编程**：vscode、vs、pychram、conda、cuda、docker 
 **文本编辑**：sublime、notebility、typora、latex 
 **图、音视频编辑**：ppt、ps、pr、pe、ar 
 **远程工具**：向日葵、todesk、VNC、Xshell、MobaXtrm 
 **仿真软件**：ANSYS、COMSOL、Simulation 
+**音视频开发**：ffmpeg
+
 
 ## 编程语言
 **C++**：变量类型、语言结构、函数、指针、编译器、STL、多文件调用、make 
