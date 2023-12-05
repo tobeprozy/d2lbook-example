@@ -1,3 +1,48 @@
+# 基本概念
+
+1. **神经网络（Neural Networks）**：这是深度学习的基础，包含输入层、隐藏层和输出层。每层都包含许多神经元，每个神经元都有权重和偏置，通过激活函数进行非线性转换。
+2. **反向传播（Backpropagation）**：这是神经网络学习的主要算法，它通过计算目标函数关于权重的梯度，然后按梯度的反方向更新权重。
+3. **激活函数（Activation Functions）**：这些函数用于引入非线性因素，使得神经网络可以学习更复杂的模式。常见的有ReLU、sigmoid和tanh等。
+4. **损失函数（Loss Functions）**：这些函数用于评估模型的预测结果与真实值之间的差距。常见的有均方误差、交叉熵等。
+5. **优化器（Optimizers）**：这些算法用于更新网络的权重和偏置以最小化损失函数。常见的有SGD、Adam和RMSprop等。
+6. **卷积神经网络（Convolution Neural Networks, CNNs）**：这是一种特别适合处理图像数据的神经网络。通过卷积层、池化层和全连接层，CNN能够有效地提取图像的局部特征和全局特征。
+7. **递归神经网络（Recurrent Neural Networks, RNNs）**：这是一种特别适合处理序列数据的神经网络，通过保存前一状态的信息，RNN可以处理具有时间依赖性的数据。
+8. **长短期记忆（Long Short-Term Memory, LSTM）**：是一种特殊的RNN，设计用来避免传统RNN的长期依赖问题。
+9. **变压器（Transformer）**：这是一种在自然语言处理中非常流行的模型，它使用自注意力机制（Self-Attention）处理序列数据，解决了RNN计算复杂性高和无法并行化的问题。BERT和GPT等模型都基于此。
+10. **生成对抗网络（Generative Adversarial Networks, GANs）**：这是一种可以生成新数据的网络，由两部分组成：生成器和判别器。生成器尝试生成尽可能真实的假数据，而判别器的目标是尽可能分辨出真实数据和假数据。
+11. **目标检测（Object detection）**：这是计算机视觉的一个重要任务，目标是找出图像中所有目标的位置和类别。YOLO（You Only Look Once）和SSD（Single Shot MultiBox Detector）是两种流行的目标检测算法。
+
+目标检测算法:
+
+- IOU(Intersection over Union):用于衡量预测框和真值框的重合程度,值越大表示预测越准确。
+- NMS(Non-Maximum Suppression):去除重复的预测框,仅保留概率最大的预测框。
+- Anchor:预先定义的用于匹配真值框的默认框,通常有不同尺度和宽高比。
+
+分割算法:
+
+- mIoU(Mean Intersection over Union):用于衡量分割结果的准确性,对每个类别单独计算IoU,然后取平均。
+
+NLP算法:
+
+- Transformer:利用Attention机制的编码器-解码器结构,不依赖RNN,更好的捕获全局依赖关系。
+- BERT:双向transformer,通过Masked LM和Next Sentence Prediction任务进行预训练,可fine-tune到下游任务。
+
+度量标准:
+
+- Precision/Recall:预测结果的准确率和召回率。
+- PR曲线:Precision-Recall曲线,度量各阈值下的P和R。
+- mAP(Mean Average Precision):对不同召回率下的平均精度进行均值,度量目标检测的性能。
+
+损失函数:
+
+- CE(Cross-Entropy Loss):常用于分类问题,衡量预测概率分布和真实分布的差异。
+- Focal Loss:解决分类数据不均衡问题,降低易分类样本的损失权重。
+
+优化方法:
+
+- SGD(Stochastic Gradient Descent):随机梯度下降,每次仅使用一个样本进行参数更新。
+- Adam:自适应学习率的优化算法,结合了Momentum和RMSProp。
+  
 ## 线性回归
 
 ### 最小二乘法
@@ -424,7 +469,6 @@ result= [3.79067723]
 ## CNN概念和计算
 
 
-
 ###  卷积层
 
 #### 张量
@@ -444,7 +488,8 @@ print(a.shape) #torch.Size([3, 3])，表示一个二维张量，第一个维度�
 #### 卷积计算
 
 卷积是通过**一定大小的卷积核**作用于图像的局部区域，将局部图像区域的像素值与[卷积核](https://so.csdn.net/so/search?q=卷积核&spm=1001.2101.3001.7020)中的数据做**内积**运算。
-![在这里插入图片描述](./photo/91e744c267f342358fdfe912855a9ffd.png)
+![卷积计算](./photo/91e744c267f342358fdfe912855a9ffd.png)
+:width:`400px`
 
 ```python
 # 卷积运算
@@ -474,8 +519,8 @@ output = _conv2d(data,kernel)
 
 **步长（stride）**：是指图像窗口每次移动的“间距”。
 
-![img](./photo/7c02ab45966a4f34b46155d679d52c60.png)同样大小的图像与卷积核，当stride发生变化时，输出图像的大小也会发生变化。
-
+![步长与填充](./photo/7c02ab45966a4f34b46155d679d52c60.png)同样大小的图像与卷积核，当stride发生变化时，输出图像的大小也会发生变化。
+:width:`400px`
 ```
 data = torch.tensor([[1,1,1,0],
                       [0,0,1,1],
@@ -497,10 +542,13 @@ print(output2.shape)  #   torch.Size([1, 1, 2, 2])
 下图为stride = 1，padding = “valid”（no padding,无填充）的卷积效果；
 4*4的图像与3*3的卷积核进行卷积操作时，图像边缘的点只会被卷积核操作一次，但是图像中间的点会被“照顾”到很多遍，那么就会在一定程度上降低边缘信息。
 
-![img](./photo/48f7b9856d8940578eb1897ee88aaecb.png)
+![填充](./photo/48f7b9856d8940578eb1897ee88aaecb.png)
+:width:`400px`
+
 
 下图为stride = 1, padding=“same”，即对图像边缘填充像素点（一般使用0进行填充），填充之后可以保证在stride = 1的情况下，输出图像大小和输入图像大小是一致的。
 ![image-20230902142054465](./photo/image-20230902142054465.png)
+:width:`400px`
 
 ```
 data = torch.tensor([[1,1,1,0],
@@ -536,7 +584,7 @@ N：输出矩阵的大小
  在卷积网络中， 通常会在卷积层之间增加池化（Pooling） 层， 以降低特征图的参数量， 提升计算速度， 增加感受野， 是一种降采样操作。 在物体检测中， 常用的池化有最大值池化（Max Pooling） 与平均值池化（Average Pooling） 。 池化层有两个主要的输入参数， 即核尺寸kernel_size与步长stride。
 
 ![img](./photo/0c9baeeaa37b42c38d264a830c451178.png)
-
+:width:`400px`
 ```python
 # PyTorch对于池化层的实现
 import torch
@@ -572,6 +620,7 @@ print(out_aver)
 Dropout的基本思想： 在训练时， 每个神经元以概率p保留， 即以1-p的概率停止工作， 每次前向传播保留下来的神经元都不同， 这样可以使得模型不太依赖于某些局部特征， 泛化性能更强。 在测试时， 为了保证相同的输出期望值， 每个参数还要乘以p。 当然还有另外一种计算方式称为Inverted Dropout， 即在训练时将保留下的神经元乘以1/p， 这样测试时就不需要再改变权重。
 
 ![image-20230902150857308](./photo/image-20230902150857308.png)
+:width:`400px`
 
 至于Dropout为什么可以防止过拟合， 可以从以下3个方面解释。
 
@@ -801,8 +850,8 @@ output = softmax(fc2)
 - 每个卷积核的深度==输入矩阵的深度。
 
 - 输出矩阵的深度==卷积核的个数。
-  ![卷积的深度](./photo/08417d0b6bf24776b222cc701611cc16.png)
-
+![卷积的深度](./photo/08417d0b6bf24776b222cc701611cc16.png)
+:width:`400px`
   
 
 如图中输入矩阵数组的深度为3，每个矩阵都是4*4的大小，要进行卷积运算，卷积核的深度也需要是3（如图中的卷积核1和卷积核2），将输入矩阵数组与卷积核1做**内积**运算，获得一个输出矩阵；然后将输入矩阵继续与卷积核2做**内积**运算，获得另一个输出矩阵，因此输出矩阵数组的深度为2。
@@ -869,6 +918,7 @@ plt.show()
 ```
 
 ![image-20230902145622839](./photo/image-20230902145622839.png)
+:width:`400px`
 
 在下方案例中，可以使用不同的卷积核来提取图像的不同特征；
 可以发现，(1)卷积核中参数是可变的;(2)卷积核的参数影响了特征提取；那么我们在训练一个卷积神经网络时，就是要去训练卷积核中参数。
@@ -893,6 +943,7 @@ plt.show()
 ```
 
 ![image-20230902145825312](./photo/image-20230902145825312.png)
+:width:`400px`
 
 ```
 inputimg = torch.FloatTensor(img_gray)
@@ -910,4 +961,4 @@ plt.show()
 ```
 
 ![image-20230902145919720](./photo/image-20230902145919720.png)
-
+:width:`400px`
