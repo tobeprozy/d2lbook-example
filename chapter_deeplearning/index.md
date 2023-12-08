@@ -4,7 +4,7 @@
 ```toc
 :maxdepth: 5
 
-basic1
-basic2
+basic
+CNN
 ```
 
