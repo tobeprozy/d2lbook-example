@@ -307,7 +307,47 @@ Dump of assembler code for function main:
 
 End of assembler dump.
 ```
+可以用“disas /m fun”（disas是disassemble命令缩写）命令将函数代码和汇编指令映射起来：
+```
+(gdb) disas /m main
+Dump of assembler code for function main:
+11      int main(void) {
+   0x00000000004004c4 <+0>:     push   %rbp
+   0x00000000004004c5 <+1>:     mov    %rsp,%rbp
+   0x00000000004004c8 <+4>:     push   %rbx
+   0x00000000004004c9 <+5>:     sub    $0x18,%rsp
 
+12              ex_st st = {1, 2, 3, 4};
+...
+```
+如果只想查看某一行所对应的地址范围，可以：
+```
+(gdb) i line 13
+Line 13 of "foo.c" starts at address 0x4004e9 <main+37> and ends at 0x40050c <main+72>.   
+```
+如果只想查看这一条语句对应的汇编代码，可以使用“disassemble [Start],[End]”命令：
+```
+(gdb) disassemble 0x4004e9, 0x40050c
+Dump of assembler code from 0x4004e9 to 0x40050c:
+   0x00000000004004e9 <main+37>:        mov    -0x14(%rbp),%esi
+...
+```
+使用gdb调试汇编程序时，可以用“display /i $pc”命令显示当程序停止时，将要执行的汇编指令。也可以一次显示多条指令：
+```
+(gdb) display /3i $pc
+2: x/3i $pc
+=> 0x400474 <change_var>:       push   %rbp
+   0x400475 <change_var+1>:     mov    %rsp,%rbp
+   0x400478 <change_var+4>:     movl   $0x64,0x2003de(%rip)        # 0x600860 <global_var>
+```
+使用“disassemble /r”命令可以用16进制形式显示程序的原始机器码。以上面程序为例：
+```
+(gdb) disassemble /r main
+Dump of assembler code for function main:
+   0x0000000000400530 <+0>:     55      push   %rbp
+   0x0000000000400531 <+1>:     48 89 e5        mov    %rsp,%rbp
+...
+```
 
 参考文献：   
 [1] https://www.yanbinghu.com/2019/04/20/41283.html   
